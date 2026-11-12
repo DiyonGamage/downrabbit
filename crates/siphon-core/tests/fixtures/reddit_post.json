@@ -1,0 +1,20 @@
+[
+  {
+    "data": {
+      "children": [
+        {
+          "data": {
+            "title": "Reddit Clip",
+            "secure_media": {
+              "reddit_video": {
+                "fallback_url": "https://v.redd.it/abc/DASH_720.mp4?source=fallback",
+                "duration": 30.0,
+                "is_gif": false
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+]
