@@ -14,11 +14,12 @@ const VERSION = '1.0.0';
 const HOST = '127.0.0.1';
 const PORT = clampInt(process.env.BRIDGE_PORT, 8765, 1, 65535);
 const DATA_DIR = path.join(os.tmpdir(), 'downrabbit-bridge');
+const CACHE_DIR = path.join(DATA_DIR, 'ytdlp-cache');
 const BIN_DIR = path.join(__dirname, 'bin');
 
-const MAX_ACTIVE = clampInt(process.env.BRIDGE_MAX_ACTIVE, 2, 1, 4);
-const FRAGMENTS = clampInt(process.env.BRIDGE_FRAGMENTS, 16, 1, 32);
-const HTTP_CHUNK = process.env.BRIDGE_HTTP_CHUNK || '10M';
+const MAX_ACTIVE = clampInt(process.env.BRIDGE_MAX_ACTIVE, 3, 1, 4);
+const FRAGMENTS = clampInt(process.env.BRIDGE_FRAGMENTS, 24, 1, 32);
+const HTTP_CHUNK = process.env.BRIDGE_HTTP_CHUNK || '16M';
 const FILE_TTL_MS = clampInt(process.env.BRIDGE_FILE_TTL_MS, 60 * 60 * 1000, 60 * 1000, 24 * 60 * 60 * 1000);
 const JOB_TTL_MS = Math.max(FILE_TTL_MS, clampInt(process.env.BRIDGE_JOB_TTL_MS, 2 * 60 * 60 * 1000, 60 * 1000, 24 * 60 * 60 * 1000));
 const MAX_FILESIZE = process.env.BRIDGE_MAX_FILESIZE || '8G';
@@ -31,6 +32,7 @@ const AUTO_UPDATE = process.env.BRIDGE_AUTO_UPDATE !== '0';
 
 const jobs = new Map();
 const files = new Map();
+const resolveCache = new Map();
 const queue = [];
 const rateHits = [];
 let active = 0;
@@ -342,7 +344,7 @@ function baseArgs() {
     '--no-playlist',
     '--playlist-items', '1',
     '--no-warnings',
-    '--no-cache-dir',
+    '--cache-dir', CACHE_DIR,
     '--no-mtime',
     '--no-write-info-json',
     '--no-write-thumbnail',
@@ -440,6 +442,10 @@ async function resolveUrl(url) {
   if (data && data._type === 'playlist' && Array.isArray(data.entries)) data = data.entries[0];
   if (!data) throw new Error('no media found at that link');
   if (!Array.isArray(data.formats) || !data.formats.length) throw new Error('no downloadable formats found');
+  const now = Date.now();
+  for (const entry of resolveCache) if (entry[1].expires < now) resolveCache.delete(entry[0]);
+  while (resolveCache.size >= 8) resolveCache.delete(resolveCache.keys().next().value);
+  resolveCache.set(url, { data: data, expires: now + 10 * 60 * 1000 });
   return normalizeInfo(data);
 }
 
@@ -559,7 +565,18 @@ async function runJob(job) {
   ]);
   if (job.mode === 'audio-mp3') args.push('-x', '--audio-format', 'mp3', '--audio-quality', '0');
   args.push('-o', path.join(dir, 'media.%(ext)s'));
-  args.push(job.url);
+  const cached = resolveCache.get(job.url);
+  if (cached && cached.expires > Date.now()) {
+    try {
+      const infoPath = path.join(dir, 'info.json');
+      fs.writeFileSync(infoPath, JSON.stringify(cached.data));
+      args.push('--load-info-json', infoPath);
+    } catch (e) {
+      args.push(job.url);
+    }
+  } else {
+    args.push(job.url);
+  }
 
   return new Promise(function (resolve) {
     let stderr = '';
@@ -618,6 +635,7 @@ async function runJob(job) {
         job.status = 'error';
         job.stage = 'error';
         job.error = friendlyError(stderr, code).message;
+        resolveCache.delete(job.url);
         cleanupDir(dir);
         return finish();
       }
@@ -741,6 +759,7 @@ function cleanup() {
 
 function initDirs() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
   let names = [];
   try { names = fs.readdirSync(DATA_DIR); } catch (e) {}
   for (const name of names) {
@@ -775,6 +794,9 @@ const server = http.createServer(async function (req, res) {
         ytdlp: ytdlpVersion,
         ffmpeg: ffmpegVersion,
         mp3: !!ffmpegMp3,
+        fragments: FRAGMENTS,
+        maxActive: MAX_ACTIVE,
+        httpChunk: HTTP_CHUNK,
         active: active,
         queued: queue.length
       });
@@ -786,6 +808,8 @@ const server = http.createServer(async function (req, res) {
       const url = await assertPublicUrl(body.url);
       await refreshTools(false);
       if (!ytdlpVersion) return json(res, 503, { error: 'yt-dlp is not installed. run bridge/setup.ps1 or install yt-dlp' });
+      const cached = resolveCache.get(url);
+      if (cached && cached.expires > Date.now()) return json(res, 200, Object.assign({ ok: true }, normalizeInfo(cached.data)));
       const info = await resolveUrl(url);
       return json(res, 200, Object.assign({ ok: true }, info));
     }

@@ -80,9 +80,9 @@ Set these before starting the bridge:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `BRIDGE_PORT` | `8765` | Port to listen on |
-| `BRIDGE_MAX_ACTIVE` | `2` | Simultaneous bridge jobs |
-| `BRIDGE_FRAGMENTS` | `16` | yt-dlp concurrent fragments |
-| `BRIDGE_HTTP_CHUNK` | `10M` | yt-dlp HTTP chunk size |
+| `BRIDGE_MAX_ACTIVE` | `3` | Simultaneous bridge jobs |
+| `BRIDGE_FRAGMENTS` | `24` | yt-dlp concurrent fragments |
+| `BRIDGE_HTTP_CHUNK` | `16M` | yt-dlp HTTP chunk size |
 | `BRIDGE_MAX_FILESIZE` | `8G` | Reject larger files |
 | `BRIDGE_FILE_TTL_MS` | `3600000` | How long prepared files stay available |
 | `BRIDGE_JOB_TTL_MS` | `7200000` | How long job records stay available |

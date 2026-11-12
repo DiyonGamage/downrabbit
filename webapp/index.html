@@ -414,8 +414,8 @@
         <div class="set-row"><div class="set-lab"><b>reduced motion</b><span>calm the rabbit</span></div><div class="set-ctl"><button class="toggle" id="motion-tog" role="switch" aria-checked="false"></button></div></div>
       </div>
       <div class="set-group">
-        <div class="set-row"><div class="set-lab"><b>connections per file</b><span>parallel range requests · more = faster, a bit more RAM</span></div><div class="set-ctl"><input type="range" id="set-conn" min="1" max="8" value="4"><span class="val" id="conn-val">4</span></div></div>
-        <div class="set-row"><div class="set-lab"><b>concurrent jobs</b><span>how many files at once</span></div><div class="set-ctl"><div class="stepper"><button id="conc-minus">−</button><span class="num" id="conc-val">2</span><button id="conc-plus">+</button></div></div></div>
+        <div class="set-row"><div class="set-lab"><b>connections per file</b><span>parallel range requests · more = faster, a bit more RAM</span></div><div class="set-ctl"><input type="range" id="set-conn" min="1" max="8" value="6"><span class="val" id="conn-val">6</span></div></div>
+        <div class="set-row"><div class="set-lab"><b>concurrent jobs</b><span>how many files at once</span></div><div class="set-ctl"><div class="stepper"><button id="conc-minus">−</button><span class="num" id="conc-val">3</span><button id="conc-plus">+</button></div></div></div>
         <div class="set-row"><div class="set-lab"><b>filename template</b><span>{name} and {ext} are replaced</span></div><div class="set-ctl"><input type="text" id="set-template" value="{name}.{ext}"></div></div>
         <div class="set-row"><div class="set-lab"><b>background downloads</b><span>hand files to your browser so they finish even if you close this tab (works on more hosts, no in-app progress)</span></div><div class="set-ctl"><button class="toggle" id="bg-tog" role="switch" aria-checked="false"></button></div></div>
         <div class="set-row"><div class="set-lab"><b>clipboard watch</b><span>capture a copied link when you return to this tab</span></div><div class="set-ctl"><button class="toggle" id="clip-tog" role="switch" aria-checked="false"></button></div></div>
@@ -440,7 +440,7 @@
     <div class="overlay" id="help-overlay"><div class="sheet">
       <div class="sheet-h"><h3>what can i download?</h3><button class="x" data-close>×</button></div>
       <div class="help-block"><b><span class="ok">✓</span> direct file links</b><p>a URL that points straight at a file — usually ends in an extension, and the host allows cross-origin reads.</p><code>https://cdn.example.com/clip.mp4<br>https://files.example.org/song.mp3</code></div>
-      <div class="help-block"><b><span class="ok">✓</span> platform pages · with the local bridge</b><p>start the tiny local bridge once and downrabbit can fetch YouTube, TikTok, Instagram, Reddit, X, Facebook, Vimeo, Twitch, SoundCloud, Bilibili, Dailymotion, Pinterest, Tumblr and most other sites yt-dlp supports. the download runs on your machine — no server of ours.</p><code>cd bridge<br>.\setup.ps1<br>.\start.ps1</code><p style="margin-top:8px">some sites (Instagram, Facebook, X, age-restricted YouTube) need your browser cookies. start the bridge with <span class="accent">BRIDGE_COOKIES_FROM_BROWSER=chrome</span> (or edge/firefox).</p><p style="margin-top:8px">1080p+ and MP3 conversion use ffmpeg; setup.ps1 installs a build with MP3 support.</p></div>
+      <div class="help-block"><b><span class="ok">✓</span> platform pages · with the local bridge</b><p>start the tiny local bridge once and downrabbit can fetch YouTube, TikTok, Instagram, Reddit, X, Facebook, Vimeo, Twitch, SoundCloud, Bilibili, Dailymotion, Pinterest, Tumblr and most other sites yt-dlp supports. the download runs on your machine — no server of ours.</p><code>cd bridge<br>.\setup.ps1<br>.\start.ps1</code><p style="margin-top:8px">some sites (Instagram, Facebook, X, age-restricted YouTube) need your browser cookies. start the bridge with <span class="accent">BRIDGE_COOKIES_FROM_BROWSER=chrome</span> (or edge/firefox).</p><p style="margin-top:8px">first time? your browser may ask to allow local network access — click <span class="accent">Allow</span> so the bridge can connect.</p><p style="margin-top:8px">1080p+ and MP3 conversion use ffmpeg; setup.ps1 installs a build with MP3 support.</p></div>
       <div class="help-block"><b><span class="no">✕</span> spotify</b><p>Spotify streams are DRM-protected, so no downloader can save them. use SoundCloud or a video mirror instead.</p></div>
       <div class="help-block"><b>tip</b><p>if a host blocks in-app reads, downrabbit offers a <span class="accent">browser download</span> fallback. turn on <span class="accent">background downloads</span> in settings to let your browser finish files even after you close this tab.</p></div>
       <button class="btn-solid" id="help-sample">try a sample direct link</button>
@@ -457,7 +457,7 @@
       <div class="opt-meta" id="opt-meta"></div>
       <div class="opt-row" id="opt-quality-row" style="display:none"><div class="opt-lab"><b>quality</b><span>real formats from the source · no fake toggles</span></div><div class="set-ctl"><select id="opt-quality"></select></div></div>
       <div class="opt-row"><div class="opt-lab"><b>save as</b><span>filename on your disk</span></div><div class="set-ctl"><input type="text" id="opt-name" spellcheck="false"></div></div>
-      <div class="opt-row"><div class="opt-lab"><b>connections</b><span>parallel ranges · more = faster</span></div><div class="set-ctl"><div class="stepper"><button id="opt-conn-minus">−</button><span class="num" id="opt-conn-val">4</span><button id="opt-conn-plus">+</button></div></div></div>
+      <div class="opt-row"><div class="opt-lab"><b>connections</b><span>parallel ranges · more = faster</span></div><div class="set-ctl"><div class="stepper"><button id="opt-conn-minus">−</button><span class="num" id="opt-conn-val">6</span><button id="opt-conn-plus">+</button></div></div></div>
       <p class="opt-note" id="opt-note">quality &amp; audio are whatever the source file has.</p>
       <div class="opt-actions"><button class="btn-line" id="opt-cancel">cancel</button><button class="btn-solid" id="opt-go">download</button></div>
     </div></div>
@@ -468,6 +468,18 @@
       <div class="prep-meta"><span class="sp" id="prep-stage">starting…</span><span id="prep-pct"></span></div>
       <div class="prep-err" id="prep-err"></div>
       <div class="opt-actions"><button class="btn-line" id="prep-cancel">cancel</button></div>
+    </div></div>
+
+    <div class="overlay" id="bridge-connect-overlay"><div class="sheet">
+      <div class="sheet-h"><h3>connect the local bridge</h3><button class="x" data-close>×</button></div>
+      <div class="help-block">
+        <b>one permission, then it's automatic</b>
+        <p>your browser will ask to let downrabbit reach apps on this device. choose <span class="accent">Allow</span> (or <span class="accent">Allow local network access</span>) so the bridge can fetch <span id="bridge-connect-what">that page</span>.</p>
+        <p>the bridge runs only on your machine. not running yet? start it:</p>
+        <code>cd bridge<br>.\start.ps1</code>
+      </div>
+      <div class="prep-err" id="bridge-connect-err"></div>
+      <div class="opt-actions"><button class="btn-line" id="bridge-connect-cancel">not now</button><button class="btn-solid" id="bridge-connect-go">allow &amp; connect</button></div>
     </div></div>
 
     <div class="toast" id="toast"><span id="toast-text"></span><button id="toast-act" style="display:none">undo</button></div>
@@ -482,15 +494,26 @@
   var SAMPLE='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
   var LS_SET='downrabbit.settings.v1', LS_HIST='downrabbit.history.v1';
   var BRIDGE='http://127.0.0.1:8765';
-  var bridge=null, bridgeLastCheck=0;
+  var BRIDGE_ALLOW_KEY='downrabbit.bridge.v1';
+  var bridge=null, bridgeLastCheck=0, bridgeTried=false, pendingBridge=null;
 
   var S={ view:'save', accent:'amber', theme:'dark', motion:'full',
-    connections:4, concurrency:2, template:'{name}.{ext}', bg:false, clip:false,
+    connections:6, concurrency:3, template:'{name}.{ext}', bg:false, clip:false,
     jobs:[], history:[], seq:0, focus:null };
 
   /* ---------- persistence ---------- */
   function saveSettings(){ try{localStorage.setItem(LS_SET,JSON.stringify({accent:S.accent,theme:S.theme,motion:S.motion,connections:S.connections,concurrency:S.concurrency,template:S.template,bg:S.bg,clip:S.clip}));}catch(e){} }
-  function loadSettings(){ try{var o=JSON.parse(localStorage.getItem(LS_SET)||'{}'); for(var k in o){ if(k in S) S[k]=o[k]; }}catch(e){} }
+  function loadSettings(){
+    try{var o=JSON.parse(localStorage.getItem(LS_SET)||'{}'); for(var k in o){ if(k in S) S[k]=o[k]; }}catch(e){}
+    try{
+      if(!localStorage.getItem('downrabbit.speed.v2')){
+        if(S.connections===4) S.connections=6;
+        if(S.concurrency===2) S.concurrency=3;
+        localStorage.setItem('downrabbit.speed.v2','1');
+        saveSettings();
+      }
+    }catch(e){}
+  }
   function saveHistory(){ try{localStorage.setItem(LS_HIST,JSON.stringify(S.history.slice(0,60)));}catch(e){} }
   function loadHistory(){ try{var o=JSON.parse(localStorage.getItem(LS_HIST)||'null'); if(Array.isArray(o)) S.history=o; else S.history=[
       {title:'flower.mp4',url:SAMPLE,size:'1.1 MB',when:'sample',kind:'video',host:'interactive-examples.mdn.mozilla.net'},
@@ -625,7 +648,7 @@
   $('#clip-tog').addEventListener('click',function(){S.clip=!S.clip;this.classList.toggle('on',S.clip);this.setAttribute('aria-checked',S.clip);saveSettings();});
   $('#clear-hist').addEventListener('click',function(){S.history=[];saveHistory();renderHistory('');toast('history cleared');});
   $('#reset-set').addEventListener('click',function(){
-    S.connections=4;S.concurrency=2;S.template='{name}.{ext}';S.bg=false;S.clip=false;S.accent='amber';S.theme='dark';S.motion='full';
+    S.connections=6;S.concurrency=3;S.template='{name}.{ext}';S.bg=false;S.clip=false;S.accent='amber';S.theme='dark';S.motion='full';
     applySettingsToUI();saveSettings();toast('settings reset to defaults');});
   window.addEventListener('focus',function(){ if(!S.clip)return;
     if(navigator.clipboard&&navigator.clipboard.readText){ navigator.clipboard.readText().then(function(t){ t=(t||'').trim();
@@ -646,17 +669,25 @@
       throw e;
     }finally{ clearTimeout(timer); }
   }
-  async function detectBridge(){
-    bridgeLastCheck=Date.now();
-    try{ bridge=await bridgeFetch('/ping',{},3000); }
+  async function detectBridge(ms){
+    bridgeLastCheck=Date.now(); bridgeTried=true;
+    try{ bridge=await bridgeFetch('/ping',{},ms||3000); }
     catch(e){ bridge=null; }
+    if(bridge&&bridge.ready){ try{ localStorage.setItem(BRIDGE_ALLOW_KEY,'1'); }catch(e){} }
     updateBridgeUI();
     return bridge;
   }
   function recheckBridge(){ if(bridge && Date.now()-bridgeLastCheck<4000) return Promise.resolve(bridge); return detectBridge(); }
   function updateBridgeUI(){
     var el=$('#bridge-state'); if(!el)return;
-    if(!bridge){ el.className='bridge-state'; el.textContent='offline · run bridge/start.ps1'; }
+    if(!bridge){
+      el.className='bridge-state';
+      if(location.protocol==='https:'){
+        el.textContent=bridgeTried?'offline · allow local access or start bridge/start.ps1':'not connected · connect on first download';
+      } else {
+        el.textContent='offline · run bridge/start.ps1';
+      }
+    }
     else if(!bridge.ready){ el.className='bridge-state bad'; el.textContent='online · yt-dlp missing'; }
     else { el.className='bridge-state ok'; el.textContent='connected · yt-dlp '+(bridge.ytdlp||'ok')+(bridge.ffmpeg?' · ffmpeg ok':''); }
   }
@@ -666,14 +697,46 @@
     setBubble("that's a <span class='accent'>"+esc(label)+"</span> page. start the <button class='inline-link' id='bridge-help'>local bridge</button> and i can fetch it — or paste a direct file link.");
     bindBridgeHelp();
   }
+  function bridgeConnectOpen(url,label){
+    pendingBridge={url:url,label:label};
+    $('#bridge-connect-what').textContent=label||'that page';
+    $('#bridge-connect-err').style.display='none'; $('#bridge-connect-err').textContent='';
+    var go=$('#bridge-connect-go'); go.disabled=false; go.textContent='allow & connect';
+    $('#bridge-connect-overlay').classList.add('on');
+    setRabbit('link'); setBubble('one quick permission — your browser will ask to allow the local bridge.');
+  }
+  function bridgeConnectClose(){
+    pendingBridge=null;
+    $('#bridge-connect-overlay').classList.remove('on');
+    setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.');
+  }
+  async function bridgeConnectGo(){
+    if(!pendingBridge)return;
+    var go=$('#bridge-connect-go'); go.disabled=true; go.textContent='connecting…';
+    var err=$('#bridge-connect-err'); err.style.display='none'; err.textContent='';
+    await detectBridge(30000);
+    if(bridge&&bridge.ready){
+      var p=pendingBridge; pendingBridge=null;
+      $('#bridge-connect-overlay').classList.remove('on');
+      bridgeFlow(p.url,p.label);
+      return;
+    }
+    go.disabled=false; go.textContent='allow & connect';
+    err.textContent = (bridge&&!bridge.ready)
+      ? 'the bridge is online, but yt-dlp is missing. run bridge/setup.ps1 and restart it.'
+      : 'could not reach the bridge. make sure bridge/start.ps1 is running, then allow local network access in your browser\'s site settings.';
+    err.style.display='block';
+    setRabbit('error');
+  }
   async function bridgeFlow(url,label){
-    if(!bridge||!bridge.ready) await recheckBridge();
-    if(!bridge){ bridgeMissing(label); return; }
-    if(!bridge.ready){
+    if(bridge && !bridge.ready){
       setRabbit('error');
       setBubble('the bridge is online, but <span class="accent">yt-dlp</span> is missing. run <span class="accent">bridge/setup.ps1</span> and restart it.');
       return;
     }
+    if(!bridge && location.protocol==='https:'){ bridgeConnectOpen(url,label); return; }
+    if(!bridge) await recheckBridge();
+    if(!bridge){ bridgeMissing(label); return; }
     fieldBusy(true); setRabbit('link');
     setBubble('the bridge is looking up that <span class="accent">'+esc(label)+'</span> link…');
     try{
@@ -824,7 +887,7 @@
     var j={ id:++S.seq, url:url, host:opts.host||hostOf(url), origin:opts.origin||url,
       viaBridge:!!opts.viaBridge, bridgeFileId:opts.bridgeFileId||null,
       name:sanitize(g.name), ext:(g.ext||'bin').toLowerCase(), displayName:'',
-      kind:'file', total:0, got:0, status:'queued', speed:0, range:false, chunkSize:4*1024*1024,
+      kind:'file', total:0, got:0, status:'queued', speed:0, range:false, chunkSize:8*1024*1024,
       conn:opts.connections||S.connections, preProbed:false,
       controllers:[], sink: handle?{type:'file',handle:handle,w:null}:{type:'blob',parts:[]},
       pending:{}, nextChunk:0, ticker:null, lastT:0, lastB:0, err:'' };
@@ -1064,7 +1127,16 @@
     startDownload(p.url,name,opts);
   });
   $('#prep-cancel').addEventListener('click',closePrepOverlay);
-  $('#bridge-recheck').addEventListener('click',function(){ detectBridge().then(function(){ toast(bridge&&bridge.ready?'bridge connected':'bridge offline'); }); });
+  $('#bridge-connect-go').addEventListener('click',bridgeConnectGo);
+  $('#bridge-connect-cancel').addEventListener('click',bridgeConnectClose);
+  $('#bridge-recheck').addEventListener('click',function(){
+    if(location.protocol==='https:' && !bridge) toast('if your browser asks, allow local network access for the bridge');
+    detectBridge(30000).then(function(){
+      if(bridge&&bridge.ready) toast('bridge connected');
+      else if(bridge) toast('bridge online, but yt-dlp is missing');
+      else toast(location.protocol==='https:'?'bridge offline — allow local access or start bridge/start.ps1':'bridge offline');
+    });
+  });
   $('#url').addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
   $('#url').addEventListener('input',function(){ if(this.value.trim()){ setRabbit('link'); setBubble('ooh, a link. press <span class="accent">enter</span> or hit download.'); } });
   $('#go-btn').addEventListener('click',function(){submit();});
@@ -1095,7 +1167,7 @@
   }
   $('#hist-open').addEventListener('click',function(){renderHistory('');$('#hist-search').value='';$('#hist-overlay').classList.add('on');});
   $('#hist-search').addEventListener('input',function(){renderHistory(this.value);});
-  function closeOverlay(o){ if(o.id==='prep-overlay'){ closePrepOverlay(); return; } o.classList.remove('on'); if(o.id==='opt-overlay')resetOptState(); }
+  function closeOverlay(o){ if(o.id==='prep-overlay'){ closePrepOverlay(); return; } if(o.id==='bridge-connect-overlay'){ bridgeConnectClose(); return; } o.classList.remove('on'); if(o.id==='opt-overlay')resetOptState(); }
   $$('[data-close]').forEach(function(b){b.addEventListener('click',function(){closeOverlay(b.closest('.overlay'));});});
   $$('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)closeOverlay(o);});});
   document.addEventListener('keydown',function(e){ if(e.key==='Escape')$$('.overlay.on').forEach(closeOverlay); });
@@ -1110,8 +1182,9 @@
   /* ---------- init ---------- */
   loadSettings(); loadHistory(); applySettingsToUI();
   setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.'); renderHistory(''); updateBadge();
-  detectBridge();
-  window.addEventListener('focus',function(){ if(!bridge||!bridge.ready) recheckBridge(); });
+  var bridgeAllowed=false; try{ bridgeAllowed=!!localStorage.getItem(BRIDGE_ALLOW_KEY); }catch(e){}
+  if(location.protocol!=='https:' || bridgeAllowed) detectBridge(); else updateBridgeUI();
+  window.addEventListener('focus',function(){ if(location.protocol==='https:')return; if(!bridge||!bridge.ready) recheckBridge(); });
 })();
 </script>
 </div>
