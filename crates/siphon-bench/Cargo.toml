@@ -1,0 +1,13 @@
+[package]
+name = "siphon-bench"
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+
+[dependencies]
+siphon-core = { path = "../siphon-core" }
+tokio.workspace = true
+clap.workspace = true
+sysinfo.workspace = true
+serde_json.workspace = true
+url.workspace = true
