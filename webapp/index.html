@@ -1189,5 +1189,17 @@
 </script>
 </div>
 <!--APP-FRAGMENT-END-->
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // Ensure bottom navigation is always visible on mobile
+  var navs = document.querySelectorAll('#downrabbit-app .nav-top, #downrabbit-app .nav-bottom');
+  navs.forEach(function(n){ n.style.display='flex'; n.style.position='relative'; n.style.zIndex='10'; });
+  // Enable page scrolling
+  document.body.style.overflow='';
+  document.documentElement.style.overflow='';
+  // Reset scroll position
+  window.scrollTo(0,0);
+});
+</script>
 </body>
 </html>
