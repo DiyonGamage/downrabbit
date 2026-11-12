@@ -1,5 +1,10 @@
 # Siphon — design spec
 
+> **STATUS: SUPERSEDED (2026-11-12).** Siphon shipped as a **pure client-side webapp**
+> (`webapp/index.html`) — direct/CORS-open links only, no exe, no local server. This document
+> records the earlier native (Tauri/Rust + yt-dlp) design exploration and is kept for history.
+> The shipped product and its scope are described in the root `README.md`.
+
 > Working codename: **Siphon** (rename anytime). A low-resource, no-nonsense media
 > downloader for Windows that beats cobalt on footprint, speed, coverage, and UX.
 > Status: design for review. Date: 2026-11-12.

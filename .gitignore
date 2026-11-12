@@ -1,3 +1,7 @@
 /target
 **/*.rs.bk
 /docs/reports/*.json
+/out
+/site
+/.superpowers
+node_modules/
