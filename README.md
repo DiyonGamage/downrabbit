@@ -1,27 +1,27 @@
-# Siphon
+# Downrabbit
 
 **Paste a direct link, get the file.** A tiny, no-nonsense media downloader that runs
 entirely in your browser. No install, no account, no server, no telemetry.
 
-Siphon is a clean-room, open-source take on the *idea* of [cobalt](https://github.com/imputnet/cobalt)
+Downrabbit is a clean-room, open-source take on the *idea* of [cobalt](https://github.com/imputnet/cobalt)
 (not its code), rebuilt to be dramatically lighter: the whole app is a single static
 HTML file with zero dependencies and zero build step. Open it and it runs.
 
-- **Live:** host it yourself (see [Hosting](#hosting)) — e.g. Cloudflare Pages → `siphon.pages.dev`
+- **Live:** host it yourself (see [Hosting](#hosting)) — e.g. Cloudflare Pages → `downrabbit.pages.dev`
 - **License:** Apache-2.0
 - **Mascot:** a stateful ink-line rabbit that reacts to every download
 
 ## What it does
 
-Paste a **direct file link** (`.mp4`, `.mp3`, `.zip`, …) and Siphon streams it to your disk:
+Paste a **direct file link** (`.mp4`, `.mp3`, `.zip`, …) and Downrabbit streams it to your disk:
 
 - **Multi-connection downloads** — parallel HTTP Range requests (configurable 1–8) for speed.
 - **Streams to disk** — uses the File System Access API where available, so memory stays tiny
   even for large files; falls back to an in-browser blob + save when the picker isn't supported.
 - **Pause / resume / cancel** — durable chunk tracking picks up exactly where it left off.
 - **Honest about scope** — it fetches *direct, CORS-open media links only*. YouTube, TikTok,
-  Instagram, Reddit and similar are *pages*, not files; Siphon tells you so instead of faking it.
-- **Graceful fallback** — if a host blocks in-app reads, Siphon offers a native browser download.
+  Instagram, Reddit and similar are *pages*, not files; Downrabbit tells you so instead of faking it.
+- **Graceful fallback** — if a host blocks in-app reads, Downrabbit offers a native browser download.
 - **History, settings, themes** — download history with re-download/copy/remove, filename
   templates, concurrency, dark-matte + creamy-white themes, amber/green phosphor accent,
   reduced-motion mode.
@@ -30,10 +30,10 @@ Everything stays in your browser. Nothing leaves your machine except the downloa
 
 ## What it does NOT do
 
-Siphon is a **pure client-side webapp**. Browsers cannot run `yt-dlp` or bypass CORS, so Siphon
+Downrabbit is a **pure client-side webapp**. Browsers cannot run `yt-dlp` or bypass CORS, so Downrabbit
 deliberately does **not** extract from platform pages (YouTube/TikTok/etc.). That needs a server,
-which Siphon doesn't have. For those, use a dedicated tool. This is a feature, not a bug: it keeps
-Siphon free, private, install-free, and honest.
+which Downrabbit doesn't have. For those, use a dedicated tool. This is a feature, not a bug: it keeps
+Downrabbit free, private, install-free, and honest.
 
 ## Run it
 

@@ -5,21 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0a0a0a">
-<meta name="description" content="Siphon — a tiny, no-nonsense media downloader that runs entirely in your browser. Paste a direct file link, get the file. No install, no account, no telemetry.">
-<title>Siphon — paste a link, get the file</title>
+<meta name="description" content="Downrabbit — a tiny, no-nonsense media downloader that runs entirely in your browser. Paste a direct file link, get the file. No install, no account, no telemetry.">
+<title>Downrabbit — paste a link, get the file</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 130'%3E%3Cg fill='none' stroke='%23ffb43a' stroke-width='6'%3E%3Cellipse cx='46' cy='30' rx='8' ry='24' transform='rotate(-9 46 54)'/%3E%3Cellipse cx='74' cy='30' rx='8' ry='24' transform='rotate(9 74 54)'/%3E%3Cellipse cx='60' cy='74' rx='29' ry='26'/%3E%3C/g%3E%3Ccircle cx='49' cy='72' r='4' fill='%23ffb43a'/%3E%3Ccircle cx='71' cy='72' r='4' fill='%23ffb43a'/%3E%3C/svg%3E">
 <style>
   html,body{height:100%;margin:0;padding:0;box-sizing:border-box;}
   body{background:#050505;font-family:ui-monospace,"Cascadia Code","JetBrains Mono","Consolas","SF Mono",monospace;}
-  #siphon-app{height:100dvh;min-height:560px;width:100%;border-radius:0;}
-  @media (min-width:1180px){ body{display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(1200px 700px at 50% -10%, #101010, #050505);} #siphon-app{height:min(760px,calc(100dvh - 44px));width:min(1120px,100%);border-radius:16px;border:1px solid #1c1c1c;box-shadow:0 40px 120px rgba(0,0,0,.6);} }
+  #downrabbit-app{height:100dvh;min-height:560px;width:100%;border-radius:0;}
+  @media (min-width:1180px){ body{display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(1200px 700px at 50% -10%, #101010, #050505);} #downrabbit-app{height:min(760px,calc(100dvh - 44px));width:min(1120px,100%);border-radius:16px;border:1px solid #1c1c1c;box-shadow:0 40px 120px rgba(0,0,0,.6);} }
 </style>
 </head>
 <body>
 <!--APP-FRAGMENT-START-->
-<div id="siphon-app" data-accent="amber" data-theme="dark" data-motion="full">
+<div id="downrabbit-app" data-accent="amber" data-theme="dark" data-motion="full">
 <style>
-  #siphon-app{
+  #downrabbit-app{
     --bg:#0a0a0a; --sidebar:#0e0e0e; --surface:#141414; --surface2:#1c1c1c;
     --line:#242424; --line2:#343434; --text:#ededed; --muted:#8a8a8a; --dim:#565656;
     --white:#f2f2f2; --rabbit-line:#f2f2f2; --danger:#ff5f56;
@@ -29,219 +29,219 @@
     font-family:var(--mono); color:var(--text); background:var(--bg);
     overflow:hidden; line-height:1.5; -webkit-font-smoothing:antialiased; position:relative;
   }
-  #siphon-app[data-accent="green"]{ --accent:#3ef07e; --accent-soft:rgba(62,240,126,.13); --accent-glow:rgba(62,240,126,.45); --on-accent:#08130c; }
-  #siphon-app[data-theme="cream"]{
+  #downrabbit-app[data-accent="green"]{ --accent:#3ef07e; --accent-soft:rgba(62,240,126,.13); --accent-glow:rgba(62,240,126,.45); --on-accent:#08130c; }
+  #downrabbit-app[data-theme="cream"]{
     --bg:#f3ede1; --sidebar:#eae2d2; --surface:#faf6ec; --surface2:#efe7d7;
     --line:#ddd3bf; --line2:#c9bda3; --text:#2c271f; --muted:#7a7060; --dim:#a89c85;
     --white:#2c271f; --rabbit-line:#2c271f; --danger:#c0392b;
     --active-bg:#2c271f; --active-fg:#f3ede1;
     --accent:#c97a06; --accent-soft:rgba(201,122,6,.15); --accent-glow:rgba(201,122,6,.3); --on-accent:#fff8ec;
   }
-  #siphon-app[data-theme="cream"][data-accent="green"]{ --accent:#1f9d57; --accent-soft:rgba(31,157,87,.15); --accent-glow:rgba(31,157,87,.3); --on-accent:#f3ede1; }
-  #siphon-app *{box-sizing:border-box;}
-  #siphon-app ::-webkit-scrollbar{width:9px;height:9px;}
-  #siphon-app ::-webkit-scrollbar-track{background:var(--bg);}
-  #siphon-app ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:9px;border:2px solid var(--bg);}
-  #siphon-app ::-webkit-scrollbar-thumb:hover{background:var(--accent);}
-  #siphon-app button{font-family:var(--mono);cursor:pointer;}
-  #siphon-app a{color:var(--muted);}
-  #siphon-app .accent{color:var(--accent);}
-  #siphon-app .inline-link{background:none;border:none;color:var(--accent);text-decoration:underline;text-underline-offset:2px;font-family:var(--mono);font-size:inherit;padding:0;cursor:pointer;}
+  #downrabbit-app[data-theme="cream"][data-accent="green"]{ --accent:#1f9d57; --accent-soft:rgba(31,157,87,.15); --accent-glow:rgba(31,157,87,.3); --on-accent:#f3ede1; }
+  #downrabbit-app *{box-sizing:border-box;}
+  #downrabbit-app ::-webkit-scrollbar{width:9px;height:9px;}
+  #downrabbit-app ::-webkit-scrollbar-track{background:var(--bg);}
+  #downrabbit-app ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:9px;border:2px solid var(--bg);}
+  #downrabbit-app ::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+  #downrabbit-app button{font-family:var(--mono);cursor:pointer;}
+  #downrabbit-app a{color:var(--muted);}
+  #downrabbit-app .accent{color:var(--accent);}
+  #downrabbit-app .inline-link{background:none;border:none;color:var(--accent);text-decoration:underline;text-underline-offset:2px;font-family:var(--mono);font-size:inherit;padding:0;cursor:pointer;}
 
   /* ambient background */
-  #siphon-app .bg-fx{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-  #siphon-app .bg-aurora{position:absolute;inset:-25%;
+  #downrabbit-app .bg-fx{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  #downrabbit-app .bg-aurora{position:absolute;inset:-25%;
     background:radial-gradient(42% 38% at 22% 20%, var(--accent-soft), transparent 70%),
                radial-gradient(38% 34% at 82% 78%, var(--accent-soft), transparent 72%);
     opacity:.55; animation:s-drift 28s ease-in-out infinite alternate;}
-  #siphon-app .bg-grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;
+  #downrabbit-app .bg-grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
   @keyframes s-drift{0%{transform:translate(0,0) rotate(0deg)}100%{transform:translate(3%,2%) rotate(2deg)}}
 
-  #siphon-app .app{display:flex;height:100%;position:relative;z-index:1;}
+  #downrabbit-app .app{display:flex;height:100%;position:relative;z-index:1;}
 
   /* sidebar */
-  #siphon-app .sidebar{flex:0 0 118px;background:var(--sidebar);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:18px 12px;animation:s-enter .5s ease both;}
-  #siphon-app .logo{width:34px;height:34px;margin-bottom:26px;color:var(--rabbit-line);}
-  #siphon-app .logo svg{width:100%;height:100%;}
-  #siphon-app .nav-top,#siphon-app .nav-bottom{display:flex;flex-direction:column;gap:8px;width:100%;}
-  #siphon-app .nav-bottom{margin-top:auto;}
-  #siphon-app .nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;padding:11px 4px;border:none;border-radius:11px;background:transparent;color:var(--muted);font-size:11px;letter-spacing:.04em;transition:.18s;position:relative;}
-  #siphon-app .nav svg{width:20px;height:20px;}
-  #siphon-app .nav:hover{color:var(--text);background:var(--surface);}
-  #siphon-app .nav.on{background:var(--active-bg);color:var(--active-fg);font-weight:600;}
+  #downrabbit-app .sidebar{flex:0 0 118px;background:var(--sidebar);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:18px 12px;animation:s-enter .5s ease both;}
+  #downrabbit-app .logo{width:34px;height:34px;margin-bottom:26px;color:var(--rabbit-line);}
+  #downrabbit-app .logo svg{width:100%;height:100%;}
+  #downrabbit-app .nav-top,#downrabbit-app .nav-bottom{display:flex;flex-direction:column;gap:8px;width:100%;}
+  #downrabbit-app .nav-bottom{margin-top:auto;}
+  #downrabbit-app .nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;padding:11px 4px;border:none;border-radius:11px;background:transparent;color:var(--muted);font-size:11px;letter-spacing:.04em;transition:.18s;position:relative;}
+  #downrabbit-app .nav svg{width:20px;height:20px;}
+  #downrabbit-app .nav:hover{color:var(--text);background:var(--surface);}
+  #downrabbit-app .nav.on{background:var(--active-bg);color:var(--active-fg);font-weight:600;}
 
   /* main */
-  #siphon-app .main{flex:1;min-width:0;background:transparent;position:relative;display:flex;flex-direction:column;}
-  #siphon-app .topbar{display:flex;align-items:center;gap:12px;padding:16px 20px;position:relative;}
-  #siphon-app .help-pill{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid transparent;color:var(--muted);font-size:12px;letter-spacing:.03em;padding:7px 12px;border-radius:9px;transition:.18s;}
-  #siphon-app .help-pill:hover{color:var(--text);background:var(--surface);border-color:var(--line);}
-  #siphon-app .help-pill svg{width:15px;height:15px;}
-  #siphon-app .res-badge{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--surface);white-space:nowrap;}
-  #siphon-app .res-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px var(--accent-glow);flex:0 0 auto;}
-  #siphon-app .res-badge .dot.live{animation:s-pulse 1.2s ease-in-out infinite;}
+  #downrabbit-app .main{flex:1;min-width:0;background:transparent;position:relative;display:flex;flex-direction:column;}
+  #downrabbit-app .topbar{display:flex;align-items:center;gap:12px;padding:16px 20px;position:relative;}
+  #downrabbit-app .help-pill{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid transparent;color:var(--muted);font-size:12px;letter-spacing:.03em;padding:7px 12px;border-radius:9px;transition:.18s;}
+  #downrabbit-app .help-pill:hover{color:var(--text);background:var(--surface);border-color:var(--line);}
+  #downrabbit-app .help-pill svg{width:15px;height:15px;}
+  #downrabbit-app .res-badge{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--surface);white-space:nowrap;}
+  #downrabbit-app .res-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px var(--accent-glow);flex:0 0 auto;}
+  #downrabbit-app .res-badge .dot.live{animation:s-pulse 1.2s ease-in-out infinite;}
   @keyframes s-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-  #siphon-app .circ{width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;transition:.18s;flex:0 0 auto;}
-  #siphon-app .circ:hover{color:var(--accent);border-color:var(--accent);box-shadow:0 0 14px var(--accent-soft);}
-  #siphon-app .circ svg{width:18px;height:18px;}
-  #siphon-app .view{display:none;flex:1;min-height:0;}
-  #siphon-app .view.on{display:flex;}
-  #siphon-app .view-save{flex-direction:column;}
-  #siphon-app .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 24px 0;overflow-y:auto;}
+  #downrabbit-app .circ{width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;transition:.18s;flex:0 0 auto;}
+  #downrabbit-app .circ:hover{color:var(--accent);border-color:var(--accent);box-shadow:0 0 14px var(--accent-soft);}
+  #downrabbit-app .circ svg{width:18px;height:18px;}
+  #downrabbit-app .view{display:none;flex:1;min-height:0;}
+  #downrabbit-app .view.on{display:flex;}
+  #downrabbit-app .view-save{flex-direction:column;}
+  #downrabbit-app .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 24px 0;overflow-y:auto;}
 
   /* mascot + bubble */
-  #siphon-app .mascot-row{position:relative;width:100%;max-width:660px;height:230px;display:flex;align-items:flex-end;justify-content:center;flex:0 0 auto;animation:s-enter .6s .05s ease both;}
-  #siphon-app .rabbit-stage{width:200px;height:222px;display:flex;align-items:flex-end;justify-content:center;}
-  #siphon-app .bubble{position:absolute;left:0;bottom:78px;max-width:250px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 15px;font-size:12px;color:var(--muted);line-height:1.55;box-shadow:0 10px 28px rgba(0,0,0,.35);transition:.25s;z-index:2;}
-  #siphon-app .bubble::after{content:"";position:absolute;right:-7px;bottom:22px;width:12px;height:12px;background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(-45deg);}
-  #siphon-app .bubble .accent{text-shadow:0 0 8px var(--accent-glow);}
+  #downrabbit-app .mascot-row{position:relative;width:100%;max-width:660px;height:230px;display:flex;align-items:flex-end;justify-content:center;flex:0 0 auto;animation:s-enter .6s .05s ease both;}
+  #downrabbit-app .rabbit-stage{width:200px;height:222px;display:flex;align-items:flex-end;justify-content:center;}
+  #downrabbit-app .bubble{position:absolute;left:0;bottom:78px;max-width:250px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 15px;font-size:12px;color:var(--muted);line-height:1.55;box-shadow:0 10px 28px rgba(0,0,0,.35);transition:.25s;z-index:2;}
+  #downrabbit-app .bubble::after{content:"";position:absolute;right:-7px;bottom:22px;width:12px;height:12px;background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(-45deg);}
+  #downrabbit-app .bubble .accent{text-shadow:0 0 8px var(--accent-glow);}
 
   /* paste */
-  #siphon-app .paste-wrap{width:100%;max-width:660px;flex:0 0 auto;animation:s-enter .6s .12s ease both;}
-  #siphon-app .field{display:flex;align-items:center;gap:11px;background:var(--bg);border:1px solid var(--line2);border-radius:13px;padding:0 16px;height:54px;transition:border-color .2s, box-shadow .2s;}
-  #siphon-app .field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
-  #siphon-app .field.busy{border-color:var(--accent);}
-  #siphon-app .field-ico{flex:0 0 auto;width:18px;height:18px;color:var(--dim);display:flex;align-items:center;justify-content:center;}
-  #siphon-app .field-ico svg{width:18px;height:18px;}
-  #siphon-app .field.busy .field-ico{color:var(--accent);}
-  #siphon-app .spin{animation:s-spin 1s linear infinite;}
+  #downrabbit-app .paste-wrap{width:100%;max-width:660px;flex:0 0 auto;animation:s-enter .6s .12s ease both;}
+  #downrabbit-app .field{display:flex;align-items:center;gap:11px;background:var(--bg);border:1px solid var(--line2);border-radius:13px;padding:0 16px;height:54px;transition:border-color .2s, box-shadow .2s;}
+  #downrabbit-app .field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  #downrabbit-app .field.busy{border-color:var(--accent);}
+  #downrabbit-app .field-ico{flex:0 0 auto;width:18px;height:18px;color:var(--dim);display:flex;align-items:center;justify-content:center;}
+  #downrabbit-app .field-ico svg{width:18px;height:18px;}
+  #downrabbit-app .field.busy .field-ico{color:var(--accent);}
+  #downrabbit-app .spin{animation:s-spin 1s linear infinite;}
   @keyframes s-spin{to{transform:rotate(360deg)}}
-  #siphon-app .field input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:15px;caret-color:var(--accent);height:100%;}
-  #siphon-app .field input::placeholder{color:var(--dim);}
-  #siphon-app .mode-row{display:flex;align-items:center;gap:12px;margin-top:13px;}
-  #siphon-app .paste-btn{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:11px;color:var(--text);font-size:13px;padding:11px 18px;transition:.16s;}
-  #siphon-app .paste-btn svg{width:15px;height:15px;}
-  #siphon-app .paste-btn:hover{border-color:var(--line2);background:var(--surface2);}
-  #siphon-app .paste-btn:active{transform:translateY(1px);}
-  #siphon-app .go-btn{display:flex;align-items:center;gap:8px;background:var(--accent);border:none;border-radius:11px;color:var(--on-accent);font-size:13px;font-weight:600;padding:11px 18px;box-shadow:0 0 16px var(--accent-soft);transition:.16s;}
-  #siphon-app .go-btn:hover{filter:brightness(1.08);}
-  #siphon-app .go-btn:active{transform:translateY(1px);}
-  #siphon-app .go-btn svg{width:15px;height:15px;}
-  #siphon-app .hint{margin-top:12px;font-size:11px;color:var(--dim);text-align:center;}
+  #downrabbit-app .field input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:15px;caret-color:var(--accent);height:100%;}
+  #downrabbit-app .field input::placeholder{color:var(--dim);}
+  #downrabbit-app .mode-row{display:flex;align-items:center;gap:12px;margin-top:13px;}
+  #downrabbit-app .paste-btn{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:11px;color:var(--text);font-size:13px;padding:11px 18px;transition:.16s;}
+  #downrabbit-app .paste-btn svg{width:15px;height:15px;}
+  #downrabbit-app .paste-btn:hover{border-color:var(--line2);background:var(--surface2);}
+  #downrabbit-app .paste-btn:active{transform:translateY(1px);}
+  #downrabbit-app .go-btn{display:flex;align-items:center;gap:8px;background:var(--accent);border:none;border-radius:11px;color:var(--on-accent);font-size:13px;font-weight:600;padding:11px 18px;box-shadow:0 0 16px var(--accent-soft);transition:.16s;}
+  #downrabbit-app .go-btn:hover{filter:brightness(1.08);}
+  #downrabbit-app .go-btn:active{transform:translateY(1px);}
+  #downrabbit-app .go-btn svg{width:15px;height:15px;}
+  #downrabbit-app .hint{margin-top:12px;font-size:11px;color:var(--dim);text-align:center;}
 
   /* queue */
-  #siphon-app .queue{margin-top:18px;display:flex;flex-direction:column;gap:10px;width:100%;}
-  #siphon-app .job{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;animation:s-rise .3s ease;}
+  #downrabbit-app .queue{margin-top:18px;display:flex;flex-direction:column;gap:10px;width:100%;}
+  #downrabbit-app .job{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;animation:s-rise .3s ease;}
   @keyframes s-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  #siphon-app .job-top{display:flex;align-items:baseline;gap:10px;margin-bottom:11px;}
-  #siphon-app .job-title{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
-  #siphon-app .job-svc{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 7px;flex:0 0 auto;}
-  #siphon-app .track{position:relative;height:7px;background:var(--surface2);border-radius:999px;}
-  #siphon-app .bar{position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--accent);border-radius:999px;box-shadow:0 0 10px var(--accent-glow);transition:width .22s linear;}
-  #siphon-app .bar.indet{background:linear-gradient(90deg,transparent,var(--accent),transparent);background-size:200% 100%;animation:s-shimmer 1.2s linear infinite;}
+  #downrabbit-app .job-top{display:flex;align-items:baseline;gap:10px;margin-bottom:11px;}
+  #downrabbit-app .job-title{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+  #downrabbit-app .job-svc{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 7px;flex:0 0 auto;}
+  #downrabbit-app .track{position:relative;height:7px;background:var(--surface2);border-radius:999px;}
+  #downrabbit-app .bar{position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--accent);border-radius:999px;box-shadow:0 0 10px var(--accent-glow);transition:width .22s linear;}
+  #downrabbit-app .bar.indet{background:linear-gradient(90deg,transparent,var(--accent),transparent);background-size:200% 100%;animation:s-shimmer 1.2s linear infinite;}
   @keyframes s-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-  #siphon-app .hop{position:absolute;right:-10px;top:-20px;width:21px;height:21px;opacity:0;transition:opacity .2s;}
-  #siphon-app .job.downloading .hop{opacity:1;}
-  #siphon-app .job.error .bar,#siphon-app .job.blocked .bar{background:var(--danger);box-shadow:0 0 10px rgba(255,95,86,.4);}
-  #siphon-app .job-meta{display:flex;align-items:center;gap:13px;margin-top:11px;font-size:11px;color:var(--muted);flex-wrap:wrap;}
-  #siphon-app .job-meta .sp{color:var(--accent);}
-  #siphon-app .job.error .job-meta .sp,#siphon-app .job.blocked .job-meta .sp{color:var(--danger);}
-  #siphon-app .job-meta .ctl{margin-left:auto;display:flex;gap:13px;}
-  #siphon-app .job-meta .ctl button{background:none;border:none;color:var(--dim);font-size:11px;padding:0;transition:.15s;}
-  #siphon-app .job-meta .ctl button:hover{color:var(--text);}
-  #siphon-app .footer{text-align:center;font-size:11px;color:var(--dim);padding:16px;flex:0 0 auto;animation:s-enter .6s .2s ease both;}
-  #siphon-app .footer a{color:var(--muted);text-decoration:underline;text-underline-offset:2px;}
+  #downrabbit-app .hop{position:absolute;right:-10px;top:-20px;width:21px;height:21px;opacity:0;transition:opacity .2s;}
+  #downrabbit-app .job.downloading .hop{opacity:1;}
+  #downrabbit-app .job.error .bar,#downrabbit-app .job.blocked .bar{background:var(--danger);box-shadow:0 0 10px rgba(255,95,86,.4);}
+  #downrabbit-app .job-meta{display:flex;align-items:center;gap:13px;margin-top:11px;font-size:11px;color:var(--muted);flex-wrap:wrap;}
+  #downrabbit-app .job-meta .sp{color:var(--accent);}
+  #downrabbit-app .job.error .job-meta .sp,#downrabbit-app .job.blocked .job-meta .sp{color:var(--danger);}
+  #downrabbit-app .job-meta .ctl{margin-left:auto;display:flex;gap:13px;}
+  #downrabbit-app .job-meta .ctl button{background:none;border:none;color:var(--dim);font-size:11px;padding:0;transition:.15s;}
+  #downrabbit-app .job-meta .ctl button:hover{color:var(--text);}
+  #downrabbit-app .footer{text-align:center;font-size:11px;color:var(--dim);padding:16px;flex:0 0 auto;animation:s-enter .6s .2s ease both;}
+  #downrabbit-app .footer a{color:var(--muted);text-decoration:underline;text-underline-offset:2px;}
 
   /* panels */
-  #siphon-app .view-panel{flex-direction:column;overflow-y:auto;padding:30px 40px;}
-  #siphon-app .panel-h{font-size:18px;letter-spacing:.04em;margin:0 0 4px;color:var(--text);}
-  #siphon-app .panel-sub{font-size:12px;color:var(--muted);margin:0 0 26px;}
-  #siphon-app .set-group{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:6px 18px;margin-bottom:16px;max-width:640px;}
-  #siphon-app .set-row{display:flex;align-items:center;gap:16px;padding:15px 0;border-bottom:1px solid var(--line);}
-  #siphon-app .set-row:last-child{border-bottom:none;}
-  #siphon-app .set-lab{flex:1;min-width:0;}
-  #siphon-app .set-lab b{display:block;font-size:13px;font-weight:500;color:var(--text);}
-  #siphon-app .set-lab span{font-size:11px;color:var(--dim);}
-  #siphon-app .set-ctl{flex:0 0 auto;display:flex;align-items:center;gap:10px;}
-  #siphon-app input[type=text]{background:var(--bg);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 11px;outline:none;width:210px;}
-  #siphon-app input[type=text]:focus{border-color:var(--accent);}
-  #siphon-app input[type=range]{-webkit-appearance:none;width:150px;height:4px;background:var(--line2);border-radius:9px;outline:none;}
-  #siphon-app input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);cursor:pointer;}
-  #siphon-app .val{font-size:12px;color:var(--accent);min-width:34px;text-align:right;}
-  #siphon-app .stepper{display:flex;align-items:center;border:1px solid var(--line2);border-radius:8px;overflow:hidden;}
-  #siphon-app .stepper button{width:30px;height:30px;background:var(--bg);border:none;color:var(--muted);font-size:15px;}
-  #siphon-app .stepper button:hover{color:var(--accent);}
-  #siphon-app .stepper .num{width:34px;text-align:center;font-size:13px;color:var(--text);}
-  #siphon-app .toggle{width:42px;height:24px;border-radius:999px;background:var(--line2);border:none;position:relative;transition:.2s;flex:0 0 auto;}
-  #siphon-app .toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:.2s;}
-  #siphon-app .toggle.on{background:var(--accent-soft);}
-  #siphon-app .toggle.on::after{left:21px;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);}
-  #siphon-app .mini-seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;}
-  #siphon-app .mini-seg button{background:var(--bg);border:none;color:var(--muted);font-size:11px;padding:7px 13px;}
-  #siphon-app .mini-seg button.on{background:var(--accent);color:var(--on-accent);font-weight:600;}
-  #siphon-app .btn-line{background:var(--surface2);border:1px solid var(--line2);border-radius:9px;color:var(--text);font-size:12px;padding:9px 16px;transition:.16s;}
-  #siphon-app .btn-line:hover{border-color:var(--accent);color:var(--accent);}
-  #siphon-app .btn-solid{background:var(--accent);border:none;border-radius:9px;color:var(--on-accent);font-size:12px;font-weight:600;padding:10px 18px;box-shadow:0 0 16px var(--accent-soft);}
-  #siphon-app .about-card{max-width:640px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:24px;}
-  #siphon-app .about-card p{font-size:12px;color:var(--muted);margin:0 0 12px;}
-  #siphon-app .tagrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
-  #siphon-app .tag{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:4px 9px;}
-  #siphon-app .arch{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 4px;}
-  #siphon-app .arch span{border:1px solid var(--line2);border-radius:8px;background:var(--bg);padding:8px 13px;font-size:12px;color:var(--text);}
-  #siphon-app .arch i{color:var(--accent);font-style:normal;}
-  #siphon-app .arch-note{font-size:11px;color:var(--dim);margin:0 0 14px;}
+  #downrabbit-app .view-panel{flex-direction:column;overflow-y:auto;padding:30px 40px;}
+  #downrabbit-app .panel-h{font-size:18px;letter-spacing:.04em;margin:0 0 4px;color:var(--text);}
+  #downrabbit-app .panel-sub{font-size:12px;color:var(--muted);margin:0 0 26px;}
+  #downrabbit-app .set-group{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:6px 18px;margin-bottom:16px;max-width:640px;}
+  #downrabbit-app .set-row{display:flex;align-items:center;gap:16px;padding:15px 0;border-bottom:1px solid var(--line);}
+  #downrabbit-app .set-row:last-child{border-bottom:none;}
+  #downrabbit-app .set-lab{flex:1;min-width:0;}
+  #downrabbit-app .set-lab b{display:block;font-size:13px;font-weight:500;color:var(--text);}
+  #downrabbit-app .set-lab span{font-size:11px;color:var(--dim);}
+  #downrabbit-app .set-ctl{flex:0 0 auto;display:flex;align-items:center;gap:10px;}
+  #downrabbit-app input[type=text]{background:var(--bg);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 11px;outline:none;width:210px;}
+  #downrabbit-app input[type=text]:focus{border-color:var(--accent);}
+  #downrabbit-app input[type=range]{-webkit-appearance:none;width:150px;height:4px;background:var(--line2);border-radius:9px;outline:none;}
+  #downrabbit-app input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);cursor:pointer;}
+  #downrabbit-app .val{font-size:12px;color:var(--accent);min-width:34px;text-align:right;}
+  #downrabbit-app .stepper{display:flex;align-items:center;border:1px solid var(--line2);border-radius:8px;overflow:hidden;}
+  #downrabbit-app .stepper button{width:30px;height:30px;background:var(--bg);border:none;color:var(--muted);font-size:15px;}
+  #downrabbit-app .stepper button:hover{color:var(--accent);}
+  #downrabbit-app .stepper .num{width:34px;text-align:center;font-size:13px;color:var(--text);}
+  #downrabbit-app .toggle{width:42px;height:24px;border-radius:999px;background:var(--line2);border:none;position:relative;transition:.2s;flex:0 0 auto;}
+  #downrabbit-app .toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:.2s;}
+  #downrabbit-app .toggle.on{background:var(--accent-soft);}
+  #downrabbit-app .toggle.on::after{left:21px;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);}
+  #downrabbit-app .mini-seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;}
+  #downrabbit-app .mini-seg button{background:var(--bg);border:none;color:var(--muted);font-size:11px;padding:7px 13px;}
+  #downrabbit-app .mini-seg button.on{background:var(--accent);color:var(--on-accent);font-weight:600;}
+  #downrabbit-app .btn-line{background:var(--surface2);border:1px solid var(--line2);border-radius:9px;color:var(--text);font-size:12px;padding:9px 16px;transition:.16s;}
+  #downrabbit-app .btn-line:hover{border-color:var(--accent);color:var(--accent);}
+  #downrabbit-app .btn-solid{background:var(--accent);border:none;border-radius:9px;color:var(--on-accent);font-size:12px;font-weight:600;padding:10px 18px;box-shadow:0 0 16px var(--accent-soft);}
+  #downrabbit-app .about-card{max-width:640px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:24px;}
+  #downrabbit-app .about-card p{font-size:12px;color:var(--muted);margin:0 0 12px;}
+  #downrabbit-app .tagrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+  #downrabbit-app .tag{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:4px 9px;}
+  #downrabbit-app .arch{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 4px;}
+  #downrabbit-app .arch span{border:1px solid var(--line2);border-radius:8px;background:var(--bg);padding:8px 13px;font-size:12px;color:var(--text);}
+  #downrabbit-app .arch i{color:var(--accent);font-style:normal;}
+  #downrabbit-app .arch-note{font-size:11px;color:var(--dim);margin:0 0 14px;}
 
   /* overlays */
-  #siphon-app .overlay{position:absolute;inset:0;background:rgba(5,5,5,.72);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:64px 24px 24px;z-index:20;}
-  #siphon-app[data-theme="cream"] .overlay{background:rgba(60,50,30,.4);}
-  #siphon-app .overlay.on{display:flex;}
-  #siphon-app .sheet{width:100%;max-width:600px;max-height:100%;overflow-y:auto;background:var(--sidebar);border:1px solid var(--line2);border-radius:14px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:s-rise .25s ease;}
-  #siphon-app .sheet-h{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
-  #siphon-app .sheet-h h3{flex:1;font-size:15px;margin:0;letter-spacing:.03em;}
-  #siphon-app .sheet-h .x{background:none;border:none;color:var(--muted);font-size:18px;width:30px;height:30px;border-radius:8px;}
-  #siphon-app .sheet-h .x:hover{color:var(--text);background:var(--surface);}
-  #siphon-app .search{display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--line2);border-radius:9px;padding:0 12px;height:40px;margin-bottom:16px;}
-  #siphon-app .search svg{width:15px;height:15px;color:var(--dim);}
-  #siphon-app .search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:13px;caret-color:var(--accent);}
-  #siphon-app .help-block{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:14px 16px;margin-bottom:12px;}
-  #siphon-app .help-block b{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;}
-  #siphon-app .help-block p{font-size:12px;color:var(--muted);margin:0 0 8px;}
-  #siphon-app .help-block code{display:block;font-size:11px;color:var(--accent);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 10px;word-break:break-all;}
-  #siphon-app .help-block .ok{color:var(--accent);}
-  #siphon-app .help-block .no{color:var(--danger);}
-  #siphon-app .hist-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
-  #siphon-app .hist-ico{width:30px;height:30px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--accent);flex:0 0 auto;}
-  #siphon-app .hist-ico svg{width:15px;height:15px;}
-  #siphon-app .hist-main{flex:1;min-width:0;}
-  #siphon-app .hist-main b{display:block;font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  #siphon-app .hist-main span{font-size:10px;color:var(--dim);}
-  #siphon-app .hist-act{display:flex;gap:6px;flex:0 0 auto;}
-  #siphon-app .hist-act button{width:28px;height:28px;border-radius:7px;background:var(--bg);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;}
-  #siphon-app .hist-act button svg{width:13px;height:13px;}
-  #siphon-app .hist-act button:hover{color:var(--accent);border-color:var(--accent);}
-  #siphon-app .hist-empty{font-size:12px;color:var(--dim);text-align:center;padding:24px;}
-  #siphon-app .toast{position:absolute;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:11px 16px;font-size:12px;color:var(--text);display:flex;align-items:center;gap:14px;opacity:0;pointer-events:none;transition:.25s;z-index:40;box-shadow:0 12px 30px rgba(0,0,0,.4);max-width:90%;}
-  #siphon-app .toast.on{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
-  #siphon-app .toast button{background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;}
+  #downrabbit-app .overlay{position:absolute;inset:0;background:rgba(5,5,5,.72);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:64px 24px 24px;z-index:20;}
+  #downrabbit-app[data-theme="cream"] .overlay{background:rgba(60,50,30,.4);}
+  #downrabbit-app .overlay.on{display:flex;}
+  #downrabbit-app .sheet{width:100%;max-width:600px;max-height:100%;overflow-y:auto;background:var(--sidebar);border:1px solid var(--line2);border-radius:14px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:s-rise .25s ease;}
+  #downrabbit-app .sheet-h{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  #downrabbit-app .sheet-h h3{flex:1;font-size:15px;margin:0;letter-spacing:.03em;}
+  #downrabbit-app .sheet-h .x{background:none;border:none;color:var(--muted);font-size:18px;width:30px;height:30px;border-radius:8px;}
+  #downrabbit-app .sheet-h .x:hover{color:var(--text);background:var(--surface);}
+  #downrabbit-app .search{display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--line2);border-radius:9px;padding:0 12px;height:40px;margin-bottom:16px;}
+  #downrabbit-app .search svg{width:15px;height:15px;color:var(--dim);}
+  #downrabbit-app .search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:13px;caret-color:var(--accent);}
+  #downrabbit-app .help-block{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:14px 16px;margin-bottom:12px;}
+  #downrabbit-app .help-block b{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;}
+  #downrabbit-app .help-block p{font-size:12px;color:var(--muted);margin:0 0 8px;}
+  #downrabbit-app .help-block code{display:block;font-size:11px;color:var(--accent);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 10px;word-break:break-all;}
+  #downrabbit-app .help-block .ok{color:var(--accent);}
+  #downrabbit-app .help-block .no{color:var(--danger);}
+  #downrabbit-app .hist-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+  #downrabbit-app .hist-ico{width:30px;height:30px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--accent);flex:0 0 auto;}
+  #downrabbit-app .hist-ico svg{width:15px;height:15px;}
+  #downrabbit-app .hist-main{flex:1;min-width:0;}
+  #downrabbit-app .hist-main b{display:block;font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #downrabbit-app .hist-main span{font-size:10px;color:var(--dim);}
+  #downrabbit-app .hist-act{display:flex;gap:6px;flex:0 0 auto;}
+  #downrabbit-app .hist-act button{width:28px;height:28px;border-radius:7px;background:var(--bg);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;}
+  #downrabbit-app .hist-act button svg{width:13px;height:13px;}
+  #downrabbit-app .hist-act button:hover{color:var(--accent);border-color:var(--accent);}
+  #downrabbit-app .hist-empty{font-size:12px;color:var(--dim);text-align:center;padding:24px;}
+  #downrabbit-app .toast{position:absolute;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:11px 16px;font-size:12px;color:var(--text);display:flex;align-items:center;gap:14px;opacity:0;pointer-events:none;transition:.25s;z-index:40;box-shadow:0 12px 30px rgba(0,0,0,.4);max-width:90%;}
+  #downrabbit-app .toast.on{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  #downrabbit-app .toast button{background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;}
 
   @keyframes s-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
   /* ============ RABBIT RIG ============ */
-  #siphon-app .rabbit{width:196px;height:218px;overflow:visible;}
-  #siphon-app .r-line{fill:var(--bg);stroke:var(--rabbit-line);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
-  #siphon-app .r-stroke{fill:none;stroke:var(--rabbit-line);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
-  #siphon-app .r-whisker{fill:none;stroke:var(--rabbit-line);stroke-width:1.5;stroke-linecap:round;opacity:.55;}
-  #siphon-app .r-accent{fill:var(--accent);}
-  #siphon-app .r-soft{fill:var(--accent-soft);stroke:none;}
-  #siphon-app .r-ink{fill:var(--rabbit-line);stroke:none;}
-  #siphon-app .r-mouth{fill:none;stroke:var(--rabbit-line);stroke-width:1.9;stroke-linecap:round;}
-  #siphon-app .r-tooth{fill:var(--bg);stroke:var(--rabbit-line);stroke-width:1.6;stroke-linejoin:round;}
-  #siphon-app .r-sad,#siphon-app .r-happy{fill:none;stroke:var(--rabbit-line);stroke-width:2.8;stroke-linecap:round;opacity:0;}
-  #siphon-app .r-ear,#siphon-app .r-head,#siphon-app .r-body,#siphon-app .r-all,#siphon-app .r-eye,#siphon-app .r-nose,#siphon-app .r-whisk,#siphon-app .r-paw,#siphon-app .r-tail{transform-box:fill-box;}
-  #siphon-app .r-all{transform-origin:50% 100%;}
-  #siphon-app .r-body{transform-origin:50% 100%;animation:s-breathe 3.6s ease-in-out infinite;}
-  #siphon-app .r-tail{transform-origin:0% 50%;animation:s-tail 4.2s ease-in-out infinite;}
-  #siphon-app .r-head-look{transform-box:fill-box;transform-origin:50% 95%;}
-  #siphon-app .r-head{transform-origin:50% 92%;transition:transform .5s cubic-bezier(.34,1.4,.64,1);animation:s-headmicro 6.5s ease-in-out infinite;}
-  #siphon-app .r-ear{transform-origin:50% 100%;transition:transform .55s cubic-bezier(.34,1.5,.64,1);}
-  #siphon-app .r-ear-l{transform:rotate(-9deg);animation:s-swayl 4.1s ease-in-out infinite;}
-  #siphon-app .r-ear-r{transform:rotate(9deg);animation:s-swayr 3.7s ease-in-out infinite;}
-  #siphon-app .r-eyes-look{transform-box:fill-box;}
-  #siphon-app .r-eye{transform-origin:50% 50%;}
-  #siphon-app .r-nose{transform-origin:50% 50%;animation:s-nose .5s ease-in-out infinite;}
-  #siphon-app .r-whisk-l{transform-origin:100% 50%;animation:s-whiskl .5s ease-in-out infinite;}
-  #siphon-app .r-whisk-r{transform-origin:0% 50%;animation:s-whiskr .5s ease-in-out infinite;}
-  #siphon-app .r-paw{transform-origin:50% 0%;}
+  #downrabbit-app .rabbit{width:196px;height:218px;overflow:visible;}
+  #downrabbit-app .r-line{fill:var(--bg);stroke:var(--rabbit-line);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
+  #downrabbit-app .r-stroke{fill:none;stroke:var(--rabbit-line);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  #downrabbit-app .r-whisker{fill:none;stroke:var(--rabbit-line);stroke-width:1.5;stroke-linecap:round;opacity:.55;}
+  #downrabbit-app .r-accent{fill:var(--accent);}
+  #downrabbit-app .r-soft{fill:var(--accent-soft);stroke:none;}
+  #downrabbit-app .r-ink{fill:var(--rabbit-line);stroke:none;}
+  #downrabbit-app .r-mouth{fill:none;stroke:var(--rabbit-line);stroke-width:1.9;stroke-linecap:round;}
+  #downrabbit-app .r-tooth{fill:var(--bg);stroke:var(--rabbit-line);stroke-width:1.6;stroke-linejoin:round;}
+  #downrabbit-app .r-sad,#downrabbit-app .r-happy{fill:none;stroke:var(--rabbit-line);stroke-width:2.8;stroke-linecap:round;opacity:0;}
+  #downrabbit-app .r-ear,#downrabbit-app .r-head,#downrabbit-app .r-body,#downrabbit-app .r-all,#downrabbit-app .r-eye,#downrabbit-app .r-nose,#downrabbit-app .r-whisk,#downrabbit-app .r-paw,#downrabbit-app .r-tail{transform-box:fill-box;}
+  #downrabbit-app .r-all{transform-origin:50% 100%;}
+  #downrabbit-app .r-body{transform-origin:50% 100%;animation:s-breathe 3.6s ease-in-out infinite;}
+  #downrabbit-app .r-tail{transform-origin:0% 50%;animation:s-tail 4.2s ease-in-out infinite;}
+  #downrabbit-app .r-head-look{transform-box:fill-box;transform-origin:50% 95%;}
+  #downrabbit-app .r-head{transform-origin:50% 92%;transition:transform .5s cubic-bezier(.34,1.4,.64,1);animation:s-headmicro 6.5s ease-in-out infinite;}
+  #downrabbit-app .r-ear{transform-origin:50% 100%;transition:transform .55s cubic-bezier(.34,1.5,.64,1);}
+  #downrabbit-app .r-ear-l{transform:rotate(-9deg);animation:s-swayl 4.1s ease-in-out infinite;}
+  #downrabbit-app .r-ear-r{transform:rotate(9deg);animation:s-swayr 3.7s ease-in-out infinite;}
+  #downrabbit-app .r-eyes-look{transform-box:fill-box;}
+  #downrabbit-app .r-eye{transform-origin:50% 50%;}
+  #downrabbit-app .r-nose{transform-origin:50% 50%;animation:s-nose .5s ease-in-out infinite;}
+  #downrabbit-app .r-whisk-l{transform-origin:100% 50%;animation:s-whiskl .5s ease-in-out infinite;}
+  #downrabbit-app .r-whisk-r{transform-origin:0% 50%;animation:s-whiskr .5s ease-in-out infinite;}
+  #downrabbit-app .r-paw{transform-origin:50% 0%;}
 
   @keyframes s-breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,1.028)}}
   @keyframes s-tail{0%,100%{transform:rotate(0)}50%{transform:rotate(7deg)}}
@@ -252,67 +252,67 @@
   @keyframes s-whiskl{0%,100%{transform:rotate(0)}50%{transform:rotate(2.4deg)}}
   @keyframes s-whiskr{0%,100%{transform:rotate(0)}50%{transform:rotate(-2.4deg)}}
   @keyframes s-blink{0%,100%{transform:scaleY(1)}45%,55%{transform:scaleY(.06)}}
-  #siphon-app .r-eye.blink{animation:s-blink .19s ease-in-out;}
+  #downrabbit-app .r-eye.blink{animation:s-blink .19s ease-in-out;}
   @keyframes s-flickl{0%,100%{transform:rotate(-9deg)}30%{transform:rotate(-26deg)}60%{transform:rotate(-4deg)}}
   @keyframes s-flickr{0%,100%{transform:rotate(9deg)}30%{transform:rotate(26deg)}60%{transform:rotate(4deg)}}
-  #siphon-app .r-ear-l.flick{animation:s-flickl .55s ease-in-out;}
-  #siphon-app .r-ear-r.flick{animation:s-flickr .55s ease-in-out;}
+  #downrabbit-app .r-ear-l.flick{animation:s-flickl .55s ease-in-out;}
+  #downrabbit-app .r-ear-r.flick{animation:s-flickr .55s ease-in-out;}
 
-  #siphon-app #rig[data-state="link"] .r-ear-l{transform:rotate(-2deg);animation:none;}
-  #siphon-app #rig[data-state="link"] .r-ear-r{transform:rotate(2deg);animation:none;}
-  #siphon-app #rig[data-state="link"] .r-head{transform:rotate(6deg);animation:none;}
+  #downrabbit-app #rig[data-state="link"] .r-ear-l{transform:rotate(-2deg);animation:none;}
+  #downrabbit-app #rig[data-state="link"] .r-ear-r{transform:rotate(2deg);animation:none;}
+  #downrabbit-app #rig[data-state="link"] .r-head{transform:rotate(6deg);animation:none;}
   @keyframes s-hop{0%{transform:translateY(0) scale(1,1)}12%{transform:translateY(3px) scale(1.07,.9)}30%{transform:translateY(-17px) scale(.93,1.1)}50%{transform:translateY(-19px) scale(.97,1.05)}70%{transform:translateY(0) scale(1.09,.88)}84%{transform:translateY(-5px) scale(.98,1.04)}100%{transform:translateY(0) scale(1,1)}}
   @keyframes s-earhop-l{0%,100%{transform:rotate(-15deg)}30%{transform:rotate(-24deg)}70%{transform:rotate(-6deg)}}
   @keyframes s-earhop-r{0%,100%{transform:rotate(15deg)}30%{transform:rotate(24deg)}70%{transform:rotate(6deg)}}
-  #siphon-app #rig[data-state="download"] .r-all{animation:s-hop .8s cubic-bezier(.36,.07,.19,.97) infinite;}
-  #siphon-app #rig[data-state="download"] .r-ear-l{animation:s-earhop-l .8s ease-in-out infinite;}
-  #siphon-app #rig[data-state="download"] .r-ear-r{animation:s-earhop-r .8s ease-in-out infinite .04s;}
-  #siphon-app #rig[data-state="download"] .r-head{animation:none;}
+  #downrabbit-app #rig[data-state="download"] .r-all{animation:s-hop .8s cubic-bezier(.36,.07,.19,.97) infinite;}
+  #downrabbit-app #rig[data-state="download"] .r-ear-l{animation:s-earhop-l .8s ease-in-out infinite;}
+  #downrabbit-app #rig[data-state="download"] .r-ear-r{animation:s-earhop-r .8s ease-in-out infinite .04s;}
+  #downrabbit-app #rig[data-state="download"] .r-head{animation:none;}
   @keyframes s-yay{0%{transform:translateY(0) scale(1,1)}10%{transform:translateY(5px) scale(1.12,.86)}28%{transform:translateY(-32px) scale(.9,1.14)}45%{transform:translateY(-34px) scale(.96,1.06)}62%{transform:translateY(0) scale(1.14,.84)}78%{transform:translateY(-11px) scale(.97,1.06)}100%{transform:translateY(0) scale(1,1)}}
   @keyframes s-flap-l{0%,100%{transform:rotate(-4deg)}25%{transform:rotate(-30deg)}50%{transform:rotate(2deg)}75%{transform:rotate(-22deg)}}
   @keyframes s-flap-r{0%,100%{transform:rotate(4deg)}25%{transform:rotate(30deg)}50%{transform:rotate(-2deg)}75%{transform:rotate(22deg)}}
-  #siphon-app #rig[data-state="success"] .r-all{animation:s-yay 1.15s cubic-bezier(.34,1.2,.64,1) 1;}
-  #siphon-app #rig[data-state="success"] .r-ear-l{animation:s-flap-l 1.15s ease-in-out 1;}
-  #siphon-app #rig[data-state="success"] .r-ear-r{animation:s-flap-r 1.15s ease-in-out 1;}
-  #siphon-app #rig[data-state="success"] .r-eyes{opacity:0;}
-  #siphon-app #rig[data-state="success"] .r-happy{opacity:1;}
-  #siphon-app #rig[data-state="success"] .r-head{animation:none;}
+  #downrabbit-app #rig[data-state="success"] .r-all{animation:s-yay 1.15s cubic-bezier(.34,1.2,.64,1) 1;}
+  #downrabbit-app #rig[data-state="success"] .r-ear-l{animation:s-flap-l 1.15s ease-in-out 1;}
+  #downrabbit-app #rig[data-state="success"] .r-ear-r{animation:s-flap-r 1.15s ease-in-out 1;}
+  #downrabbit-app #rig[data-state="success"] .r-eyes{opacity:0;}
+  #downrabbit-app #rig[data-state="success"] .r-happy{opacity:1;}
+  #downrabbit-app #rig[data-state="success"] .r-head{animation:none;}
   @keyframes s-sigh{0%,100%{transform:scale(1,1)}40%{transform:scale(1.02,.96)}}
-  #siphon-app #rig[data-state="error"] .r-ear-l{transform:rotate(-54deg);animation:none;}
-  #siphon-app #rig[data-state="error"] .r-ear-r{transform:rotate(54deg);animation:none;}
-  #siphon-app #rig[data-state="error"] .r-head{transform:rotate(-6deg) translateY(4px);animation:none;}
-  #siphon-app #rig[data-state="error"] .r-body{animation:s-sigh .9s ease-in-out 1;}
-  #siphon-app #rig[data-state="error"] .r-eyes{opacity:0;}
-  #siphon-app #rig[data-state="error"] .r-sad{opacity:1;}
-  #siphon-app #rig[data-state="error"] .r-nose{animation:none;}
-  #siphon-app #rig[data-state="sorry"] .r-ear-l{transform:rotate(-30deg);animation:none;}
-  #siphon-app #rig[data-state="sorry"] .r-ear-r{transform:rotate(30deg);animation:none;}
-  #siphon-app #rig[data-state="sorry"] .r-head{transform:rotate(7deg) translateY(2px);animation:none;}
-  #siphon-app #rig[data-state="sorry"] .r-nose{animation:none;}
-  #siphon-app #rig[data-state="empty"] .r-head{animation:s-headmicro 3s ease-in-out infinite;}
-  #siphon-app #rig[data-state="empty"] .r-paw-r{animation:s-pawtap 1.4s ease-in-out infinite;}
+  #downrabbit-app #rig[data-state="error"] .r-ear-l{transform:rotate(-54deg);animation:none;}
+  #downrabbit-app #rig[data-state="error"] .r-ear-r{transform:rotate(54deg);animation:none;}
+  #downrabbit-app #rig[data-state="error"] .r-head{transform:rotate(-6deg) translateY(4px);animation:none;}
+  #downrabbit-app #rig[data-state="error"] .r-body{animation:s-sigh .9s ease-in-out 1;}
+  #downrabbit-app #rig[data-state="error"] .r-eyes{opacity:0;}
+  #downrabbit-app #rig[data-state="error"] .r-sad{opacity:1;}
+  #downrabbit-app #rig[data-state="error"] .r-nose{animation:none;}
+  #downrabbit-app #rig[data-state="sorry"] .r-ear-l{transform:rotate(-30deg);animation:none;}
+  #downrabbit-app #rig[data-state="sorry"] .r-ear-r{transform:rotate(30deg);animation:none;}
+  #downrabbit-app #rig[data-state="sorry"] .r-head{transform:rotate(7deg) translateY(2px);animation:none;}
+  #downrabbit-app #rig[data-state="sorry"] .r-nose{animation:none;}
+  #downrabbit-app #rig[data-state="empty"] .r-head{animation:s-headmicro 3s ease-in-out infinite;}
+  #downrabbit-app #rig[data-state="empty"] .r-paw-r{animation:s-pawtap 1.4s ease-in-out infinite;}
   @keyframes s-pawtap{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 
-  #siphon-app[data-motion="reduced"] *{animation:none !important;transition:none !important;}
-  @media (prefers-reduced-motion:reduce){ #siphon-app *{animation:none !important;transition:none !important;} }
+  #downrabbit-app[data-motion="reduced"] *{animation:none !important;transition:none !important;}
+  @media (prefers-reduced-motion:reduce){ #downrabbit-app *{animation:none !important;transition:none !important;} }
 
   /* responsive */
   @media (max-width:760px){
-    #siphon-app .app{flex-direction:column;}
-    #siphon-app .sidebar{flex:0 0 auto;flex-direction:row;width:100%;border-right:none;border-top:1px solid var(--line);padding:8px 10px;order:2;justify-content:center;gap:6px;}
-    #siphon-app .logo{display:none;}
-    #siphon-app .nav-top,#siphon-app .nav-bottom{flex-direction:row;width:auto;margin:0;gap:6px;}
-    #siphon-app .nav{width:auto;flex-direction:row;padding:9px 14px;gap:8px;}
-    #siphon-app .main{order:1;flex:1;}
-    #siphon-app .mascot-row{height:180px;justify-content:flex-end;}
-    #siphon-app .rabbit-stage{width:160px;height:178px;}
-    #siphon-app .rabbit{width:156px;height:174px;}
-    #siphon-app .bubble{max-width:150px;font-size:11px;bottom:60px;}
-    #siphon-app .view-panel{padding:22px 18px;}
-    #siphon-app .topbar{padding:12px 14px;}
-    #siphon-app .res-badge{display:none;}
-    #siphon-app input[type=text]{width:140px;}
-    #siphon-app .set-row{flex-wrap:wrap;}
+    #downrabbit-app .app{flex-direction:column;}
+    #downrabbit-app .sidebar{flex:0 0 auto;flex-direction:row;width:100%;border-right:none;border-top:1px solid var(--line);padding:8px 10px;order:2;justify-content:center;gap:6px;}
+    #downrabbit-app .logo{display:none;}
+    #downrabbit-app .nav-top,#downrabbit-app .nav-bottom{flex-direction:row;width:auto;margin:0;gap:6px;}
+    #downrabbit-app .nav{width:auto;flex-direction:row;padding:9px 14px;gap:8px;}
+    #downrabbit-app .main{order:1;flex:1;}
+    #downrabbit-app .mascot-row{height:180px;justify-content:flex-end;}
+    #downrabbit-app .rabbit-stage{width:160px;height:178px;}
+    #downrabbit-app .rabbit{width:156px;height:174px;}
+    #downrabbit-app .bubble{max-width:150px;font-size:11px;bottom:60px;}
+    #downrabbit-app .view-panel{padding:22px 18px;}
+    #downrabbit-app .topbar{padding:12px 14px;}
+    #downrabbit-app .res-badge{display:none;}
+    #downrabbit-app input[type=text]{width:140px;}
+    #downrabbit-app .set-row{flex-wrap:wrap;}
   }
 </style>
 
@@ -320,7 +320,7 @@
 
 <div class="app">
   <aside class="sidebar">
-    <div class="logo" title="siphon">
+    <div class="logo" title="downrabbit">
       <svg viewBox="0 0 120 130" aria-hidden="true">
         <g style="transform:rotate(-9deg);transform-box:fill-box;transform-origin:50% 100%"><ellipse class="r-line" cx="46" cy="30" rx="8" ry="24"/></g>
         <g style="transform:rotate(9deg);transform-box:fill-box;transform-origin:50% 100%"><ellipse class="r-line" cx="74" cy="30" rx="8" ry="24"/></g>
@@ -350,7 +350,7 @@
         <div class="mascot-row">
           <div class="bubble" id="bubble"><span id="bubble-text">paste a direct link — i'll do the rest.</span></div>
           <div class="rabbit-stage" id="rig" data-state="idle">
-            <svg class="rabbit" viewBox="0 0 220 235" aria-label="Siphon rabbit mascot">
+            <svg class="rabbit" viewBox="0 0 220 235" aria-label="Downrabbit rabbit mascot">
               <g class="r-all" id="r-all">
                 <g class="r-tail" id="r-tail"><circle class="r-line" cx="170" cy="186" r="13"/></g>
                 <g class="r-body" id="r-body">
@@ -426,15 +426,15 @@
     </section>
 
     <section class="view view-panel" data-view="about">
-      <h2 class="panel-h">about siphon</h2>
+      <h2 class="panel-h">about downrabbit</h2>
       <p class="panel-sub">a tiny, no-nonsense media downloader that lives in your browser.</p>
       <div class="about-card">
-        <p><b style="color:var(--text)">paste a direct link, get the file.</b> siphon streams free, public media straight to your disk over your own connection — multi-connection, resumable, no proxy tunnel, no bot check, no account.</p>
+        <p><b style="color:var(--text)">paste a direct link, get the file.</b> downrabbit streams free, public media straight to your disk over your own connection — multi-connection, resumable, no proxy tunnel, no bot check, no account.</p>
         <div class="arch"><span>this tab</span><i>→</i><span>fetch</span><i>→</i><span>your disk</span></div>
         <p class="arch-note">no server · no account · nothing leaves your machine</p>
         <p>it's a webapp, not an install: open it in a browser and it just runs. files stream to disk as they arrive, so memory stays tiny even for big files.</p>
-        <p><b style="color:var(--text)">honest scope:</b> siphon fetches <span class="accent">direct file links</span>. it can't pull from YouTube, TikTok or similar pages — those need a server, which siphon deliberately doesn't have. for a page like that, use a dedicated tool.</p>
-        <p>the rabbit is the mascot. the app is siphon.</p>
+        <p><b style="color:var(--text)">honest scope:</b> downrabbit fetches <span class="accent">direct file links</span>. it can't pull from YouTube, TikTok or similar pages — those need a server, which downrabbit deliberately doesn't have. for a page like that, use a dedicated tool.</p>
+        <p>the rabbit is the mascot. the app is downrabbit.</p>
         <div class="tagrow"><span class="tag">Apache-2.0</span><span class="tag">clean-room</span><span class="tag">zero telemetry</span><span class="tag">no install</span><span class="tag">streams to disk</span><span class="tag">Chromium best</span></div>
       </div>
     </section>
@@ -442,8 +442,8 @@
     <div class="overlay" id="help-overlay"><div class="sheet">
       <div class="sheet-h"><h3>what can i download?</h3><button class="x" data-close>×</button></div>
       <div class="help-block"><b><span class="ok">✓</span> direct file links</b><p>a URL that points straight at a file — usually ends in an extension, and the host allows cross-origin reads.</p><code>https://cdn.example.com/clip.mp4<br>https://files.example.org/song.mp3</code></div>
-      <div class="help-block"><b><span class="no">✕</span> platform pages</b><p>YouTube, TikTok, Instagram, Reddit and similar are pages, not files. fetching them needs a server, which siphon doesn't run. the rabbit will tell you when a link is one of these.</p><code>https://youtube.com/watch?v=…</code></div>
-      <div class="help-block"><b>tip</b><p>if a host blocks in-app reads, siphon offers a <span class="accent">browser download</span> fallback. turn on <span class="accent">background downloads</span> in settings to let your browser finish files even after you close this tab.</p></div>
+      <div class="help-block"><b><span class="no">✕</span> platform pages</b><p>YouTube, TikTok, Instagram, Reddit and similar are pages, not files. fetching them needs a server, which downrabbit doesn't run. the rabbit will tell you when a link is one of these.</p><code>https://youtube.com/watch?v=…</code></div>
+      <div class="help-block"><b>tip</b><p>if a host blocks in-app reads, downrabbit offers a <span class="accent">browser download</span> fallback. turn on <span class="accent">background downloads</span> in settings to let your browser finish files even after you close this tab.</p></div>
       <button class="btn-solid" id="help-sample">try a sample direct link</button>
     </div></div>
 
@@ -459,11 +459,11 @@
 
 <script>
 (function(){
-  var root=document.getElementById('siphon-app'); if(!root) return;
+  var root=document.getElementById('downrabbit-app'); if(!root) return;
   var $=function(s){return root.querySelector(s);};
   var $$=function(s){return Array.prototype.slice.call(root.querySelectorAll(s));};
   var SAMPLE='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
-  var LS_SET='siphon.settings.v1', LS_HIST='siphon.history.v1';
+  var LS_SET='downrabbit.settings.v1', LS_HIST='downrabbit.history.v1';
 
   var S={ view:'save', accent:'amber', theme:'dark', motion:'full',
     connections:4, concurrency:2, template:'{name}.{ext}', bg:false, clip:false,
