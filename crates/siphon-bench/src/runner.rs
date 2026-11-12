@@ -2,7 +2,6 @@ use siphon_core::download::download_segmented;
 use siphon_core::engines::reddit::RedditExtractor;
 use siphon_core::engines::ytdlp::YtdlpExtractor;
 use siphon_core::error::{Result, SiphonError};
-use siphon_core::extractor::Extractor;
 use siphon_core::ffmpeg::merge;
 use siphon_core::router::ExtractorRouter;
 use siphon_core::types::{Options, StreamKind};
