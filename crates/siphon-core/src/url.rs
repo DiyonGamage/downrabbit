@@ -33,7 +33,11 @@ pub fn sanitize_filename(name: &str, ext: &str) -> String {
     let base = base.strip_suffix(&format!(".{ext}")).unwrap_or(&base);
     let mut base = base.to_string();
     if base.len() > 180 {
-        base.truncate(180);
+        let mut end = 180;
+        while end > 0 && !base.is_char_boundary(end) {
+            end -= 1;
+        }
+        base.truncate(end);
     }
     format!("{base}.{ext}")
 }
@@ -78,5 +82,15 @@ mod tests {
     fn sanitize_does_not_double_ext() {
         let f = sanitize_filename("clip.mp4", "mp4");
         assert_eq!(f, "clip.mp4");
+    }
+
+    #[test]
+    fn sanitize_truncates_multibyte_without_panic() {
+        let name = format!("{}漢", "a".repeat(179)); // 179 ASCII + 3-byte char straddling byte 180
+        let f = sanitize_filename(&name, "mp4");
+        assert!(f.ends_with(".mp4"));
+        let base = f.strip_suffix(".mp4").unwrap();
+        assert!(base.len() <= 180);
+        assert!(!base.is_empty());
     }
 }
