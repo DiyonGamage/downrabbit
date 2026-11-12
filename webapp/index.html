@@ -16,7 +16,7 @@
 </head>
 <body>
 <!--APP-FRAGMENT-START-->
-<div id="downrabbit-app" data-accent="amber" data-theme="dark" data-motion="full">
+<div id="downrabbit-app" data-accent="amber" data-theme="cream" data-motion="full">
 <style>
   #downrabbit-app{
     --bg:#0a0a0a; --sidebar:#0e0e0e; --surface:#141414; --surface2:#1c1c1c;
@@ -409,7 +409,7 @@
       <h2 class="panel-h">settings</h2>
       <p class="panel-sub">everything stays in this browser.</p>
       <div class="set-group">
-        <div class="set-row"><div class="set-lab"><b>theme</b><span>matte terminal or creamy paper</span></div><div class="set-ctl"><div class="mini-seg" id="theme-seg"><button class="on" data-theme="dark">matte black</button><button data-theme="cream">creamy white</button></div></div></div>
+        <div class="set-row"><div class="set-lab"><b>theme</b><span>matte terminal or creamy paper</span></div><div class="set-ctl"><div class="mini-seg" id="theme-seg"><button data-theme="dark">matte black</button><button class="on" data-theme="cream">creamy white</button></div></div></div>
         <div class="set-row"><div class="set-lab"><b>phosphor accent</b><span>the live color · no blue</span></div><div class="set-ctl"><div class="mini-seg" id="accent-seg"><button data-accent="green">green</button><button class="on" data-accent="amber">amber</button></div></div></div>
         <div class="set-row"><div class="set-lab"><b>reduced motion</b><span>calm the rabbit</span></div><div class="set-ctl"><button class="toggle" id="motion-tog" role="switch" aria-checked="false"></button></div></div>
       </div>
@@ -497,7 +497,7 @@
   var BRIDGE_ALLOW_KEY='downrabbit.bridge.v1';
   var bridge=null, bridgeLastCheck=0, bridgeTried=false, pendingBridge=null;
 
-  var S={ view:'save', accent:'amber', theme:'dark', motion:'full',
+  var S={ view:'save', accent:'amber', theme:'cream', motion:'full',
     connections:6, concurrency:3, template:'{name}.{ext}', bg:false, clip:false,
     jobs:[], history:[], seq:0, focus:null };
 
@@ -648,7 +648,7 @@
   $('#clip-tog').addEventListener('click',function(){S.clip=!S.clip;this.classList.toggle('on',S.clip);this.setAttribute('aria-checked',S.clip);saveSettings();});
   $('#clear-hist').addEventListener('click',function(){S.history=[];saveHistory();renderHistory('');toast('history cleared');});
   $('#reset-set').addEventListener('click',function(){
-    S.connections=6;S.concurrency=3;S.template='{name}.{ext}';S.bg=false;S.clip=false;S.accent='amber';S.theme='dark';S.motion='full';
+    S.connections=6;S.concurrency=3;S.template='{name}.{ext}';S.bg=false;S.clip=false;S.accent='amber';S.theme='cream';S.motion='full';
     applySettingsToUI();saveSettings();toast('settings reset to defaults');});
   window.addEventListener('focus',function(){ if(!S.clip)return;
     if(navigator.clipboard&&navigator.clipboard.readText){ navigator.clipboard.readText().then(function(t){ t=(t||'').trim();
