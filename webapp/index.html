@@ -12,7 +12,7 @@
   html,body{height:100%;margin:0;padding:0;box-sizing:border-box;}
   body{background:#050505;font-family:ui-monospace,"Cascadia Code","JetBrains Mono","Consolas","SF Mono",monospace;}
   #downrabbit-app{height:100dvh;min-height:560px;width:100%;border-radius:0;}
-  @media (min-width:1180px){ body{display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(1200px 700px at 50% -10%, #101010, #050505);} #downrabbit-app{height:min(760px,calc(100dvh - 44px));width:min(1120px,100%);border-radius:16px;border:1px solid #1c1c1c;box-shadow:0 40px 120px rgba(0,0,0,.6);} }
+  @media (min-width:1180px){ body{display:flex;align-items:center;justify-content:center;padding:22px;background:#050505;} #downrabbit-app{height:min(760px,calc(100dvh - 44px));width:min(1120px,100%);border-radius:16px;border:1px solid #1c1c1c;box-shadow:0 40px 120px rgba(0,0,0,.6);} }
 </style>
 </head>
 <body>
@@ -47,16 +47,6 @@
   #downrabbit-app a{color:var(--muted);}
   #downrabbit-app .accent{color:var(--accent);}
   #downrabbit-app .inline-link{background:none;border:none;color:var(--accent);text-decoration:underline;text-underline-offset:2px;font-family:var(--mono);font-size:inherit;padding:0;cursor:pointer;}
-
-  /* ambient background */
-  #downrabbit-app .bg-fx{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-  #downrabbit-app .bg-aurora{position:absolute;inset:-25%;
-    background:radial-gradient(42% 38% at 22% 20%, var(--accent-soft), transparent 70%),
-               radial-gradient(38% 34% at 82% 78%, var(--accent-soft), transparent 72%);
-    opacity:.55; animation:s-drift 28s ease-in-out infinite alternate;}
-  #downrabbit-app .bg-grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
-  @keyframes s-drift{0%{transform:translate(0,0) rotate(0deg)}100%{transform:translate(3%,2%) rotate(2deg)}}
 
   #downrabbit-app .app{display:flex;height:100%;position:relative;z-index:1;}
 
@@ -176,10 +166,15 @@
   #downrabbit-app .about-card p{font-size:12px;color:var(--muted);margin:0 0 12px;}
   #downrabbit-app .tagrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
   #downrabbit-app .tag{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:4px 9px;}
-  #downrabbit-app .arch{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 4px;}
-  #downrabbit-app .arch span{border:1px solid var(--line2);border-radius:8px;background:var(--bg);padding:8px 13px;font-size:12px;color:var(--text);}
-  #downrabbit-app .arch i{color:var(--accent);font-style:normal;}
-  #downrabbit-app .arch-note{font-size:11px;color:var(--dim);margin:0 0 14px;}
+  #downrabbit-app .opt-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+  #downrabbit-app .opt-row{display:flex;align-items:center;gap:14px;padding:13px 0;}
+  #downrabbit-app .opt-row + .opt-row{border-top:1px solid var(--line);}
+  #downrabbit-app .opt-lab{flex:1;min-width:0;}
+  #downrabbit-app .opt-lab b{display:block;font-size:13px;font-weight:500;color:var(--text);}
+  #downrabbit-app .opt-lab span{font-size:11px;color:var(--dim);}
+  #downrabbit-app #opt-name{width:240px;}
+  #downrabbit-app .opt-note{font-size:11px;color:var(--dim);margin:12px 0 4px;}
+  #downrabbit-app .opt-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:10px;}
 
   /* overlays */
   #downrabbit-app .overlay{position:absolute;inset:0;background:rgba(5,5,5,.72);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:64px 24px 24px;z-index:20;}
@@ -316,8 +311,6 @@
   }
 </style>
 
-<div class="bg-fx" aria-hidden="true"><div class="bg-aurora"></div><div class="bg-grain"></div></div>
-
 <div class="app">
   <aside class="sidebar">
     <div class="logo" title="downrabbit">
@@ -341,7 +334,7 @@
   <main class="main">
     <div class="topbar">
       <button class="help-pill" id="help-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 013.8 2.1c0 1.6-2.3 2-2.3 3.4M12 17h.01"/></svg>what can i download?</button>
-      <div class="res-badge" id="res-badge"><span class="dot"></span>~18 MB · streams to disk</div>
+      <div class="res-badge" id="res-badge"><span class="dot"></span>~18 MB</div>
       <button class="circ" id="hist-open" title="history & downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9 9.7 9.7 0 00-6.7 2.8L3 8"/><path d="M3 3v5h5M12 7v5l3 3"/></svg></button>
     </div>
 
@@ -397,16 +390,16 @@
             <button class="paste-btn" id="paste-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>paste</button>
             <button class="go-btn" id="go-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>download</button>
           </div>
-          <div class="hint">direct file links only · <button class="inline-link" id="sample-chip">try a sample</button> · <button class="inline-link" id="what-link">what's a direct link?</button></div>
+          <div class="hint">direct file links only · <button class="inline-link" id="sample-chip">try a sample</button></div>
           <div class="queue" id="queue"></div>
         </div>
       </div>
-      <div class="footer">runs entirely in your browser · zero telemetry · <a href="#" onclick="return false">ethics of use</a> · Apache-2.0</div>
+      <div class="footer">in-browser · zero telemetry · Apache-2.0</div>
     </section>
 
     <section class="view view-panel" data-view="settings">
       <h2 class="panel-h">settings</h2>
-      <p class="panel-sub">everything stays in this browser. no account, no cloud, no install.</p>
+      <p class="panel-sub">everything stays in this browser.</p>
       <div class="set-group">
         <div class="set-row"><div class="set-lab"><b>theme</b><span>matte terminal or creamy paper</span></div><div class="set-ctl"><div class="mini-seg" id="theme-seg"><button class="on" data-theme="dark">matte black</button><button data-theme="cream">creamy white</button></div></div></div>
         <div class="set-row"><div class="set-lab"><b>phosphor accent</b><span>the live color · no blue</span></div><div class="set-ctl"><div class="mini-seg" id="accent-seg"><button data-accent="green">green</button><button class="on" data-accent="amber">amber</button></div></div></div>
@@ -427,14 +420,10 @@
 
     <section class="view view-panel" data-view="about">
       <h2 class="panel-h">about downrabbit</h2>
-      <p class="panel-sub">a tiny, no-nonsense media downloader that lives in your browser.</p>
+      <p class="panel-sub">a tiny media downloader that lives in your browser.</p>
       <div class="about-card">
-        <p><b style="color:var(--text)">paste a direct link, get the file.</b> downrabbit streams free, public media straight to your disk over your own connection — multi-connection, resumable, no proxy tunnel, no bot check, no account.</p>
-        <div class="arch"><span>this tab</span><i>→</i><span>fetch</span><i>→</i><span>your disk</span></div>
-        <p class="arch-note">no server · no account · nothing leaves your machine</p>
-        <p>it's a webapp, not an install: open it in a browser and it just runs. files stream to disk as they arrive, so memory stays tiny even for big files.</p>
-        <p><b style="color:var(--text)">honest scope:</b> downrabbit fetches <span class="accent">direct file links</span>. it can't pull from YouTube, TikTok or similar pages — those need a server, which downrabbit deliberately doesn't have. for a page like that, use a dedicated tool.</p>
-        <p>the rabbit is the mascot. the app is downrabbit.</p>
+        <p><b style="color:var(--text)">paste a direct link, get the file.</b> streams straight to your disk — multi-connection, resumable, no account.</p>
+        <p><b style="color:var(--text)">honest scope:</b> direct file links only. platform pages (YouTube, TikTok…) need a server; downrabbit doesn't run one.</p>
         <div class="tagrow"><span class="tag">Apache-2.0</span><span class="tag">clean-room</span><span class="tag">zero telemetry</span><span class="tag">no install</span><span class="tag">streams to disk</span><span class="tag">Chromium best</span></div>
       </div>
     </section>
@@ -451,6 +440,15 @@
       <div class="sheet-h"><h3>history &amp; downloads</h3><button class="x" data-close>×</button></div>
       <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="hist-search" placeholder="search downloads…"></div>
       <div id="hist-list"></div>
+    </div></div>
+
+    <div class="overlay" id="opt-overlay"><div class="sheet">
+      <div class="sheet-h"><h3>before you download</h3><button class="x" data-close>×</button></div>
+      <div class="opt-meta" id="opt-meta"></div>
+      <div class="opt-row"><div class="opt-lab"><b>save as</b><span>filename on your disk</span></div><div class="set-ctl"><input type="text" id="opt-name" spellcheck="false"></div></div>
+      <div class="opt-row"><div class="opt-lab"><b>connections</b><span>parallel ranges · more = faster</span></div><div class="set-ctl"><div class="stepper"><button id="opt-conn-minus">−</button><span class="num" id="opt-conn-val">4</span><button id="opt-conn-plus">+</button></div></div></div>
+      <p class="opt-note">quality &amp; audio are whatever the source file has.</p>
+      <div class="opt-actions"><button class="btn-line" id="opt-cancel">cancel</button><button class="btn-solid" id="opt-go">download</button></div>
     </div></div>
 
     <div class="toast" id="toast"><span id="toast-text"></span><button id="toast-act" style="display:none">undo</button></div>
@@ -600,15 +598,18 @@
     setBubble('downloading · <span class="accent">'+fmtSpeed(j.speed)+'</span>'+pct); }
   function updateBadge(){ var act=S.jobs.filter(function(j){return j.status==='downloading';}); var el=$('#res-badge'); if(!el)return;
     if(act.length){ var sp=act.reduce(function(a,j){return a+j.speed;},0); el.innerHTML='<span class="dot live"></span>'+act.length+' active · '+fmtSpeed(sp); }
-    else { el.innerHTML='<span class="dot"></span>~18 MB · streams to disk'; } }
+    else { el.innerHTML='<span class="dot"></span>~18 MB'; } }
 
-  function enqueue(url,handle){
+  function enqueue(url,handle,opts){
+    opts=opts||{};
     var g=nameFromUrl(url);
     var j={ id:++S.seq, url:url, host:hostOf(url), name:sanitize(g.name), ext:(g.ext||'bin').toLowerCase(), displayName:'',
       kind:'file', total:0, got:0, status:'queued', speed:0, range:false, chunkSize:4*1024*1024,
+      conn:opts.connections||S.connections, preProbed:false,
       controllers:[], sink: handle?{type:'file',handle:handle,w:null}:{type:'blob',parts:[]},
       pending:{}, nextChunk:0, ticker:null, lastT:0, lastB:0, err:'' };
-    j.displayName=applyTemplate(j);
+    if(opts.info){ j.kind=opts.info.kind; j.total=opts.info.total; j.range=opts.info.range; j.name=opts.info.name; j.ext=opts.info.ext; j.preProbed=true; }
+    j.displayName=opts.name?sanitize(opts.name):applyTemplate(j);
     S.jobs.push(j); renderQueue(); pump();
     setRabbit('link'); setBubble('ooh — a direct link. fetching…'); fieldBusy(true);
   }
@@ -620,7 +621,7 @@
     j.status='downloading'; j.lastT=performance.now(); j.lastB=j.got; S.focus=j.id;
     renderQueue(); setRabbit('download'); startTicker(j);
     try{
-      await probe(j);
+      if(!j.preProbed) await probe(j);
       if(j.sink.type==='file'){ try{ j.sink.w=await j.sink.handle.createWritable(); }catch(e){ j.sink={type:'blob',parts:[]}; } }
       if(j.range) await startRange(j); else await startStream(j);
       if(j.status==='downloading'){ await closeSink(j,true); finish(j); }
@@ -660,7 +661,7 @@
   async function startRange(j){
     var total=j.total, cs=j.chunkSize, n=Math.ceil(total/cs);
     var startIdx=j.nextChunk; j.got=Math.min(total,startIdx*cs); j.pending={};
-    var idx=startIdx, workers=Math.max(1,Math.min(S.connections,n-startIdx));
+    var idx=startIdx, workers=Math.max(1,Math.min(j.conn||S.connections,n-startIdx));
     async function worker(){
       while(j.status==='downloading'){
         var i=idx++; if(i>=n) return;
@@ -734,7 +735,7 @@
   function jobMeta(j){
     var pct=j.total?Math.min(100,j.got/j.total*100):0;
     if(j.status==='queued')return '<span class="sp">queued</span><span>waiting…</span><span class="ctl"><button data-act="cancel">cancel</button></span>';
-    if(j.status==='downloading')return '<span class="sp">'+fmtSpeed(j.speed)+'</span><span>'+(j.total?Math.round(pct)+'%':fmtSize(j.got))+'</span><span>'+(j.range?S.connections+' connections':'1 stream')+'</span><span class="ctl">'+(j.range?'<button data-act="pause">pause</button>':'')+'<button data-act="cancel">cancel</button></span>';
+    if(j.status==='downloading')return '<span class="sp">'+fmtSpeed(j.speed)+'</span><span>'+(j.total?Math.round(pct)+'%':fmtSize(j.got))+'</span><span>'+(j.range?(j.conn||S.connections)+' connections':'1 stream')+'</span><span class="ctl">'+(j.range?'<button data-act="pause">pause</button>':'')+'<button data-act="cancel">cancel</button></span>';
     if(j.status==='paused')return '<span class="sp">paused</span><span>'+Math.round(pct)+'%</span><span class="ctl"><button data-act="resume">resume</button><button data-act="cancel">cancel</button></span>';
     if(j.status==='done')return '<span class="sp">✓ saved</span><span>'+fmtSize(j.got)+'</span><span class="ctl"><button data-act="again">save again</button><button data-act="dismiss">dismiss</button></span>';
     if(j.status==='blocked')return '<span class="sp">host blocks in-app fetch</span><span class="ctl"><button data-act="browser">browser download</button><button data-act="retry">retry</button><button data-act="dismiss">dismiss</button></span>';
@@ -774,12 +775,40 @@
     var g=nameFromUrl(url); var suggested=sanitize(g.name)+'.'+(g.ext||'bin');
     if(S.bg){ browserDlUrl(url,suggested); setRabbit('success'); setBubble('handed to your browser’s downloader ✓');
       S.history.unshift({title:suggested,url:url,size:'—',when:'just now',kind:'file',host:hostOf(url)}); saveHistory(); renderHistory(''); return; }
+    fieldBusy(true); setRabbit('link'); setBubble('checking the link…');
+    var pj={url:url,controllers:[]};
+    probe(pj).then(function(){ abortAll(pj); openOptions(url,pj,suggested); })
+      .catch(function(){ abortAll(pj); fieldBusy(false); startDownload(url,suggested,null); });
+  }
+  function startDownload(url,suggested,opts){
     if(window.showSaveFilePicker){
       window.showSaveFilePicker({suggestedName:suggested})
-        .then(function(h){ enqueue(url,h); })
-        .catch(function(e){ if(e&&e.name==='AbortError'){ setRabbit('idle'); setBubble('no save location picked — the link stayed put.'); } else { enqueue(url,null); } });
-    } else { enqueue(url,null); }
+        .then(function(h){ enqueue(url,h,opts); })
+        .catch(function(e){ if(e&&e.name==='AbortError'){ setRabbit('idle'); setBubble('no save location picked — the link stayed put.'); } else { enqueue(url,null,opts); } });
+    } else { enqueue(url,null,opts); }
   }
+  var pendingOpt=null;
+  function openOptions(url,info,suggested){
+    pendingOpt={url:url,info:info,connections:S.connections,suggested:suggested};
+    $('#opt-meta').innerHTML='<span class="tag">'+esc(info.kind)+'</span><span class="tag">'+(info.total?fmtSize(info.total):'size unknown')+'</span><span class="tag">'+esc(hostOf(url))+'</span>';
+    $('#opt-name').value=info.displayName||suggested;
+    $('#opt-conn-val').textContent=S.connections;
+    fieldBusy(false); setRabbit('link'); setBubble('set your options, then hit download.');
+    $('#opt-overlay').classList.add('on');
+  }
+  function resetOptState(){ pendingOpt=null; setRabbit('idle'); setBubble('paste a direct link — i\'ll do the rest.'); }
+  function closeOptions(){ $('#opt-overlay').classList.remove('on'); resetOptState(); }
+  $('#opt-conn-minus').addEventListener('click',function(){ if(!pendingOpt)return; pendingOpt.connections=Math.max(1,pendingOpt.connections-1); $('#opt-conn-val').textContent=pendingOpt.connections; });
+  $('#opt-conn-plus').addEventListener('click',function(){ if(!pendingOpt)return; pendingOpt.connections=Math.min(8,pendingOpt.connections+1); $('#opt-conn-val').textContent=pendingOpt.connections; });
+  $('#opt-cancel').addEventListener('click',closeOptions);
+  $('#opt-overlay [data-close]').addEventListener('click',closeOptions);
+  $('#opt-go').addEventListener('click',function(){
+    if(!pendingOpt)return;
+    var p=pendingOpt; var name=sanitize($('#opt-name').value)||p.suggested;
+    var opts={name:name,connections:p.connections,info:p.info};
+    $('#opt-overlay').classList.remove('on'); pendingOpt=null;
+    startDownload(p.url,name,opts);
+  });
   $('#url').addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
   $('#url').addEventListener('input',function(){ if(this.value.trim()){ setRabbit('link'); setBubble('ooh, a link. press <span class="accent">enter</span> or hit download.'); } });
   $('#go-btn').addEventListener('click',function(){submit();});
@@ -790,7 +819,6 @@
     } else { $('#url').focus(); }
   });
   $('#sample-chip').addEventListener('click',function(){ $('#url').value=SAMPLE; submit(SAMPLE); });
-  $('#what-link').addEventListener('click',openHelp);
   $('#help-sample').addEventListener('click',function(){ $('#help-overlay').classList.remove('on'); setView('save'); $('#url').value=SAMPLE; submit(SAMPLE); });
 
   /* ---------- overlays ---------- */
@@ -812,8 +840,8 @@
   $('#hist-open').addEventListener('click',function(){renderHistory('');$('#hist-search').value='';$('#hist-overlay').classList.add('on');});
   $('#hist-search').addEventListener('input',function(){renderHistory(this.value);});
   $$('[data-close]').forEach(function(b){b.addEventListener('click',function(){b.closest('.overlay').classList.remove('on');});});
-  $$('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('on');});});
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape')$$('.overlay.on').forEach(function(o){o.classList.remove('on');}); });
+  $$('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o){o.classList.remove('on'); if(o.id==='opt-overlay')resetOptState();}});});
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape')$$('.overlay.on').forEach(function(o){o.classList.remove('on'); if(o.id==='opt-overlay')resetOptState();}); });
 
   /* ---------- toast ---------- */
   var toastT=null;

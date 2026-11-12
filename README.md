@@ -15,6 +15,9 @@ HTML file with zero dependencies and zero build step. Open it and it runs.
 
 Paste a **direct file link** (`.mp4`, `.mp3`, `.zip`, …) and Downrabbit streams it to your disk:
 
+- **Options before you download** — a quick card shows the detected type, size and host, lets you
+  rename the file and pick connections (1–8) before anything is written. Quality and audio are
+  whatever the source file already has — no fake toggles.
 - **Multi-connection downloads** — parallel HTTP Range requests (configurable 1–8) for speed.
 - **Streams to disk** — uses the File System Access API where available, so memory stays tiny
   even for large files; falls back to an in-browser blob + save when the picker isn't supported.
@@ -57,10 +60,9 @@ It's a static site. Any static host works. For Cloudflare Pages:
 ## Repo layout
 
 - `webapp/` — **the product.** Single self-contained `index.html` (UI + download engine + rabbit rig).
-- `crates/`, `Cargo.toml` — an earlier **native Rust engine feasibility spike (M0)**, superseded by
-  the pure webapp. Kept for history/reference; not used by the webapp.
-- `docs/specs/` — design history. The original Tauri/native spec is marked **superseded**; the
-  shipped product is the pure webapp described above.
+
+That's the whole app. An earlier native Rust engine feasibility spike and its design docs were
+removed once the pure webapp shipped; they remain in the git history if you're curious.
 
 ## Privacy & safety
 
