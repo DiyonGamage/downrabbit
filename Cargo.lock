@@ -1077,9 +1077,11 @@ name = "siphon-bench"
 version = "0.0.0"
 dependencies = [
  "clap",
+ "reqwest",
  "serde_json",
  "siphon-core",
  "sysinfo",
+ "tempfile",
  "tokio",
  "url",
 ]
