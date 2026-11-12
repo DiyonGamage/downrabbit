@@ -80,6 +80,11 @@ pub fn parse_ytdlp_json(v: &Value, opts: &Options) -> Result<MediaPlan> {
     Ok(MediaPlan { service: "yt-dlp".into(), items: vec![item] })
 }
 
+fn ytdlp_args(url: &str) -> Vec<&str> {
+    // --no-js-runtimes: stop yt-dlp spawning Deno (~288MB) for YouTube nsig; spec §9 RAM gate <=150MB.
+    vec!["--dump-single-json", "--no-download", "--no-warnings", "--no-js-runtimes", url]
+}
+
 #[async_trait]
 impl Extractor for YtdlpExtractor {
     fn id(&self) -> &'static str { "yt-dlp" }
@@ -87,7 +92,7 @@ impl Extractor for YtdlpExtractor {
 
     async fn extract(&self, url: &Url, opts: &Options) -> Result<MediaPlan> {
         let output = tokio::process::Command::new("yt-dlp")
-            .args(["--dump-single-json", "--no-download", "--no-warnings", url.as_str()])
+            .args(ytdlp_args(url.as_str()))
             .output()
             .await
             .map_err(|e| SiphonError::Extract(format!("spawn yt-dlp: {e}")))?;
@@ -97,5 +102,22 @@ impl Extractor for YtdlpExtractor {
         }
         let v: Value = serde_json::from_slice(&output.stdout)?;
         parse_ytdlp_json(&v, opts)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn args_disable_external_js_runtimes() {
+        let args = ytdlp_args("https://www.youtube.com/watch?v=x");
+        assert!(
+            args.contains(&"--no-js-runtimes"),
+            "must disable external JS runtimes: Deno adds ~288MB, breaching spec §9 <=150MB RAM gate"
+        );
+        assert!(args.contains(&"--dump-single-json"));
+        assert!(args.contains(&"--no-download"));
+        assert_eq!(args.last().copied(), Some("https://www.youtube.com/watch?v=x"));
     }
 }
