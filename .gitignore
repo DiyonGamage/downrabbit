@@ -3,3 +3,4 @@
 /site
 /.superpowers
 node_modules/
+/bridge/bin/

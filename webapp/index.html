@@ -172,8 +172,17 @@
   #downrabbit-app .opt-lab b{display:block;font-size:13px;font-weight:500;color:var(--text);}
   #downrabbit-app .opt-lab span{font-size:11px;color:var(--dim);}
   #downrabbit-app #opt-name{width:240px;}
+  #downrabbit-app #opt-quality{min-width:190px;}
+  #downrabbit-app select{background:var(--bg);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 11px;outline:none;max-width:100%;}
+  #downrabbit-app select:focus{border-color:var(--accent);}
   #downrabbit-app .opt-note{font-size:11px;color:var(--dim);margin:12px 0 4px;}
   #downrabbit-app .opt-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:10px;}
+  #downrabbit-app .prep-meta{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--muted);margin-top:12px;flex-wrap:wrap;}
+  #downrabbit-app .prep-meta .sp{color:var(--accent);}
+  #downrabbit-app .prep-err{display:none;font-size:12px;color:var(--danger);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:11px 13px;margin-top:14px;line-height:1.5;}
+  #downrabbit-app .bridge-state{font-size:11px;color:var(--dim);}
+  #downrabbit-app .bridge-state.ok{color:var(--accent);}
+  #downrabbit-app .bridge-state.bad{color:var(--danger);}
 
   /* overlays */
   #downrabbit-app .overlay{position:absolute;inset:0;background:rgba(5,5,5,.72);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:64px 24px 24px;z-index:20;}
@@ -340,7 +349,7 @@
     <section class="view view-save on" data-view="save">
       <div class="center">
         <div class="mascot-row">
-          <div class="bubble" id="bubble"><span id="bubble-text">paste a direct link — i'll do the rest.</span></div>
+          <div class="bubble" id="bubble"><span id="bubble-text">paste a link — i'll do the rest.</span></div>
           <div class="rabbit-stage" id="rig" data-state="idle">
             <svg class="rabbit" viewBox="0 0 220 235" aria-label="Downrabbit rabbit mascot">
               <g class="r-all" id="r-all">
@@ -383,13 +392,13 @@
         <div class="paste-wrap">
           <div class="field" id="field">
             <span class="field-ico" id="field-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7l1.5-1.5"/></svg></span>
-            <input id="url" placeholder="paste a direct file link (.mp4, .mp3, .zip…)" spellcheck="false" autocomplete="off" inputmode="url">
+            <input id="url" placeholder="paste a link — direct file or YouTube/TikTok…" spellcheck="false" autocomplete="off" inputmode="url">
           </div>
           <div class="mode-row">
             <button class="paste-btn" id="paste-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>paste</button>
             <button class="go-btn" id="go-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>download</button>
           </div>
-          <div class="hint">direct file links only · <button class="inline-link" id="sample-chip">try a sample</button></div>
+          <div class="hint">direct files + platform pages via the local bridge · <button class="inline-link" id="sample-chip">try a sample</button></div>
           <div class="queue" id="queue"></div>
         </div>
       </div>
@@ -410,6 +419,7 @@
         <div class="set-row"><div class="set-lab"><b>filename template</b><span>{name} and {ext} are replaced</span></div><div class="set-ctl"><input type="text" id="set-template" value="{name}.{ext}"></div></div>
         <div class="set-row"><div class="set-lab"><b>background downloads</b><span>hand files to your browser so they finish even if you close this tab (works on more hosts, no in-app progress)</span></div><div class="set-ctl"><button class="toggle" id="bg-tog" role="switch" aria-checked="false"></button></div></div>
         <div class="set-row"><div class="set-lab"><b>clipboard watch</b><span>capture a copied link when you return to this tab</span></div><div class="set-ctl"><button class="toggle" id="clip-tog" role="switch" aria-checked="false"></button></div></div>
+        <div class="set-row"><div class="set-lab"><b>local bridge</b><span class="bridge-state" id="bridge-state">checking…</span></div><div class="set-ctl"><button class="btn-line" id="bridge-recheck">recheck</button></div></div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn-line" id="clear-hist">clear history</button>
@@ -421,16 +431,17 @@
       <h2 class="panel-h">about downrabbit</h2>
       <p class="panel-sub">a tiny media downloader that lives in your browser.</p>
       <div class="about-card">
-        <p><b style="color:var(--text)">paste a direct link, get the file.</b> streams straight to your disk — multi-connection, resumable, no account.</p>
-        <p><b style="color:var(--text)">honest scope:</b> direct file links only. platform pages (YouTube, TikTok…) need a server; downrabbit doesn't run one.</p>
-        <div class="tagrow"><span class="tag">Apache-2.0</span><span class="tag">clean-room</span><span class="tag">zero telemetry</span><span class="tag">no install</span><span class="tag">streams to disk</span><span class="tag">Chromium best</span></div>
+        <p><b style="color:var(--text)">paste a link, get the file.</b> direct links stream straight to your disk — multi-connection, resumable, no account. platform pages run through the optional local bridge.</p>
+        <p><b style="color:var(--text)">honest scope:</b> the webapp itself is still serverless. YouTube/TikTok/etc. need the small bridge on your machine; Spotify is DRM and stays unsupported.</p>
+        <div class="tagrow"><span class="tag">Apache-2.0</span><span class="tag">clean-room</span><span class="tag">zero telemetry</span><span class="tag">no server</span><span class="tag">local bridge</span><span class="tag">streams to disk</span><span class="tag">Chromium best</span></div>
       </div>
     </section>
 
     <div class="overlay" id="help-overlay"><div class="sheet">
       <div class="sheet-h"><h3>what can i download?</h3><button class="x" data-close>×</button></div>
       <div class="help-block"><b><span class="ok">✓</span> direct file links</b><p>a URL that points straight at a file — usually ends in an extension, and the host allows cross-origin reads.</p><code>https://cdn.example.com/clip.mp4<br>https://files.example.org/song.mp3</code></div>
-      <div class="help-block"><b><span class="no">✕</span> platform pages</b><p>YouTube, TikTok, Instagram, Reddit and similar are pages, not files. fetching them needs a server, which downrabbit doesn't run. the rabbit will tell you when a link is one of these.</p><code>https://youtube.com/watch?v=…</code></div>
+      <div class="help-block"><b><span class="ok">✓</span> platform pages · with the local bridge</b><p>start the tiny local bridge once and downrabbit can fetch YouTube, TikTok, Instagram, Reddit, X, Facebook, Vimeo, Twitch, SoundCloud, Bilibili, Dailymotion, Pinterest, Tumblr and most other sites yt-dlp supports. the download runs on your machine — no server of ours.</p><code>cd bridge<br>.\setup.ps1<br>.\start.ps1</code><p style="margin-top:8px">some sites (Instagram, Facebook, X, age-restricted YouTube) need your browser cookies. start the bridge with <span class="accent">BRIDGE_COOKIES_FROM_BROWSER=chrome</span> (or edge/firefox).</p><p style="margin-top:8px">1080p+ and MP3 conversion use ffmpeg; setup.ps1 installs a build with MP3 support.</p></div>
+      <div class="help-block"><b><span class="no">✕</span> spotify</b><p>Spotify streams are DRM-protected, so no downloader can save them. use SoundCloud or a video mirror instead.</p></div>
       <div class="help-block"><b>tip</b><p>if a host blocks in-app reads, downrabbit offers a <span class="accent">browser download</span> fallback. turn on <span class="accent">background downloads</span> in settings to let your browser finish files even after you close this tab.</p></div>
       <button class="btn-solid" id="help-sample">try a sample direct link</button>
     </div></div>
@@ -444,10 +455,19 @@
     <div class="overlay" id="opt-overlay"><div class="sheet">
       <div class="sheet-h"><h3>before you download</h3><button class="x" data-close>×</button></div>
       <div class="opt-meta" id="opt-meta"></div>
+      <div class="opt-row" id="opt-quality-row" style="display:none"><div class="opt-lab"><b>quality</b><span>real formats from the source · no fake toggles</span></div><div class="set-ctl"><select id="opt-quality"></select></div></div>
       <div class="opt-row"><div class="opt-lab"><b>save as</b><span>filename on your disk</span></div><div class="set-ctl"><input type="text" id="opt-name" spellcheck="false"></div></div>
       <div class="opt-row"><div class="opt-lab"><b>connections</b><span>parallel ranges · more = faster</span></div><div class="set-ctl"><div class="stepper"><button id="opt-conn-minus">−</button><span class="num" id="opt-conn-val">4</span><button id="opt-conn-plus">+</button></div></div></div>
-      <p class="opt-note">quality &amp; audio are whatever the source file has.</p>
+      <p class="opt-note" id="opt-note">quality &amp; audio are whatever the source file has.</p>
       <div class="opt-actions"><button class="btn-line" id="opt-cancel">cancel</button><button class="btn-solid" id="opt-go">download</button></div>
+    </div></div>
+
+    <div class="overlay" id="prep-overlay"><div class="sheet">
+      <div class="sheet-h"><h3 id="prep-title">preparing…</h3></div>
+      <div class="track"><div class="bar indet" id="prep-bar" style="width:0%"></div></div>
+      <div class="prep-meta"><span class="sp" id="prep-stage">starting…</span><span id="prep-pct"></span></div>
+      <div class="prep-err" id="prep-err"></div>
+      <div class="opt-actions"><button class="btn-line" id="prep-cancel">cancel</button></div>
     </div></div>
 
     <div class="toast" id="toast"><span id="toast-text"></span><button id="toast-act" style="display:none">undo</button></div>
@@ -461,6 +481,8 @@
   var $$=function(s){return Array.prototype.slice.call(root.querySelectorAll(s));};
   var SAMPLE='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
   var LS_SET='downrabbit.settings.v1', LS_HIST='downrabbit.history.v1';
+  var BRIDGE='http://127.0.0.1:8765';
+  var bridge=null, bridgeLastCheck=0;
 
   var S={ view:'save', accent:'amber', theme:'dark', motion:'full',
     connections:4, concurrency:2, template:'{name}.{ext}', bg:false, clip:false,
@@ -483,9 +505,35 @@
   function fmtSize(b){ if(b==null)return '—'; if(b<1024)return b+' B'; if(b<1048576)return (b/1024).toFixed(1)+' KB'; if(b<1073741824)return (b/1048576).toFixed(1)+' MB'; return (b/1073741824).toFixed(2)+' GB'; }
   function fmtSpeed(bps){ if(!bps)return '0 KB/s'; if(bps<1048576)return Math.round(bps/1024)+' KB/s'; return (bps/1048576).toFixed(1)+' MB/s'; }
   function applyTemplate(j){ var t=S.template||'{name}.{ext}'; return sanitize(t.replace(/\{name\}/g,j.name).replace(/\{ext\}/g,j.ext)); }
-  var PLATFORMS=[[/youtube\.com|youtu\.be/,'YouTube'],[/tiktok\.com/,'TikTok'],[/instagram\.com/,'Instagram'],[/reddit\.com|redd\.it/,'Reddit'],[/twitter\.com|x\.com/,'X'],[/facebook\.com|fb\.watch/,'Facebook'],[/vimeo\.com/,'Vimeo'],[/twitch\.tv/,'Twitch'],[/soundcloud\.com/,'SoundCloud'],[/spotify\.com/,'Spotify'],[/bilibili\.com/,'Bilibili'],[/dailymotion\.com/,'Dailymotion'],[/pinterest\.|pin\.it/,'Pinterest'],[/tumblr\.com/,'Tumblr']];
+  var PLATFORMS=[
+    [/(^|\.)youtube\.com$|(^|\.)youtu\.be$/,'YouTube'],
+    [/(^|\.)tiktok\.com$/,'TikTok'],
+    [/(^|\.)instagram\.com$/,'Instagram'],
+    [/(^|\.)reddit\.com$|(^|\.)redd\.it$/,'Reddit'],
+    [/(^|\.)twitter\.com$|(^|\.)x\.com$/,'X'],
+    [/(^|\.)facebook\.com$|(^|\.)fb\.watch$/,'Facebook'],
+    [/(^|\.)vimeo\.com$/,'Vimeo'],
+    [/(^|\.)twitch\.tv$/,'Twitch'],
+    [/(^|\.)soundcloud\.com$/,'SoundCloud'],
+    [/(^|\.)spotify\.com$/,'Spotify'],
+    [/(^|\.)bilibili\.com$|(^|\.)b23\.tv$/,'Bilibili'],
+    [/(^|\.)dailymotion\.com$|(^|\.)dai\.ly$/,'Dailymotion'],
+    [/(^|\.)pinterest\.[a-z.]+$|(^|\.)pin\.it$/,'Pinterest'],
+    [/(^|\.)tumblr\.com$/,'Tumblr'],
+    [/(^|\.)kick\.com$/,'Kick'],
+    [/(^|\.)rumble\.com$/,'Rumble'],
+    [/(^|\.)odysee\.com$/,'Odysee'],
+    [/(^|\.)streamable\.com$/,'Streamable'],
+    [/(^|\.)imgur\.com$/,'Imgur'],
+    [/(^|\.)giphy\.com$/,'Giphy'],
+    [/(^|\.)linkedin\.com$/,'LinkedIn'],
+    [/(^|\.)snapchat\.com$/,'Snapchat']
+  ];
   function platformOf(u){ var h=hostOf(u); for(var i=0;i<PLATFORMS.length;i++){ if(PLATFORMS[i][0].test(h)) return PLATFORMS[i][1]; } return null; }
   function isBlock(e){ return e && (e.name==='TypeError' || /fetch|network|cors|failed/i.test(e.message||'')); }
+  function fmtDur(s){ s=Math.max(0,Math.round(Number(s)||0)); var h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60; return (h?h+':':'')+(h&&m<10?'0':'')+m+':'+(ss<10?'0':'')+ss; }
+  function ensureExt(n,ext){ var b=sanitize(n).replace(/\.[a-z0-9]{1,5}$/i,''); return b+'.'+(ext||'mp4'); }
+  function swapExt(n,oldExt,newExt){ n=sanitize(n); if(oldExt&&new RegExp('\\.'+oldExt+'$','i').test(n)) return n.replace(new RegExp('\\.'+oldExt+'$','i'),'.'+newExt); var m=n.match(/^(.*)\.[a-z0-9]{1,5}$/i); return (m?m[1]:n)+'.'+newExt; }
 
   /* ---------- rabbit rig ---------- */
   var Rig=(function(){
@@ -583,6 +631,177 @@
     if(navigator.clipboard&&navigator.clipboard.readText){ navigator.clipboard.readText().then(function(t){ t=(t||'').trim();
       if(/^https?:\/\//i.test(t)&&t!==$('#url').value){ $('#url').value=t; setRabbit('link'); setBubble('captured a link from your clipboard — press <span class="accent">enter</span>.'); } }).catch(function(){}); } });
 
+  /* ---------- local bridge ---------- */
+  async function bridgeFetch(path,opts,ms){
+    var ctrl=new AbortController(); var timer=setTimeout(function(){ctrl.abort();},ms||15000);
+    var o=Object.assign({cache:'no-store',signal:ctrl.signal},opts||{});
+    try{
+      var r=await fetch(BRIDGE+path,o);
+      var txt=await r.text(); var data={};
+      try{ data=txt?JSON.parse(txt):{}; }catch(e){ data={error:txt||('bridge HTTP '+r.status)}; }
+      if(!r.ok) throw new Error(data.error||('bridge HTTP '+r.status));
+      return data;
+    }catch(e){
+      if(e&&e.name==='AbortError') throw new Error('the bridge took too long to answer');
+      throw e;
+    }finally{ clearTimeout(timer); }
+  }
+  async function detectBridge(){
+    bridgeLastCheck=Date.now();
+    try{ bridge=await bridgeFetch('/ping',{},3000); }
+    catch(e){ bridge=null; }
+    updateBridgeUI();
+    return bridge;
+  }
+  function recheckBridge(){ if(bridge && Date.now()-bridgeLastCheck<4000) return Promise.resolve(bridge); return detectBridge(); }
+  function updateBridgeUI(){
+    var el=$('#bridge-state'); if(!el)return;
+    if(!bridge){ el.className='bridge-state'; el.textContent='offline · run bridge/start.ps1'; }
+    else if(!bridge.ready){ el.className='bridge-state bad'; el.textContent='online · yt-dlp missing'; }
+    else { el.className='bridge-state ok'; el.textContent='connected · yt-dlp '+(bridge.ytdlp||'ok')+(bridge.ffmpeg?' · ffmpeg ok':''); }
+  }
+  function bindBridgeHelp(){ var b=$('#bridge-help'); if(b) b.onclick=function(){ openHelp(); }; }
+  function bridgeMissing(label){
+    setRabbit('sorry');
+    setBubble("that's a <span class='accent'>"+esc(label)+"</span> page. start the <button class='inline-link' id='bridge-help'>local bridge</button> and i can fetch it — or paste a direct file link.");
+    bindBridgeHelp();
+  }
+  async function bridgeFlow(url,label){
+    if(!bridge||!bridge.ready) await recheckBridge();
+    if(!bridge){ bridgeMissing(label); return; }
+    if(!bridge.ready){
+      setRabbit('error');
+      setBubble('the bridge is online, but <span class="accent">yt-dlp</span> is missing. run <span class="accent">bridge/setup.ps1</span> and restart it.');
+      return;
+    }
+    fieldBusy(true); setRabbit('link');
+    setBubble('the bridge is looking up that <span class="accent">'+esc(label)+'</span> link…');
+    try{
+      var meta=await bridgeFetch('/resolve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})},90000);
+      openBridgeOptions(url,label,meta);
+    }catch(e){
+      fieldBusy(false); setRabbit('error');
+      setBubble('bridge: <span style="color:var(--danger)">'+esc(e.message||'could not resolve that link')+'</span>');
+    }
+  }
+  function openBridgeOptions(url,label,meta){
+    var qs=meta.qualities||[];
+    $('#opt-quality').innerHTML=qs.map(function(q){ return '<option value="'+esc(q.key)+'">'+esc(q.label)+(q.filesize?' · ~'+fmtSize(q.filesize):'')+'</option>'; }).join('');
+    $('#opt-quality-row').style.display='';
+    $('#opt-quality').value='best';
+    var tags='<span class="tag">'+esc(label)+'</span>';
+    if(meta.duration) tags+='<span class="tag">'+fmtDur(meta.duration)+'</span>';
+    if(meta.extractor) tags+='<span class="tag">'+esc(meta.extractor)+'</span>';
+    if(meta.isLive) tags+='<span class="tag">live</span>';
+    $('#opt-meta').innerHTML=tags;
+    var suggested=meta.suggestedName||'media.mp4';
+    $('#opt-name').value=suggested;
+    $('#opt-conn-val').textContent=S.connections;
+    $('#opt-note').textContent=meta.isLive?'live stream — the bridge records until you cancel.':'the local bridge downloads and merges on your machine. quality is real, not a fake toggle.';
+    pendingOpt={kind:'bridge',url:url,label:label,meta:meta,connections:S.connections,suggested:suggested,suggestedExt:(meta.videoExt||'mp4'),quality:'best'};
+    fieldBusy(false); setRabbit('link'); setBubble('pick a quality — the bridge will fetch it locally.');
+    $('#opt-overlay').classList.add('on');
+  }
+  var prep={id:null,url:'',label:'',name:'',mode:'video',handle:null,timer:null,active:false};
+  var prepFails=0;
+  async function startBridgePrepare(p,q,name,handle){
+    var mode=q==='audio-mp3'?'audio-mp3':q==='audio'?'audio':'video';
+    var height=(q==='best'||q==='audio'||q==='audio-mp3')?0:(Number(q)||0);
+    prep={id:null,url:p.url,label:p.label,name:name,mode:mode,handle:handle,timer:null,active:true};
+    prepFails=0;
+    $('#prep-title').textContent='preparing '+(name||'media');
+    $('#prep-stage').textContent='starting…';
+    $('#prep-pct').textContent='';
+    $('#prep-bar').style.width='0%';
+    $('#prep-bar').classList.add('indet');
+    $('#prep-err').style.display='none'; $('#prep-err').textContent='';
+    $('#prep-cancel').textContent='cancel';
+    $('#prep-overlay').classList.add('on');
+    fieldBusy(true); setRabbit('download');
+    setBubble('the bridge is fetching it on your machine…');
+    try{
+      var r=await bridgeFetch('/prepare',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:p.url,mode:mode,height:height,name:name})},30000);
+      if(!prep.active){ fetch(BRIDGE+'/job/'+r.id+'/cancel',{method:'POST'}).catch(function(){}); return; }
+      prep.id=r.id; pollPrep();
+    }catch(e){ if(prep.active) prepError(e.message||'could not start the bridge job'); }
+  }
+  function prepError(msg){
+    prep.active=false;
+    if(prep.timer){clearTimeout(prep.timer);prep.timer=null;}
+    $('#prep-bar').classList.remove('indet'); $('#prep-bar').style.width='0%';
+    $('#prep-stage').textContent='failed';
+    $('#prep-err').textContent=msg; $('#prep-err').style.display='block';
+    $('#prep-cancel').textContent='close';
+    setRabbit('error'); setBubble('bridge: <span style="color:var(--danger)">'+esc(msg)+'</span>');
+  }
+  function updatePrep(j){
+    var stage=j.stage||'downloading';
+    var label=stage==='queued'?'waiting for a slot…':stage==='merging'?'merging video + audio…':stage==='converting'?'converting audio…':stage==='finishing'?'finishing…':'downloading…';
+    $('#prep-stage').textContent=label;
+    if(j.total){
+      $('#prep-bar').classList.remove('indet');
+      $('#prep-bar').style.width=Math.min(100,j.percent||0)+'%';
+      $('#prep-pct').textContent=Math.round(j.percent||0)+'%'+(j.speed?' · '+fmtSpeed(j.speed):'')+(j.eta?' · '+j.eta+'s left':'');
+    } else {
+      $('#prep-bar').classList.add('indet');
+      $('#prep-pct').textContent=j.downloaded?fmtSize(j.downloaded):'';
+    }
+    setBubble('bridge · <span class="accent">'+esc(label)+'</span>'+(j.total?' · '+Math.round(j.percent||0)+'%':''));
+  }
+  async function pollPrep(){
+    if(!prep.active||!prep.id)return;
+    try{
+      var j=await bridgeFetch('/job/'+prep.id,{},15000);
+      if(!prep.active)return;
+      prepFails=0;
+      if(j.status==='done'){
+        var done=prep; prep.active=false; if(prep.timer){clearTimeout(prep.timer);prep.timer=null;}
+        $('#prep-overlay').classList.remove('on'); fieldBusy(false);
+        enqueueBridge(j,done);
+        return;
+      }
+      if(j.status==='error'||j.status==='cancelled'){ prepError(j.error||'the bridge job failed'); return; }
+      updatePrep(j);
+    }catch(e){
+      prepFails++;
+      if(prepFails>=10){ prepError('lost contact with the bridge'); return; }
+    }
+    if(prep.active) prep.timer=setTimeout(pollPrep,500);
+  }
+  function enqueueBridge(j,p){
+    var ext=j.ext||'mp4';
+    var display=ensureExt(p.name||j.fileName||'media',ext);
+    var kind=/^(m4a|mp3|opus|ogg|oga|wav|flac|aac)$/i.test(ext)?'audio':'video';
+    var fileUrl=BRIDGE+'/file/'+j.fileId;
+    if(p.handle){
+      enqueue(fileUrl,p.handle,{info:{kind:kind,total:j.size||0,range:true,name:display,ext:ext},name:display,origin:p.url,host:p.label,viaBridge:true,bridgeFileId:j.fileId});
+      setRabbit('download'); setBubble('saving <span class="accent">'+esc(display)+'</span> to your disk…');
+    } else {
+      browserDlUrl(fileUrl,display);
+      S.history.unshift({title:display,url:p.url,size:fmtSize(j.size),when:'just now',kind:kind,host:p.label});
+      if(S.history.length>60)S.history.length=60; saveHistory(); renderHistory($('#hist-search').value);
+      setRabbit('success'); setBubble('handed <span class="accent">'+esc(display)+'</span> to your browser ✓');
+      updateBadge();
+    }
+  }
+  function closePrepOverlay(){
+    var wasActive=!!(prep.active&&prep.id);
+    if(wasActive){
+      var id=prep.id; prep.active=false;
+      if(prep.timer){clearTimeout(prep.timer);prep.timer=null;}
+      fetch(BRIDGE+'/job/'+id+'/cancel',{method:'POST'}).catch(function(){});
+      setRabbit('idle'); setBubble('cancelled. paste another whenever.');
+    }
+    prep.active=false;
+    if(prep.timer){clearTimeout(prep.timer);prep.timer=null;}
+    $('#prep-overlay').classList.remove('on');
+    fieldBusy(false);
+    if(!wasActive){ setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.'); }
+  }
+  function dropBridgeFile(j){
+    if(j&&j.bridgeFileId){ fetch(BRIDGE+'/file/'+j.bridgeFileId,{method:'DELETE'}).catch(function(){}); j.bridgeFileId=null; }
+  }
+
   /* ---------- download engine ---------- */
   function abortAll(j){ j.controllers.forEach(function(c){try{c.abort();}catch(e){}}); j.controllers=[]; }
   function startTicker(j){ stopTicker(j); j.lastT=performance.now(); j.lastB=j.got;
@@ -602,7 +821,9 @@
   function enqueue(url,handle,opts){
     opts=opts||{};
     var g=nameFromUrl(url);
-    var j={ id:++S.seq, url:url, host:hostOf(url), name:sanitize(g.name), ext:(g.ext||'bin').toLowerCase(), displayName:'',
+    var j={ id:++S.seq, url:url, host:opts.host||hostOf(url), origin:opts.origin||url,
+      viaBridge:!!opts.viaBridge, bridgeFileId:opts.bridgeFileId||null,
+      name:sanitize(g.name), ext:(g.ext||'bin').toLowerCase(), displayName:'',
       kind:'file', total:0, got:0, status:'queued', speed:0, range:false, chunkSize:4*1024*1024,
       conn:opts.connections||S.connections, preProbed:false,
       controllers:[], sink: handle?{type:'file',handle:handle,w:null}:{type:'blob',parts:[]},
@@ -610,7 +831,7 @@
     if(opts.info){ j.kind=opts.info.kind; j.total=opts.info.total; j.range=opts.info.range; j.name=opts.info.name; j.ext=opts.info.ext; j.preProbed=true; }
     j.displayName=opts.name?sanitize(opts.name):applyTemplate(j);
     S.jobs.push(j); renderQueue(); pump();
-    setRabbit('link'); setBubble('ooh — a direct link. fetching…'); fieldBusy(true);
+    setRabbit('link'); setBubble('ooh — a link. fetching…'); fieldBusy(true);
   }
   function pump(){ var active=S.jobs.filter(function(j){return j.status==='downloading';}).length;
     S.jobs.forEach(function(j){ if(j.status==='queued'&&active<S.concurrency){ active++; runJob(j); } });
@@ -700,7 +921,7 @@
     }catch(e){}
     j.sink.w=null;
   }
-  function addHistory(j){ S.history.unshift({title:j.displayName|| (j.name+'.'+j.ext), url:j.url, size:fmtSize(j.got), when:'just now', kind:j.kind, host:j.host});
+  function addHistory(j){ S.history.unshift({title:j.displayName|| (j.name+'.'+j.ext), url:j.origin||j.url, size:fmtSize(j.got), when:'just now', kind:j.kind, host:j.host});
     if(S.history.length>60)S.history.length=60; saveHistory(); renderHistory($('#hist-search').value); }
   function finish(j){ j.status='done'; if(j.total)j.got=j.total; stopTicker(j); abortAll(j);
     addHistory(j); renderQueue(); updateBadge(); fieldBusy(S.jobs.some(function(x){return x.status==='downloading';}));
@@ -718,17 +939,19 @@
     try{ if(j.sink.type==='file'&&!j.sink.w){ j.sink.w=await j.sink.handle.createWritable(); }
       await startRange(j); if(j.status==='downloading'){ await closeSink(j,true); finish(j); } }
     catch(e){ if(j.status==='paused')return; if(isBlock(e))block(j); else fail(j,(e&&e.message)||'error'); } }
-  function cancel(j){ j.status='cancelled'; abortAll(j); stopTicker(j); closeSink(j,false);
+  function cancel(j){ j.status='cancelled'; abortAll(j); stopTicker(j); closeSink(j,false); dropBridgeFile(j);
     S.jobs=S.jobs.filter(function(x){return x.id!==j.id;}); renderQueue(); updateBadge(); fieldBusy(false);
     setRabbit('idle'); setBubble('cancelled. paste another whenever.'); pump(); }
-  function dismiss(j){ S.jobs=S.jobs.filter(function(x){return x.id!==j.id;}); renderQueue(); updateBadge();
-    if(!S.jobs.length){setRabbit('idle');setBubble('paste a direct link — i\'ll do the rest.');fieldBusy(false);} pump(); }
-  function retry(j){ j.status='queued'; j.err=''; j.got=0; j.nextChunk=0; j.pending={}; j.controllers=[];
+  function dismiss(j){ dropBridgeFile(j); S.jobs=S.jobs.filter(function(x){return x.id!==j.id;}); renderQueue(); updateBadge();
+    if(!S.jobs.length){setRabbit('idle');setBubble('paste a link — i\'ll do the rest.');fieldBusy(false);} pump(); }
+  function retry(j){
+    if(j.viaBridge&&j.origin){ dismiss(j); submit(j.origin); return; }
+    j.status='queued'; j.err=''; j.got=0; j.nextChunk=0; j.pending={}; j.controllers=[];
     if(j.sink.type==='file'){ j.sink={type:'blob',parts:[]}; } renderQueue(); pump(); }
   function browserDlUrl(url,name){ var a=document.createElement('a'); a.href=url; if(name)a.download=name; a.target='_blank'; a.rel='noopener';
     document.body.appendChild(a); a.click(); a.remove(); }
   function browserDl(j){ browserDlUrl(j.url,j.displayName); toast('handing off to your browser’s downloader'); }
-  function again(j){ submit(j.url); }
+  function again(j){ submit(j.viaBridge&&j.origin?j.origin:j.url); }
 
   /* ---------- queue UI ---------- */
   function jobMeta(j){
@@ -764,20 +987,27 @@
     else if(act==='again')again(j); }; }); }
 
   /* ---------- submit ---------- */
-  function bindSorryHelp(){ var b=$('#sorry-help'); if(b)b.onclick=function(){openHelp();}; }
   function submit(raw){
     var url=(raw!=null?raw:$('#url').value).trim();
     if(!url){ setRabbit('empty'); setBubble('no link yet. i\'m waiting…'); return; }
     if(!/^https?:\/\//i.test(url)){ setRabbit('error'); setBubble("that doesn't look like a link. paste a full http(s) URL."); return; }
     var plat=platformOf(url);
-    if(plat){ setRabbit('sorry'); setBubble("that's a <span class='accent'>"+plat+"</span> page, not a direct file. i fetch direct media links — <button class='inline-link' id='sorry-help'>see how</button>."); bindSorryHelp(); return; }
+    if(plat==='Spotify'){ setRabbit('sorry'); setBubble('Spotify is <span class="accent">DRM-protected</span> — no downloader can save it. try SoundCloud or a video mirror.'); return; }
+    if(plat){ bridgeFlow(url,plat); return; }
     var g=nameFromUrl(url); var suggested=sanitize(g.name)+'.'+(g.ext||'bin');
     if(S.bg){ browserDlUrl(url,suggested); setRabbit('success'); setBubble('handed to your browser’s downloader ✓');
       S.history.unshift({title:suggested,url:url,size:'—',when:'just now',kind:'file',host:hostOf(url)}); saveHistory(); renderHistory(''); return; }
     fieldBusy(true); setRabbit('link'); setBubble('checking the link…');
     var pj={url:url,controllers:[]};
     probe(pj).then(function(){ abortAll(pj); openOptions(url,pj,suggested); })
-      .catch(function(){ abortAll(pj); fieldBusy(false); startDownload(url,suggested,null); });
+      .catch(function(){ abortAll(pj); fieldBusy(false);
+        var ext=(g.ext||'').toLowerCase();
+        if(ext&&ext!=='bin'){ startDownload(url,suggested,null); return; }
+        recheckBridge().then(function(b){
+          if(b&&b.ready){ bridgeFlow(url,platformOf(url)||hostOf(url)); }
+          else { startDownload(url,suggested,null); }
+        });
+      });
   }
   function startDownload(url,suggested,opts){
     if(window.showSaveFilePicker){
@@ -788,26 +1018,53 @@
   }
   var pendingOpt=null;
   function openOptions(url,info,suggested){
-    pendingOpt={url:url,info:info,connections:S.connections,suggested:suggested};
+    pendingOpt={kind:'direct',url:url,info:info,connections:S.connections,suggested:suggested};
+    $('#opt-quality-row').style.display='none';
+    $('#opt-note').textContent='quality & audio are whatever the source file has.';
     $('#opt-meta').innerHTML='<span class="tag">'+esc(info.kind)+'</span><span class="tag">'+(info.total?fmtSize(info.total):'size unknown')+'</span><span class="tag">'+esc(hostOf(url))+'</span>';
     $('#opt-name').value=info.displayName||suggested;
     $('#opt-conn-val').textContent=S.connections;
     fieldBusy(false); setRabbit('link'); setBubble('set your options, then hit download.');
     $('#opt-overlay').classList.add('on');
   }
-  function resetOptState(){ pendingOpt=null; setRabbit('idle'); setBubble('paste a direct link — i\'ll do the rest.'); }
+  function resetOptState(){ pendingOpt=null; setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.'); }
   function closeOptions(){ $('#opt-overlay').classList.remove('on'); resetOptState(); }
   $('#opt-conn-minus').addEventListener('click',function(){ if(!pendingOpt)return; pendingOpt.connections=Math.max(1,pendingOpt.connections-1); $('#opt-conn-val').textContent=pendingOpt.connections; });
   $('#opt-conn-plus').addEventListener('click',function(){ if(!pendingOpt)return; pendingOpt.connections=Math.min(8,pendingOpt.connections+1); $('#opt-conn-val').textContent=pendingOpt.connections; });
   $('#opt-cancel').addEventListener('click',closeOptions);
   $('#opt-overlay [data-close]').addEventListener('click',closeOptions);
-  $('#opt-go').addEventListener('click',function(){
+  $('#opt-quality').addEventListener('change',function(){
+    if(!pendingOpt||pendingOpt.kind!=='bridge')return;
+    var q=this.value, meta=pendingOpt.meta;
+    var qmeta=(meta.qualities||[]).find(function(x){return x.key===q;});
+    var ext=(qmeta&&qmeta.ext)||(q==='audio-mp3'?'mp3':q==='audio'?(meta.audioExt||'m4a'):(meta.videoExt||'mp4'));
+    var v=$('#opt-name').value||pendingOpt.suggested;
+    $('#opt-name').value=swapExt(v,pendingOpt.suggestedExt,ext);
+    pendingOpt.suggestedExt=ext; pendingOpt.quality=q;
+  });
+  $('#opt-go').addEventListener('click',async function(){
     if(!pendingOpt)return;
     var p=pendingOpt; var name=sanitize($('#opt-name').value)||p.suggested;
+    if(p.kind==='bridge'){
+      var q=$('#opt-quality').value||'best';
+      $('#opt-overlay').classList.remove('on'); pendingOpt=null;
+      var handle=null;
+      if(window.showSaveFilePicker&&!S.bg){
+        try{ handle=await window.showSaveFilePicker({suggestedName:ensureExt(name,p.suggestedExt)}); }
+        catch(e){
+          if(e&&e.name==='AbortError'){ setRabbit('idle'); setBubble('no save location picked — the link stayed put.'); return; }
+          handle=null;
+        }
+      }
+      startBridgePrepare(p,q,name,handle);
+      return;
+    }
     var opts={name:name,connections:p.connections,info:p.info};
     $('#opt-overlay').classList.remove('on'); pendingOpt=null;
     startDownload(p.url,name,opts);
   });
+  $('#prep-cancel').addEventListener('click',closePrepOverlay);
+  $('#bridge-recheck').addEventListener('click',function(){ detectBridge().then(function(){ toast(bridge&&bridge.ready?'bridge connected':'bridge offline'); }); });
   $('#url').addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
   $('#url').addEventListener('input',function(){ if(this.value.trim()){ setRabbit('link'); setBubble('ooh, a link. press <span class="accent">enter</span> or hit download.'); } });
   $('#go-btn').addEventListener('click',function(){submit();});
@@ -838,9 +1095,10 @@
   }
   $('#hist-open').addEventListener('click',function(){renderHistory('');$('#hist-search').value='';$('#hist-overlay').classList.add('on');});
   $('#hist-search').addEventListener('input',function(){renderHistory(this.value);});
-  $$('[data-close]').forEach(function(b){b.addEventListener('click',function(){b.closest('.overlay').classList.remove('on');});});
-  $$('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o){o.classList.remove('on'); if(o.id==='opt-overlay')resetOptState();}});});
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape')$$('.overlay.on').forEach(function(o){o.classList.remove('on'); if(o.id==='opt-overlay')resetOptState();}); });
+  function closeOverlay(o){ if(o.id==='prep-overlay'){ closePrepOverlay(); return; } o.classList.remove('on'); if(o.id==='opt-overlay')resetOptState(); }
+  $$('[data-close]').forEach(function(b){b.addEventListener('click',function(){closeOverlay(b.closest('.overlay'));});});
+  $$('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)closeOverlay(o);});});
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape')$$('.overlay.on').forEach(closeOverlay); });
 
   /* ---------- toast ---------- */
   var toastT=null;
@@ -851,7 +1109,9 @@
 
   /* ---------- init ---------- */
   loadSettings(); loadHistory(); applySettingsToUI();
-  setRabbit('idle'); setBubble('paste a direct link — i\'ll do the rest.'); renderHistory(''); updateBadge();
+  setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.'); renderHistory(''); updateBadge();
+  detectBridge();
+  window.addEventListener('focus',function(){ if(!bridge||!bridge.ready) recheckBridge(); });
 })();
 </script>
 </div>
