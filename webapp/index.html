@@ -759,7 +759,7 @@
       setBubble('the bridge is online, but <span class="accent">yt-dlp</span> is missing. run <span class="accent">bridge/setup.ps1</span> and restart it.');
       return;
     }
-    if(!bridge && location.protocol==='https:'){ bridgeConnectOpen(url,label); return; }
+    if(!bridge && location.protocol==='https:'){ location.href=BRIDGE+'/?url='+encodeURIComponent(url); return; }
     if(!bridge) await recheckBridge();
     if(!bridge){ bridgeMissing(label); return; }
     fieldBusy(true); setRabbit('link');
@@ -1210,6 +1210,8 @@
   setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.'); renderHistory(''); updateBadge();
   var bridgeAllowed=false; try{ bridgeAllowed=!!localStorage.getItem(BRIDGE_ALLOW_KEY); }catch(e){}
   if(location.protocol!=='https:' || bridgeAllowed) detectBridge(); else updateBridgeUI();
+  var handoff=new URLSearchParams(location.search).get('url');
+  if(handoff && location.protocol!=='https:' && /^https?:\/\//i.test(handoff)){ $('#url').value=handoff; submit(handoff); }
   window.addEventListener('focus',function(){ if(location.protocol==='https:')return; if(!bridge||!bridge.ready) recheckBridge(); });
 })();
 </script>
