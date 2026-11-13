@@ -36,6 +36,7 @@ const AUTO_UPDATE = process.env.BRIDGE_AUTO_UPDATE !== '0';
 const jobs = new Map();
 const files = new Map();
 const resolveCache = new Map();
+const resolveInflight = new Map();
 const queue = [];
 const rateHits = [];
 let active = 0;
@@ -438,6 +439,13 @@ function runCapture(cmd, args, timeout) {
 async function resolveData(url) {
   const cached = resolveCache.get(url);
   if (cached && cached.expires > Date.now()) return cached.data;
+  if (resolveInflight.has(url)) return resolveInflight.get(url);
+  const p = resolveDataFresh(url);
+  resolveInflight.set(url, p);
+  try { return await p; } finally { resolveInflight.delete(url); }
+}
+
+async function resolveDataFresh(url) {
   const args = baseArgs().concat(['-J', '--skip-download', url]);
   const r = await runCapture(YTDLP, args, 90000);
   if (r.code !== 0) throw friendlyError(r.stderr, r.code);
@@ -1059,7 +1067,7 @@ const server = http.createServer(async function (req, res) {
   try {
     if ((p === '/' || p === '/index.html') && (req.method === 'GET' || req.method === 'HEAD')) return serveApp(req, res);
     if (p === '/ping' && req.method === 'GET') {
-      refreshTools(false);
+      await refreshTools(false);
       return json(res, 200, {
         ok: true,
         app: 'downrabbit-bridge',
@@ -1086,6 +1094,24 @@ const server = http.createServer(async function (req, res) {
       if (cached && cached.expires > Date.now()) return json(res, 200, Object.assign({ ok: true }, normalizeInfo(cached.data)));
       const info = await resolveUrl(url);
       return json(res, 200, Object.assign({ ok: true }, info));
+    }
+
+    if (p === '/preview' && req.method === 'POST') {
+      const body = await readBody(req);
+      const url = await assertPublicUrl(body.url);
+      resolveData(url).catch(function () {});
+      const out = { ok: true, title: '', thumbnail: '', uploader: '' };
+      const host = new URL(url).hostname.replace(/^www\./, '');
+      if (/(^|\.)youtube\.com$/.test(host) || /(^|\.)youtu\.be$/.test(host)) {
+        try {
+          const ac = new AbortController();
+          const to = setTimeout(function () { ac.abort(); }, 4000);
+          const r = await fetch('https://www.youtube.com/oembed?url=' + encodeURIComponent(url) + '&format=json', { headers: { 'User-Agent': UA }, signal: ac.signal });
+          clearTimeout(to);
+          if (r.ok) { const j = await r.json(); out.title = j.title || ''; out.thumbnail = j.thumbnail_url || ''; out.uploader = j.author_name || ''; }
+        } catch (e) {}
+      }
+      return json(res, 200, out);
     }
 
     if (p === '/prepare' && req.method === 'POST') {
@@ -1147,9 +1173,9 @@ const server = http.createServer(async function (req, res) {
 });
 
 initDirs();
-refreshTools(true).then(function () {
-  server.listen(PORT, HOST, function () {
-    console.log('downrabbit bridge ' + VERSION + ' -> http://' + HOST + ':' + PORT);
+server.listen(PORT, HOST, function () {
+  console.log('downrabbit bridge ' + VERSION + ' -> http://' + HOST + ':' + PORT);
+  refreshTools(true).then(function () {
     console.log('yt-dlp: ' + (ytdlpVersion || 'NOT FOUND') + '   ffmpeg: ' + (ffmpegVersion || 'NOT FOUND'));
     if (!ytdlpVersion) console.log('run bridge/setup.ps1 (Windows) or install yt-dlp');
     maybeAutoUpdate();
