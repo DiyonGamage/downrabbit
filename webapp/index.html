@@ -317,6 +317,30 @@
     #downrabbit-app input[type=text]{width:140px;}
     #downrabbit-app .set-row{flex-wrap:wrap;}
   }
+
+  /* phone ergonomics */
+  @media (max-width:560px){
+    #downrabbit-app .topbar{padding-top:calc(12px + env(safe-area-inset-top));}
+    #downrabbit-app .sidebar{padding-bottom:calc(8px + env(safe-area-inset-bottom));}
+    #downrabbit-app .footer{padding-bottom:calc(16px + env(safe-area-inset-bottom));}
+    #downrabbit-app input[type=text]{width:auto;font-size:16px;}
+    #downrabbit-app #url{flex:1;min-width:0;width:auto;font-size:16px;}
+    #downrabbit-app .field{height:56px;}
+    #downrabbit-app .mode-row{gap:10px;}
+    #downrabbit-app .go-btn{flex:1;min-height:48px;padding:13px 20px;justify-content:center;}
+    #downrabbit-app .paste-btn{min-height:48px;}
+    #downrabbit-app .nav{min-height:44px;}
+    #downrabbit-app .stepper button{width:44px;height:44px;}
+    #downrabbit-app .stepper .num{width:40px;}
+    #downrabbit-app .sheet-h .x{width:44px;height:44px;font-size:22px;}
+    #downrabbit-app .overlay{align-items:flex-end;padding:0;}
+    #downrabbit-app .sheet{max-width:100%;width:100%;max-height:90vh;border-radius:20px 20px 0 0;border-left:none;border-right:none;border-bottom:none;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:s-sheet .28s ease;}
+    #downrabbit-app .opt-row{min-height:52px;padding:14px 0;}
+    #downrabbit-app .opt-row select{min-height:44px;font-size:16px;}
+    #downrabbit-app .opt-actions{position:sticky;bottom:0;background:var(--sidebar);padding:12px 0 4px;margin-top:12px;border-top:1px solid var(--line);}
+    #downrabbit-app .opt-actions .btn-line,#downrabbit-app .opt-actions .btn-solid{flex:1;min-height:48px;justify-content:center;}
+  }
+  @keyframes s-sheet{from{transform:translateY(40px);opacity:.4;}to{transform:translateY(0);opacity:1;}}
 </style>
 
 <div class="app">
@@ -553,6 +577,7 @@
     [/(^|\.)snapchat\.com$/,'Snapchat']
   ];
   function platformOf(u){ var h=hostOf(u); for(var i=0;i<PLATFORMS.length;i++){ if(PLATFORMS[i][0].test(h)) return PLATFORMS[i][1]; } return null; }
+  function canonicalPlatform(u){ try{ var x=new URL(u); var h=x.hostname.replace(/^www\./,''); if(/(^|\.)youtube\.com$/.test(h)){ var m=/^\/(shorts|live|embed)\/([^/?#]+)/i.exec(x.pathname); if(m){ x.pathname='/watch'; x.search='?v='+m[2]; return x.toString(); } } }catch(e){} return u; }
   function isBlock(e){ return e && (e.name==='TypeError' || /fetch|network|cors|failed/i.test(e.message||'')); }
   function fmtDur(s){ s=Math.max(0,Math.round(Number(s)||0)); var h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60; return (h?h+':':'')+(h&&m<10?'0':'')+m+':'+(ss<10?'0':'')+ss; }
   function ensureExt(n,ext){ var b=sanitize(n).replace(/\.[a-z0-9]{1,5}$/i,''); return b+'.'+(ext||'mp4'); }
@@ -1054,6 +1079,7 @@
     var url=(raw!=null?raw:$('#url').value).trim();
     if(!url){ setRabbit('empty'); setBubble('no link yet. i\'m waiting…'); return; }
     if(!/^https?:\/\//i.test(url)){ setRabbit('error'); setBubble("that doesn't look like a link. paste a full http(s) URL."); return; }
+    url=canonicalPlatform(url);
     var plat=platformOf(url);
     if(plat==='Spotify'){ setRabbit('sorry'); setBubble('Spotify is <span class="accent">DRM-protected</span> — no downloader can save it. try SoundCloud or a video mirror.'); return; }
     if(plat){ bridgeFlow(url,plat); return; }

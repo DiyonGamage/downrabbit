@@ -19,7 +19,9 @@ const BIN_DIR = path.join(__dirname, 'bin');
 
 const MAX_ACTIVE = clampInt(process.env.BRIDGE_MAX_ACTIVE, 3, 1, 4);
 const FRAGMENTS = clampInt(process.env.BRIDGE_FRAGMENTS, 24, 1, 32);
+const CONNECTIONS = clampInt(process.env.BRIDGE_CONNECTIONS, 8, 1, 16);
 const HTTP_CHUNK = process.env.BRIDGE_HTTP_CHUNK || '16M';
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36';
 const FILE_TTL_MS = clampInt(process.env.BRIDGE_FILE_TTL_MS, 60 * 60 * 1000, 60 * 1000, 24 * 60 * 60 * 1000);
 const JOB_TTL_MS = Math.max(FILE_TTL_MS, clampInt(process.env.BRIDGE_JOB_TTL_MS, 2 * 60 * 60 * 1000, 60 * 1000, 24 * 60 * 60 * 1000));
 const MAX_FILESIZE = process.env.BRIDGE_MAX_FILESIZE || '8G';
@@ -223,6 +225,10 @@ async function assertPublicUrl(raw) {
     }
   }
   if (/(^|\.)spotify\.com$/i.test(host)) throw new Error('Spotify is DRM-protected and cannot be downloaded');
+  if (/(^|\.)youtube\.com$/i.test(host)) {
+    const m = /^\/(shorts|live|embed)\/([^/?#]+)/i.exec(u.pathname);
+    if (m) { u.pathname = '/watch'; u.search = '?v=' + m[2]; }
+  }
   return u.toString();
 }
 
@@ -428,7 +434,9 @@ function runCapture(cmd, args, timeout) {
   });
 }
 
-async function resolveUrl(url) {
+async function resolveData(url) {
+  const cached = resolveCache.get(url);
+  if (cached && cached.expires > Date.now()) return cached.data;
   const args = baseArgs().concat(['-J', '--skip-download', url]);
   const r = await runCapture(YTDLP, args, 90000);
   if (r.code !== 0) throw friendlyError(r.stderr, r.code);
@@ -446,7 +454,11 @@ async function resolveUrl(url) {
   for (const entry of resolveCache) if (entry[1].expires < now) resolveCache.delete(entry[0]);
   while (resolveCache.size >= 8) resolveCache.delete(resolveCache.keys().next().value);
   resolveCache.set(url, { data: data, expires: now + 10 * 60 * 1000 });
-  return normalizeInfo(data);
+  return data;
+}
+
+async function resolveUrl(url) {
+  return normalizeInfo(await resolveData(url));
 }
 
 function formatSelector(job) {
@@ -549,6 +561,241 @@ function parseProgress(job, line) {
   }
 }
 
+function rmQuiet(p) { try { fs.unlinkSync(p); } catch (e) {} }
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function abortErr() { const e = new Error('cancelled'); e.cancel = true; return e; }
+function writeAt(fd, buf, position) {
+  return new Promise(function (resolve, reject) {
+    fs.write(fd, buf, 0, buf.length, position, function (err, written) { err ? reject(err) : resolve(written); });
+  });
+}
+
+function selectFormats(data, job) {
+  const formats = Array.isArray(data.formats) ? data.formats : [];
+  if (job.mode === 'audio' || job.mode === 'audio-mp3') {
+    const a = pickAudio(formats);
+    if (!a) throw new Error('no audio format found');
+    return { video: null, audio: a };
+  }
+  const v = pickVideo(formats, job.height || 4320);
+  if (!v) throw new Error('no video format found');
+  if (v.acodec && v.acodec !== 'none') return { video: v, audio: null };
+  return { video: v, audio: pickAudio(formats) };
+}
+
+function directOk(f) {
+  return f && typeof f.url === 'string' && /^https?:/i.test(f.url) && !/m3u8|dash|ism|f4m/i.test(f.protocol || '');
+}
+
+function makeTracker(job) {
+  let lastT = Date.now(), lastB = 0, speed = 0;
+  return function add(n) {
+    job.downloaded += n;
+    const now = Date.now();
+    if (now - lastT >= 400) {
+      const dt = (now - lastT) / 1000;
+      const inst = (job.downloaded - lastB) / dt;
+      speed = speed ? speed * 0.6 + inst * 0.4 : inst;
+      lastB = job.downloaded; lastT = now;
+      job.speed = Math.round(speed);
+      job.eta = speed > 0 && job.total > job.downloaded ? Math.round((job.total - job.downloaded) / speed) : null;
+      job.percent = job.total ? Math.min(99.9, Math.round((job.downloaded / job.total) * 1000) / 10) : 0;
+      job.stage = 'downloading';
+    }
+  };
+}
+
+async function downloadRange(url, fd, start, end, job, add) {
+  const expect = end - start + 1;
+  for (let attempt = 1; ; attempt++) {
+    if (job.status === 'cancelled') throw abortErr();
+    const ac = new AbortController();
+    (job._acs = job._acs || []).push(ac);
+    let idle = null;
+    let got = 0;
+    try {
+      const resp = await fetch(url, { headers: { Range: 'bytes=' + start + '-' + end, 'User-Agent': UA }, signal: ac.signal, redirect: 'follow' });
+      if (resp.status === 403 || resp.status === 401) { const e = new Error('HTTP ' + resp.status); e.fatal = true; throw e; }
+      if (resp.status === 200) { const e = new Error('server ignored range'); e.fatal = true; throw e; }
+      if (resp.status !== 206) throw new Error('HTTP ' + resp.status);
+      const reader = resp.body.getReader();
+      const arm = function () { clearTimeout(idle); idle = setTimeout(function () { ac.abort(); }, 30000); };
+      arm();
+      while (true) {
+        const r = await reader.read();
+        if (r.done) break;
+        arm();
+        await writeAt(fd, r.value, start + got);
+        got += r.value.length;
+        add(r.value.length);
+        if (job.status === 'cancelled') throw abortErr();
+      }
+      clearTimeout(idle);
+      if (got !== expect) throw new Error('short segment ' + got + '/' + expect);
+      return;
+    } catch (e) {
+      clearTimeout(idle);
+      if (e.cancel || job.status === 'cancelled') throw abortErr();
+      if (e.fatal || attempt >= 4) throw e;
+      await sleep(500 * attempt);
+    }
+  }
+}
+
+async function downloadSingle(url, dest, job, add) {
+  for (let attempt = 1; ; attempt++) {
+    if (job.status === 'cancelled') throw abortErr();
+    const ac = new AbortController();
+    (job._acs = job._acs || []).push(ac);
+    let idle = null;
+    const ws = fs.createWriteStream(dest);
+    try {
+      const resp = await fetch(url, { headers: { 'User-Agent': UA }, signal: ac.signal, redirect: 'follow' });
+      if (resp.status === 403 || resp.status === 401) { const e = new Error('HTTP ' + resp.status); e.fatal = true; throw e; }
+      if (resp.status !== 200 && resp.status !== 206) throw new Error('HTTP ' + resp.status);
+      const reader = resp.body.getReader();
+      const arm = function () { clearTimeout(idle); idle = setTimeout(function () { ac.abort(); }, 30000); };
+      arm();
+      while (true) {
+        const r = await reader.read();
+        if (r.done) break;
+        arm();
+        await new Promise(function (res, rej) { ws.write(r.value, function (err) { err ? rej(err) : res(); }); });
+        add(r.value.length);
+        if (job.status === 'cancelled') throw abortErr();
+      }
+      clearTimeout(idle);
+      await new Promise(function (res) { ws.end(res); });
+      return;
+    } catch (e) {
+      clearTimeout(idle);
+      ws.destroy();
+      if (e.cancel || job.status === 'cancelled') throw abortErr();
+      if (e.fatal || attempt >= 4) throw e;
+      await sleep(500 * attempt);
+    }
+  }
+}
+
+async function downloadSegmented(url, dest, total, conns, job, add) {
+  if (!total || total <= 0) return downloadSingle(url, dest, job, add);
+  const n = Math.max(1, Math.min(conns, Math.ceil(total / (128 * 1024))));
+  const seg = Math.ceil(total / n);
+  const fd = fs.openSync(dest, 'w');
+  fs.ftruncateSync(fd, total);
+  try {
+    let idx = 0;
+    const worker = async function () {
+      while (idx < n) {
+        const my = idx++;
+        const s = my * seg;
+        const e = Math.min(total - 1, (my + 1) * seg - 1);
+        await downloadRange(url, fd, s, e, job, add);
+      }
+    };
+    const workers = [];
+    for (let i = 0; i < n; i++) workers.push(worker());
+    await Promise.all(workers);
+  } finally {
+    try { fs.closeSync(fd); } catch (e) {}
+  }
+}
+
+function runFfmpeg(job, args) {
+  return new Promise(function (resolve, reject) {
+    const p = spawn(FFMPEG, args, { windowsHide: true, stdio: ['ignore', 'ignore', 'pipe'] });
+    job.proc = p;
+    let err = '';
+    p.stderr.on('data', function (d) { err = (err + d.toString('utf8')).slice(-8192); });
+    p.on('error', function (e) { job.proc = null; reject(e); });
+    p.on('close', function (code) {
+      job.proc = null;
+      if (job.status === 'cancelled') return reject(abortErr());
+      if (code !== 0) return reject(new Error('ffmpeg failed: ' + cleanStderr(err).split('\n').filter(Boolean).slice(-2).join(' ')));
+      resolve();
+    });
+  });
+}
+
+function registerOutput(job, filePath) {
+  const st = fs.statSync(filePath);
+  const ext = (path.extname(filePath).slice(1) || 'bin').toLowerCase();
+  const fileId = crypto.randomUUID();
+  const fileName = ensureExt(job.name, ext);
+  files.set(fileId, { id: fileId, path: filePath, name: fileName, ext: ext, size: st.size, created: Date.now() });
+  job.status = 'done';
+  job.stage = 'done';
+  job.percent = 100;
+  job.downloaded = st.size;
+  job.total = st.size;
+  job.size = st.size;
+  job.speed = 0;
+  job.eta = null;
+  job.ext = ext;
+  job.fileId = fileId;
+  job.fileName = fileName;
+}
+
+async function runJobFast(job, dir) {
+  const vpath = path.join(dir, 'v.part');
+  const apath = path.join(dir, 'a.part');
+  let sel = null;
+  for (let round = 0; ; round++) {
+    if (job.status === 'cancelled') throw abortErr();
+    const data = await resolveData(job.url);
+    sel = selectFormats(data, job);
+    if (sel.video && !directOk(sel.video)) throw new Error('video format is not a direct link');
+    if (sel.audio && !directOk(sel.audio)) throw new Error('audio format is not a direct link');
+    const add = makeTracker(job);
+    job.downloaded = 0;
+    job.total = (sel.video ? sizeOf(sel.video) : 0) + (sel.audio ? sizeOf(sel.audio) : 0);
+    job.stage = 'downloading';
+    try {
+      const tasks = [];
+      if (sel.video) tasks.push(downloadSegmented(sel.video.url, vpath, sizeOf(sel.video), CONNECTIONS, job, add));
+      if (sel.audio) tasks.push(downloadSegmented(sel.audio.url, apath, sizeOf(sel.audio), 2, job, add));
+      await Promise.all(tasks);
+      break;
+    } catch (e) {
+      if (e.cancel || job.status === 'cancelled') throw e;
+      if (e.fatal && /403|401/.test(e.message) && round < 2) {
+        resolveCache.delete(job.url);
+        rmQuiet(vpath); rmQuiet(apath);
+        console.log('[bridge] ' + e.message + ' — re-resolving fresh (round ' + (round + 1) + ')');
+        await sleep(800 * (round + 1));
+        continue;
+      }
+      throw e;
+    }
+  }
+  if (job.status === 'cancelled') throw abortErr();
+
+  let outPath, outExt;
+  if (job.mode === 'audio-mp3') {
+    outExt = 'mp3'; outPath = path.join(dir, 'media.mp3');
+    job.stage = 'converting'; job.percent = 100;
+    await runFfmpeg(job, ['-y', '-hide_banner', '-loglevel', 'error', '-i', apath, '-vn', '-codec:a', 'libmp3lame', '-q:a', '2', outPath]);
+  } else if (job.mode === 'audio') {
+    outExt = sel.audio.ext || 'm4a'; outPath = path.join(dir, 'media.' + outExt);
+    fs.renameSync(apath, outPath);
+  } else if (!sel.audio) {
+    outExt = sel.video.ext || 'mp4'; outPath = path.join(dir, 'media.' + outExt);
+    fs.renameSync(vpath, outPath);
+  } else {
+    if (sel.video.ext === 'mp4' && sel.audio.ext === 'm4a') outExt = 'mp4';
+    else if (sel.video.ext === 'webm' && (sel.audio.ext === 'webm' || sel.audio.ext === 'opus')) outExt = 'webm';
+    else outExt = 'mkv';
+    outPath = path.join(dir, 'media.' + outExt);
+    job.stage = 'merging'; job.percent = 100;
+    const margs = ['-y', '-hide_banner', '-loglevel', 'error', '-i', vpath, '-i', apath, '-c', 'copy'];
+    if (outExt === 'mp4') margs.push('-movflags', '+faststart');
+    margs.push(outPath);
+    await runFfmpeg(job, margs);
+  }
+  rmQuiet(vpath); rmQuiet(apath);
+  registerOutput(job, outPath);
+}
+
 async function runJob(job) {
   if (job.status === 'cancelled') return;
   const dir = path.join(DATA_DIR, job.id);
@@ -556,7 +803,22 @@ async function runJob(job) {
   job.status = 'downloading';
   job.stage = 'downloading';
   job.started = Date.now();
+  try {
+    await runJobFast(job, dir);
+    return;
+  } catch (e) {
+    if (job.status === 'cancelled' || (e && e.cancel)) { cleanupDir(dir); return; }
+    console.log('[bridge] fast path failed (' + (e && e.message) + ') — falling back to yt-dlp');
+    resolveCache.delete(job.url);
+    cleanupDir(dir);
+    fs.mkdirSync(dir, { recursive: true });
+    job.downloaded = 0; job.total = 0; job.percent = 0; job.speed = 0; job.eta = null;
+    job.stage = 'downloading';
+    await runJobYtdlp(job, dir);
+  }
+}
 
+async function runJobYtdlp(job, dir) {
   const args = baseArgs().concat([
     '--newline',
     '--progress-template',
@@ -677,6 +939,7 @@ function cancelJob(id) {
   if (!job) return false;
   job.status = 'cancelled';
   job.stage = 'cancelled';
+  if (job._acs) job._acs.forEach(function (ac) { try { ac.abort(); } catch (e) {} });
   if (job.proc) killTree(job.proc);
   cleanupDir(path.join(DATA_DIR, id));
   return true;
