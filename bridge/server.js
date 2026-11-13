@@ -16,6 +16,7 @@ const PORT = clampInt(process.env.BRIDGE_PORT, 8765, 1, 65535);
 const DATA_DIR = path.join(os.tmpdir(), 'downrabbit-bridge');
 const CACHE_DIR = path.join(DATA_DIR, 'ytdlp-cache');
 const BIN_DIR = path.join(__dirname, 'bin');
+const APP_HTML = path.join(__dirname, '..', 'webapp', 'index.html');
 
 const MAX_ACTIVE = clampInt(process.env.BRIDGE_MAX_ACTIVE, 3, 1, 4);
 const FRAGMENTS = clampInt(process.env.BRIDGE_FRAGMENTS, 24, 1, 32);
@@ -1034,6 +1035,15 @@ function initDirs() {
   }
 }
 
+function serveApp(req, res) {
+  let body;
+  try { body = fs.readFileSync(APP_HTML); }
+  catch (e) { return json(res, 500, { error: 'webapp/index.html not found next to bridge/' }); }
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Content-Length': body.length, 'Cache-Control': 'no-store' });
+  if (req.method === 'HEAD') return res.end();
+  res.end(body);
+}
+
 const server = http.createServer(async function (req, res) {
   cors(req, res);
   if (req.method === 'OPTIONS') {
@@ -1047,6 +1057,7 @@ const server = http.createServer(async function (req, res) {
   const p = u.pathname;
 
   try {
+    if ((p === '/' || p === '/index.html') && (req.method === 'GET' || req.method === 'HEAD')) return serveApp(req, res);
     if (p === '/ping' && req.method === 'GET') {
       refreshTools(false);
       return json(res, 200, {

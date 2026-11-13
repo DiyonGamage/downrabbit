@@ -497,9 +497,9 @@
     <div class="overlay" id="bridge-connect-overlay"><div class="sheet">
       <div class="sheet-h"><h3>connect the local bridge</h3><button class="x" data-close>×</button></div>
       <div class="help-block">
-        <b>one permission, then it's automatic</b>
-        <p>your browser will ask to let downrabbit reach apps on this device. choose <span class="accent">Allow</span> (or <span class="accent">Allow local network access</span>) so the bridge can fetch <span id="bridge-connect-what">that page</span>.</p>
-        <p>the bridge runs only on your machine. not running yet? start it:</p>
+        <b>easiest: run the local app — no permission needed</b>
+        <p>double-click <span class="accent">bridge/Downrabbit.cmd</span>. it opens downrabbit at <span class="accent">http://127.0.0.1:8765</span>, already connected — your browser never asks for local-network access.</p>
+        <p>or stay here and grant one permission: choose <span class="accent">Allow</span> (or <span class="accent">Allow local network access</span>) so the bridge can fetch <span id="bridge-connect-what">that page</span>. bridge not running? start it:</p>
         <code>cd bridge<br>.\start.ps1</code>
       </div>
       <div class="prep-err" id="bridge-connect-err"></div>
@@ -517,7 +517,7 @@
   var $$=function(s){return Array.prototype.slice.call(root.querySelectorAll(s));};
   var SAMPLE='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
   var LS_SET='downrabbit.settings.v1', LS_HIST='downrabbit.history.v1';
-  var BRIDGE='http://127.0.0.1:8765';
+  var BRIDGE=(location.protocol==='http:'&&location.port==='8765'&&(location.hostname==='127.0.0.1'||location.hostname==='localhost'))?'':'http://127.0.0.1:8765';
   var BRIDGE_ALLOW_KEY='downrabbit.bridge.v1';
   var bridge=null, bridgeLastCheck=0, bridgeTried=false, pendingBridge=null;
 
