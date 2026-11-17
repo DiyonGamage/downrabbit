@@ -48,8 +48,12 @@ downloads you ask for.
 ## The local bridge
 
 Browsers cannot run `yt-dlp` or bypass CORS, so platform pages go through a tiny Node.js
-bridge on `127.0.0.1:8765`. It has **zero npm dependencies**, wraps yt-dlp + ffmpeg, and runs
+bridge on port `8765`. It has **zero npm dependencies**, wraps yt-dlp + ffmpeg, and runs
 only on your machine. The webapp probes it automatically and shows `connected` in settings.
+
+The bridge also **serves the webapp itself** at `http://127.0.0.1:8765`, so the app and the
+bridge share one origin — no browser local-network permission prompt, no mixed-content block.
+Double-click `bridge/Downrabbit.cmd` (Windows) to start it and open the app in one step.
 
 ### Windows (one-time setup)
 
@@ -73,6 +77,27 @@ cd bridge
 ./start.sh
 ```
 
+### Use it on your phone or another PC
+
+The bridge runs on one computer, but any device on the **same Wi-Fi** can use it. By default
+the bridge listens on all interfaces (`0.0.0.0`), so it is reachable at your PC's LAN address,
+e.g. `http://192.168.1.20:8765`. Open that address in the other device's browser — the app is
+served from the bridge, so it is same-origin plain HTTP: **no permission prompt, works in
+Firefox and Safari too**, and downloads run on the PC.
+
+1. On the PC, start the bridge (`Downrabbit.cmd`). The launcher prints the **On your network**
+   address; it is also in the app under **settings → open on another device** (with a copy button).
+2. First time only: double-click `bridge/allow-firewall.cmd` on the PC and approve the UAC prompt.
+   It adds one inbound rule for TCP 8765 so other devices can reach it (applies to the active
+   network profile, including a phone hotspot marked Public).
+3. On the phone/tablet/other PC, open the network address and paste a link.
+
+If a phone still cannot connect, the Wi-Fi may isolate clients from each other (common on guest
+networks and some phone hotspots). Turn off "AP isolation" / allow devices to communicate, or use
+a normal router Wi-Fi. Both devices must be on the same network.
+
+To keep the bridge private to this PC only, start it with `BRIDGE_HOST=127.0.0.1`.
+
 ### Options
 
 Set these before starting the bridge:
@@ -80,6 +105,7 @@ Set these before starting the bridge:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `BRIDGE_PORT` | `8765` | Port to listen on |
+| `BRIDGE_HOST` | `0.0.0.0` | Bind address; set `127.0.0.1` to keep it local-only |
 | `BRIDGE_MAX_ACTIVE` | `3` | Simultaneous bridge jobs |
 | `BRIDGE_FRAGMENTS` | `24` | yt-dlp concurrent fragments |
 | `BRIDGE_HTTP_CHUNK` | `16M` | yt-dlp HTTP chunk size |
@@ -102,8 +128,9 @@ Set these before starting the bridge:
   PATH ffmpeg lacks it, the bridge hides the MP3 option and tells you to run setup.
 - Prepared files are cleaned up automatically after the TTL. Use **cancel** or **dismiss** in
   the queue to remove them immediately.
-- The bridge binds to `127.0.0.1`, has SSRF guards, a request rate limit, and CORS locked to
-  the configured origin(s).
+- The bridge binds to `0.0.0.0` by default so other devices on your Wi-Fi can use it (set
+  `BRIDGE_HOST=127.0.0.1` for local-only). It has SSRF guards, a request rate limit, and CORS
+  locked to the configured origin(s).
 
 ## What it does NOT do
 
@@ -135,13 +162,17 @@ It's a static site. Any static host works. For Cloudflare Pages:
 - `webapp/` — **the product.** Single self-contained `index.html` (UI + download engine + rabbit rig).
 - `bridge/` — optional local yt-dlp/ffmpeg bridge (Node.js, zero npm deps).
 - `bridge/setup.ps1`, `bridge/start.ps1`, `bridge/start.cmd`, `bridge/start.sh` — setup and launch scripts.
+- `bridge/Downrabbit.cmd` — Windows one-click launcher: starts the bridge, prints the LAN address, opens the app.
+- `bridge/allow-firewall.cmd` — one-time, user-approved inbound rule so other Wi-Fi devices can reach the bridge.
+- `bridge/install-autostart.cmd` / `remove-autostart.cmd` — optional start-with-Windows (hidden).
 - `bridge/bin/` — downloaded yt-dlp/ffmpeg binaries (gitignored).
 
 ## Privacy & safety
 
 - Zero telemetry, zero analytics, zero accounts. Network is used only for the downloads you initiate.
 - Filenames are sanitized; no path traversal. Clean-room: no cobalt source copied.
-- The bridge binds to `127.0.0.1` by default and only downloads URLs you submit.
+- The bridge listens on your local network by default (`0.0.0.0`) and only downloads URLs you
+  submit. Set `BRIDGE_HOST=127.0.0.1` to restrict it to this PC.
 
 ## License
 

@@ -7,6 +7,8 @@
 <meta name="theme-color" content="#0a0a0a">
 <meta name="description" content="Downrabbit — a tiny, no-nonsense media downloader that runs entirely in your browser. Paste a direct file link, get the file. No install, no account, no telemetry.">
 <title>Downrabbit — paste a link, get the file</title>
+<link rel="preconnect" href="https://i.ytimg.com">
+<link rel="dns-prefetch" href="https://i.ytimg.com">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 130'%3E%3Cg fill='none' stroke='%23ffb43a' stroke-width='6'%3E%3Cellipse cx='46' cy='30' rx='8' ry='24' transform='rotate(-9 46 54)'/%3E%3Cellipse cx='74' cy='30' rx='8' ry='24' transform='rotate(9 74 54)'/%3E%3Cellipse cx='60' cy='74' rx='29' ry='26'/%3E%3C/g%3E%3Ccircle cx='49' cy='72' r='4' fill='%23ffb43a'/%3E%3Ccircle cx='71' cy='72' r='4' fill='%23ffb43a'/%3E%3C/svg%3E">
 <style>
   html,body{height:100%;margin:0;padding:0;box-sizing:border-box;}
@@ -142,6 +144,7 @@
   #downrabbit-app .set-lab b{display:block;font-size:13px;font-weight:500;color:var(--text);}
   #downrabbit-app .set-lab span{font-size:11px;color:var(--dim);}
   #downrabbit-app .set-ctl{flex:0 0 auto;display:flex;align-items:center;gap:10px;}
+  #downrabbit-app .lan-ctl code{font-family:var(--mono);font-size:11px;color:var(--muted);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   #downrabbit-app input[type=text]{background:var(--bg);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 11px;outline:none;width:210px;}
   #downrabbit-app input[type=text]:focus{border-color:var(--accent);}
   #downrabbit-app input[type=range]{-webkit-appearance:none;width:150px;height:4px;background:var(--line2);border-radius:9px;outline:none;}
@@ -365,6 +368,13 @@
     #downrabbit-app #opt-name{width:100%;}
     #downrabbit-app .opt-actions{position:sticky;bottom:0;background:var(--sidebar);padding:12px 0 4px;margin-top:12px;border-top:1px solid var(--line);}
     #downrabbit-app .opt-actions .btn-line,#downrabbit-app .opt-actions .btn-solid{flex:1;min-height:48px;justify-content:center;}
+    #downrabbit-app #lan-row,#downrabbit-app #template-row{flex-direction:column;align-items:stretch;gap:10px;}
+    #downrabbit-app #lan-row .set-lab,#downrabbit-app #template-row .set-lab{flex:0 0 auto;width:100%;}
+    #downrabbit-app .lan-ctl{width:100%;}
+    #downrabbit-app .lan-ctl code{flex:1;max-width:none;font-size:12px;}
+    #downrabbit-app .lan-ctl .btn-line{min-height:44px;}
+    #downrabbit-app #template-row .set-ctl{width:100%;}
+    #downrabbit-app #template-row input[type=text]{width:100%;}
   }
   @keyframes s-sheet{from{transform:translateY(40px);opacity:.4;}to{transform:translateY(0);opacity:1;}}
 </style>
@@ -476,10 +486,11 @@
       <div class="set-group">
         <div class="set-row"><div class="set-lab"><b>connections per file</b><span>parallel range requests · more = faster, a bit more RAM</span></div><div class="set-ctl"><input type="range" id="set-conn" min="1" max="8" value="6"><span class="val" id="conn-val">6</span></div></div>
         <div class="set-row"><div class="set-lab"><b>concurrent jobs</b><span>how many files at once</span></div><div class="set-ctl"><div class="stepper"><button id="conc-minus">−</button><span class="num" id="conc-val">3</span><button id="conc-plus">+</button></div></div></div>
-        <div class="set-row"><div class="set-lab"><b>filename template</b><span>{name} and {ext} are replaced</span></div><div class="set-ctl"><input type="text" id="set-template" value="{name}.{ext}"></div></div>
+        <div class="set-row" id="template-row"><div class="set-lab"><b>filename template</b><span>{name} and {ext} are replaced</span></div><div class="set-ctl"><input type="text" id="set-template" value="{name}.{ext}"></div></div>
         <div class="set-row"><div class="set-lab"><b>background downloads</b><span>hand files to your browser so they finish even if you close this tab (works on more hosts, no in-app progress)</span></div><div class="set-ctl"><button class="toggle" id="bg-tog" role="switch" aria-checked="false"></button></div></div>
         <div class="set-row"><div class="set-lab"><b>clipboard watch</b><span>capture a copied link when you return to this tab</span></div><div class="set-ctl"><button class="toggle" id="clip-tog" role="switch" aria-checked="false"></button></div></div>
         <div class="set-row"><div class="set-lab"><b>local bridge</b><span class="bridge-state" id="bridge-state">checking…</span></div><div class="set-ctl"><button class="btn-line" id="bridge-recheck">recheck</button></div></div>
+        <div class="set-row" id="lan-row" hidden><div class="set-lab"><b>open on another device</b><span>same Wi-Fi · phone, tablet, other PC</span></div><div class="set-ctl lan-ctl"><code id="bridge-lan"></code><button class="btn-line" id="bridge-lan-copy">copy</button></div></div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn-line" id="clear-hist">clear history</button>
@@ -501,6 +512,7 @@
       <div class="sheet-h"><h3>what can i download?</h3><button class="x" data-close>×</button></div>
       <div class="help-block"><b><span class="ok">✓</span> direct file links</b><p>a URL that points straight at a file — usually ends in an extension, and the host allows cross-origin reads.</p><code>https://cdn.example.com/clip.mp4<br>https://files.example.org/song.mp3</code></div>
       <div class="help-block"><b><span class="ok">✓</span> platform pages · with the local bridge</b><p>start the tiny local bridge once and downrabbit can fetch YouTube, TikTok, Instagram, Reddit, X, Facebook, Vimeo, Twitch, SoundCloud, Bilibili, Dailymotion, Pinterest, Tumblr and most other sites yt-dlp supports. the download runs on your machine — no server of ours.</p><code>cd bridge<br>.\setup.ps1<br>.\start.ps1</code><p style="margin-top:8px">some sites (Instagram, Facebook, X, age-restricted YouTube) need your browser cookies. start the bridge with <span class="accent">BRIDGE_COOKIES_FROM_BROWSER=chrome</span> (or edge/firefox).</p><p style="margin-top:8px">first time? your browser may ask to allow local network access — click <span class="accent">Allow</span> so the bridge can connect.</p><p style="margin-top:8px">1080p+ and MP3 conversion use ffmpeg; setup.ps1 installs a build with MP3 support.</p></div>
+      <div class="help-block"><b><span class="ok">✓</span> use it on your phone or another PC</b><p>the bridge runs on one computer. to download from a phone, tablet or second PC on the <span class="accent">same Wi-Fi</span>, open the bridge's network address there — find it in <span class="accent">settings → open on another device</span> and copy it.</p><code>http://192.168.1.20:8765</code><p style="margin-top:8px">first time only: on the PC running the bridge, double-click <span class="accent">bridge/allow-firewall.cmd</span> once so other devices can reach it. it's plain http on your own network, so no browser permission prompt.</p></div>
       <div class="help-block"><b><span class="no">✕</span> spotify</b><p>Spotify streams are DRM-protected, so no downloader can save them. use SoundCloud or a video mirror instead.</p></div>
       <div class="help-block"><b>tip</b><p>if a host blocks in-app reads, downrabbit offers a <span class="accent">browser download</span> fallback. turn on <span class="accent">background downloads</span> in settings to let your browser finish files even after you close this tab.</p></div>
       <button class="btn-solid" id="help-sample">try a sample direct link</button>
@@ -554,7 +566,7 @@
   var $$=function(s){return Array.prototype.slice.call(root.querySelectorAll(s));};
   var SAMPLE='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
   var LS_SET='downrabbit.settings.v1', LS_HIST='downrabbit.history.v1';
-  var BRIDGE=(location.protocol==='http:'&&location.port==='8765'&&(location.hostname==='127.0.0.1'||location.hostname==='localhost'))?'':'http://127.0.0.1:8765';
+  var BRIDGE=(location.protocol==='http:'&&location.port==='8765')?'':'http://127.0.0.1:8765';
   var BRIDGE_ALLOW_KEY='downrabbit.bridge.v1';
   var bridge=null, bridgeLastCheck=0, bridgeTried=false, pendingBridge=null;
 
@@ -752,6 +764,8 @@
     }
     else if(!bridge.ready){ el.className='bridge-state bad'; el.textContent='online · yt-dlp missing'; }
     else { el.className='bridge-state ok'; el.textContent='connected · yt-dlp '+(bridge.ytdlp||'ok')+(bridge.ffmpeg?' · ffmpeg ok':''); }
+    var lr=$('#lan-row'), lc=$('#bridge-lan');
+    if(lr&&lc){ var lans=(bridge&&bridge.lan)||[]; if(lans.length){ lc.textContent=lans[0]; lr.hidden=false; } else { lr.hidden=true; } }
   }
   function bindBridgeHelp(){ var b=$('#bridge-help'); if(b) b.onclick=function(){ openHelp(); }; }
   function bridgeMissing(label){
@@ -820,13 +834,25 @@
     hidePreview(); fieldBusy(false); setRabbit('idle');
     setBubble('paste a link — i\'ll do the rest.');
   }
+  function isMobileUA(){ return /Android|iPhone|iPad|iPod|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent||''); }
+  function phoneGuidance(){
+    setRabbit('sorry');
+    setBubble('platform pages download on your <span class="accent">PC</span>, not this phone. open your PC\'s downrabbit address (below) on this phone — direct file links still work here.');
+    $('#help-overlay').classList.add('on');
+    var bs=$$('#help-overlay .help-block'); var t=null;
+    for(var i=0;i<bs.length;i++){ if(/use it on your phone/i.test(bs[i].textContent)){ t=bs[i]; break; } }
+    if(t) t.scrollIntoView({block:'center'});
+  }
   async function bridgeFlow(url,label){
     if(bridge && !bridge.ready){
       setRabbit('error');
       setBubble('the bridge is online, but <span class="accent">yt-dlp</span> is missing. run <span class="accent">bridge/setup.ps1</span> and restart it.');
       return;
     }
-    if(!bridge && location.protocol==='https:'){ location.href=BRIDGE+'/?url='+encodeURIComponent(url); return; }
+    if(!bridge && location.protocol==='https:'){
+      if(isMobileUA()){ phoneGuidance(); return; }
+      location.href=BRIDGE+'/?url='+encodeURIComponent(url); return;
+    }
     if(!bridge) await recheckBridge();
     if(!bridge){ bridgeMissing(label); return; }
     showPreview(url,label); fieldBusy(true);
@@ -1238,6 +1264,11 @@
       else toast(location.protocol==='https:'?'bridge offline — allow local access or start bridge/start.ps1':'bridge offline');
     });
   });
+  function copyText(t){
+    if(navigator.clipboard&&navigator.clipboard.writeText){ return navigator.clipboard.writeText(t); }
+    return new Promise(function(res,rej){ var ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy')?res():rej(new Error('copy failed')); }catch(e){ rej(e); } finally{ document.body.removeChild(ta); } });
+  }
+  $('#bridge-lan-copy').addEventListener('click',function(){ var t=$('#bridge-lan').textContent; if(!t)return; copyText(t).then(function(){toast('copied — open it on the other device');}).catch(function(){toast('copy failed — select the address manually');}); });
   $('#url').addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
   $('#url').addEventListener('input',function(){ if(this.value.trim()){ setRabbit('link'); setBubble('ooh, a link. press <span class="accent">enter</span> or hit download.'); } });
   $('#go-btn').addEventListener('click',function(){submit();});

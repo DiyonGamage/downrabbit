@@ -11,10 +11,11 @@ const { spawn, execFile } = require('child_process');
 const { URL } = require('url');
 
 const VERSION = '1.0.0';
-const HOST = '127.0.0.1';
+const HOST = process.env.BRIDGE_HOST || '0.0.0.0';
 const PORT = clampInt(process.env.BRIDGE_PORT, 8765, 1, 65535);
 const DATA_DIR = path.join(os.tmpdir(), 'downrabbit-bridge');
 const CACHE_DIR = path.join(DATA_DIR, 'ytdlp-cache');
+const RESOLVE_DISK = path.join(DATA_DIR, 'resolve-cache.json');
 const BIN_DIR = path.join(__dirname, 'bin');
 const APP_HTML = path.join(__dirname, '..', 'webapp', 'index.html');
 
@@ -463,7 +464,24 @@ async function resolveDataFresh(url) {
   for (const entry of resolveCache) if (entry[1].expires < now) resolveCache.delete(entry[0]);
   while (resolveCache.size >= 8) resolveCache.delete(resolveCache.keys().next().value);
   resolveCache.set(url, { data: data, expires: now + 10 * 60 * 1000 });
+  persistResolveDisk();
   return data;
+}
+
+function persistResolveDisk() {
+  try {
+    fs.writeFile(RESOLVE_DISK, JSON.stringify(Array.from(resolveCache.entries())), function () {});
+  } catch (e) {}
+}
+
+function loadResolveDisk() {
+  try {
+    const arr = JSON.parse(fs.readFileSync(RESOLVE_DISK, 'utf8'));
+    const now = Date.now();
+    for (const entry of arr) {
+      if (Array.isArray(entry) && entry[1] && entry[1].expires > now) resolveCache.set(entry[0], entry[1]);
+    }
+  } catch (e) {}
 }
 
 async function resolveUrl(url) {
@@ -1032,6 +1050,7 @@ function cleanup() {
 function initDirs() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.mkdirSync(CACHE_DIR, { recursive: true });
+  loadResolveDisk();
   let names = [];
   try { names = fs.readdirSync(DATA_DIR); } catch (e) {}
   for (const name of names) {
@@ -1043,11 +1062,33 @@ function initDirs() {
   }
 }
 
+function lanUrls() {
+  const ifaces = os.networkInterfaces();
+  const vpn = /vpn|radmin|hamachi|virtual|vmware|vbox|host-?only|tunnel|tap|tun|zerotier|tailscale|utun|wireguard|pseudo|teredo|isatap|6to4|bluetooth|hyper-v|vethernet|docker|wsl|bridge/i;
+  const lan = /wi-?fi|wlan|wireless|ethernet|eth\b|en\d|local area connection|airport/i;
+  const cand = [];
+  for (const name of Object.keys(ifaces)) {
+    for (const a of ifaces[name] || []) {
+      if (a.family !== 'IPv4' || a.internal) continue;
+      const priv = /^10\./.test(a.address) || /^192\.168\./.test(a.address) || /^172\.(1[6-9]|2\d|3[01])\./.test(a.address);
+      let score = 0;
+      if (priv) score += 4;
+      if (lan.test(name)) score += 3;
+      if (vpn.test(name)) score -= 6;
+      cand.push({ url: 'http://' + a.address + ':' + PORT, score: score });
+    }
+  }
+  cand.sort(function (x, y) { return y.score - x.score; });
+  return cand.map(function (c) { return c.url; });
+}
+
 function serveApp(req, res) {
   let body;
   try { body = fs.readFileSync(APP_HTML); }
   catch (e) { return json(res, 500, { error: 'webapp/index.html not found next to bridge/' }); }
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Content-Length': body.length, 'Cache-Control': 'no-store' });
+  const etag = '"' + crypto.createHash('sha1').update(body).digest('hex').slice(0, 16) + '"';
+  if (req.headers['if-none-match'] === etag) { res.writeHead(304, { ETag: etag, 'Cache-Control': 'no-cache' }); return res.end(); }
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Content-Length': body.length, 'Cache-Control': 'no-cache', ETag: etag });
   if (req.method === 'HEAD') return res.end();
   res.end(body);
 }
@@ -1080,7 +1121,9 @@ const server = http.createServer(async function (req, res) {
         maxActive: MAX_ACTIVE,
         httpChunk: HTTP_CHUNK,
         active: active,
-        queued: queue.length
+        queued: queue.length,
+        host: HOST,
+        lan: lanUrls()
       });
     }
 
@@ -1174,7 +1217,8 @@ const server = http.createServer(async function (req, res) {
 
 initDirs();
 server.listen(PORT, HOST, function () {
-  console.log('downrabbit bridge ' + VERSION + ' -> http://' + HOST + ':' + PORT);
+  console.log('downrabbit bridge ' + VERSION + ' -> http://127.0.0.1:' + PORT);
+  for (const u of lanUrls()) console.log('  on your network: ' + u);
   refreshTools(true).then(function () {
     console.log('yt-dlp: ' + (ytdlpVersion || 'NOT FOUND') + '   ffmpeg: ' + (ffmpegVersion || 'NOT FOUND'));
     if (!ytdlpVersion) console.log('run bridge/setup.ps1 (Windows) or install yt-dlp');
