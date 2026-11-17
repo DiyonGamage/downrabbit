@@ -173,7 +173,7 @@ const Progress = (function () {
   const out = process.stdout;
   const tty = !!out.isTTY;
   const colorOn = tty && !process.env.NO_COLOR && (process.env.TERM || '') !== 'dumb';
-  const trueColor = colorOn && /truecolor|24bit/i.test(process.env.COLORTERM || '');
+  const trueColor = colorOn && (/truecolor|24bit/i.test(process.env.COLORTERM || '') || !!process.env.WT_SESSION);
   const E = '\x1b[';
   const RESET = colorOn ? E + '0m' : '';
   const DIM = colorOn ? E + '2m' : '';
