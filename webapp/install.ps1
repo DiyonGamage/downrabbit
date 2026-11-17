@@ -113,6 +113,16 @@ try {
     }
   }
 
+  try {
+    $live = 'https://raw.githubusercontent.com/DiyonGamage/downrabbit/main'
+    $cliTmp = Join-Path $tmp 'downr.js'
+    $pkgTmp = Join-Path $tmp 'package.json'
+    Invoke-WebRequest -Uri "$live/bridge/downr.js" -OutFile $cliTmp -UseBasicParsing
+    Invoke-WebRequest -Uri "$live/bridge/package.json" -OutFile $pkgTmp -UseBasicParsing
+    Copy-Item $cliTmp (Join-Path $InstallDir 'bridge\downr.js') -Force
+    Copy-Item $pkgTmp (Join-Path $InstallDir 'bridge\package.json') -Force
+  } catch {}
+
   $nodeExe = Join-Path $InstallDir 'node.exe'
   $downrJs = Join-Path $InstallDir 'bridge\downr.js'
   # a literal % in the install path must be %% inside a batch file

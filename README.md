@@ -42,9 +42,12 @@ folder to uninstall (the installer prints its location).
 
 ```
 downr <link>                      best quality video, saved to Downloads
-downr <link> -q 1080              cap the resolution (2160/1440/1080/720/480/360)
-downr <link> -a                   audio only, original format
-downr <link> -m                   audio only, converted to mp3
+downr <link> 1080p                cap the resolution (2160p/1440p/1080p/720p/480p/360p)
+downr <link> audio                audio only, original format
+downr <link> mp3                  audio only, converted to mp3
+downr <link> -q 1080              long form of the quality shortcut
+downr <link> -a                   long form of audio
+downr <link> -m                   long form of mp3
 downr <link> -o "D:\Videos"       save somewhere else
 downr <link> --name "my clip"     pick the filename
 downr <link1> <link2> ...         several links, one after another
@@ -52,7 +55,7 @@ downr                             asks you to paste a link
 downr --help                      every option
 ```
 
-Progress, titles, quality and speed print right in your terminal. `Ctrl+C` cancels.
+A live gradient progress bar shows the title and speed right in your terminal. `Ctrl+C` cancels.
 
 ### What you get
 
