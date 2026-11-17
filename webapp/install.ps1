@@ -22,6 +22,55 @@ $binDir = Join-Path $InstallDir 'bin'
 $shim = Join-Path $binDir 'downr.cmd'
 $zipUrl = "$Base/downrabbit-portable.zip"
 
+function Get-FileWithProgress([string]$Url, [string]$OutFile) {
+  Add-Type -AssemblyName System.Net.Http -ErrorAction SilentlyContinue
+  $client = New-Object System.Net.Http.HttpClient
+  $client.Timeout = [TimeSpan]::FromMinutes(60)
+  $resp = $null
+  $stream = $null
+  $file = $null
+  $width = 28
+  try {
+    $resp = $client.GetAsync($Url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).GetAwaiter().GetResult()
+    $resp.EnsureSuccessStatusCode() | Out-Null
+    $total = $resp.Content.Headers.ContentLength
+    $stream = $resp.Content.ReadAsStreamAsync().GetAwaiter().GetResult()
+    $file = [IO.File]::Create($OutFile)
+    $buffer = New-Object byte[] 1048576
+    $done = 0L
+    $watch = [Diagnostics.Stopwatch]::StartNew()
+    while (($read = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+      $file.Write($buffer, 0, $read)
+      $done += $read
+      if ($watch.ElapsedMilliseconds -ge 120) {
+        $watch.Restart()
+        if ($total -gt 0) {
+          $pct = [int](100 * $done / $total)
+          if ($pct -gt 100) { $pct = 100 }
+          $filled = [int]($width * $pct / 100)
+          $bar = [string]::new('#', $filled) + [string]::new('-', $width - $filled)
+          $line = '  [{0}] {1,3}%  {2:N1} / {3:N1} MB' -f $bar, $pct, ($done / 1MB), ($total / 1MB)
+        } else {
+          $line = '  {0:N1} MB' -f ($done / 1MB)
+        }
+        Write-Host ("`r" + $line.PadRight(78)) -NoNewline
+      }
+    }
+    if ($total -gt 0) {
+      $bar = [string]::new('#', $width)
+      $line = '  [{0}] 100%  {1:N1} / {2:N1} MB' -f $bar, ($total / 1MB), ($total / 1MB)
+      Write-Host ("`r" + $line.PadRight(78)) -NoNewline
+    }
+    if ($file) { $file.Dispose(); $file = $null }
+    Write-Host ''
+  } finally {
+    if ($file) { $file.Dispose() }
+    if ($stream) { $stream.Dispose() }
+    if ($resp) { $resp.Dispose() }
+    $client.Dispose()
+  }
+}
+
 Write-Host ''
 Write-Host 'downrabbit' -ForegroundColor Yellow
 Write-Host 'download anything with one command.' -ForegroundColor DarkGray
@@ -35,7 +84,7 @@ $tmpDir = Join-Path $tmp 'engine'
 New-Item -ItemType Directory -Force -Path $tmp | Out-Null
 
 try {
-  Invoke-WebRequest -Uri $zipUrl -OutFile $tmpZip -UseBasicParsing
+  Get-FileWithProgress $zipUrl $tmpZip
   $mb = [math]::Round((Get-Item $tmpZip).Length / 1MB)
   Write-Host "downloaded ($mb MB), unpacking..."
 
