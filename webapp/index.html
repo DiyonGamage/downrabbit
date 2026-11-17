@@ -3,488 +3,285 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>downrabbit — download anything from your terminal</title>
-<meta name="description" content="One command installs a tiny, fast downloader for YouTube, TikTok, Instagram, X, SoundCloud and thousands more sites. No account, no ads, no telemetry.">
-<meta name="theme-color" content="#f3ede1">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f3ede1'/%3E%3Cg fill='none' stroke='%232c271f' stroke-width='3.4' stroke-linecap='round'%3E%3Cellipse cx='24' cy='18' rx='6' ry='13'/%3E%3Cellipse cx='40' cy='18' rx='6' ry='13'/%3E%3Cellipse cx='32' cy='41' rx='16' ry='15'/%3E%3C/g%3E%3Ccircle cx='26' cy='39' r='2.2' fill='%232c271f'/%3E%3Ccircle cx='38' cy='39' r='2.2' fill='%232c271f'/%3E%3Cpath d='M29.5 45.5h5l-2.5 3z' fill='%23c97a06'/%3E%3C/svg%3E">
-<style>
-  #downrabbit-app{
-    --bg:#0a0a0a; --surface:#121212; --surface2:#1a1a1a;
-    --line:#242424; --line2:#343434; --text:#ededed; --muted:#8a8a8a; --dim:#565656;
-    --rabbit-line:#f2f2f2; --danger:#ff5f56;
-    --accent:#ffb43a; --accent-soft:rgba(255,180,58,.13); --on-accent:#1a1206;
-    --mono:ui-monospace,"Cascadia Code","JetBrains Mono","Consolas","SF Mono",monospace;
-    font-family:var(--mono); color:var(--text); background:var(--bg);
-    line-height:1.55; -webkit-font-smoothing:antialiased; min-height:100vh;
-  }
-  #downrabbit-app[data-theme="cream"]{
-    --bg:#f3ede1; --surface:#faf6ec; --surface2:#efe7d7;
-    --line:#ddd3bf; --line2:#c9bda3; --text:#2c271f; --muted:#7a7060; --dim:#a89c85;
-    --rabbit-line:#2c271f; --danger:#c0392b;
-    --accent:#c97a06; --accent-soft:rgba(201,122,6,.15); --on-accent:#fff8ec;
-  }
-  html,body{margin:0;padding:0;background:#f3ede1;}
-  html{scroll-behavior:smooth;}
-  #downrabbit-app *{box-sizing:border-box;}
-  #downrabbit-app ::selection{background:var(--accent-soft);}
-  #downrabbit-app ::-webkit-scrollbar{width:9px;height:9px;}
-  #downrabbit-app ::-webkit-scrollbar-track{background:var(--bg);}
-  #downrabbit-app ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:9px;border:2px solid var(--bg);}
-  #downrabbit-app button{font-family:var(--mono);cursor:pointer;}
-  #downrabbit-app a{color:inherit;}
-  #downrabbit-app .accent{color:var(--accent);}
-  #downrabbit-app .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
-
-  /* nav */
-  #downrabbit-app .nav{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40;background:var(--bg);}
-  #downrabbit-app .nav-in{display:flex;align-items:center;gap:22px;height:62px;}
-  #downrabbit-app .brand{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;letter-spacing:.01em;text-decoration:none;margin-right:auto;}
-  #downrabbit-app .brand svg{width:22px;height:22px;color:var(--rabbit-line);}
-  #downrabbit-app .brand i{font-style:normal;color:var(--accent);}
-  #downrabbit-app .nav a.lk{font-size:12px;color:var(--muted);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent;transition:.16s;}
-  #downrabbit-app .nav a.lk:hover{color:var(--text);border-bottom-color:var(--line2);}
-  #downrabbit-app .nav .cta{font-size:12px;text-decoration:none;border:1px solid var(--line2);border-radius:8px;padding:7px 13px;color:var(--text);transition:.16s;}
-  #downrabbit-app .nav .cta:hover{border-color:var(--accent);color:var(--accent);}
-  @media (max-width:700px){ #downrabbit-app .nav a.lk{display:none;} }
-
-  /* hero */
-  #downrabbit-app .hero{padding:74px 0 54px;}
-  #downrabbit-app .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:48px;align-items:center;}
-  #downrabbit-app .kick{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);}
-  #downrabbit-app h1{font-size:clamp(30px,4.4vw,48px);line-height:1.08;letter-spacing:-.02em;margin:14px 0 0;font-weight:600;text-wrap:balance;}
-  #downrabbit-app .lede{font-size:14px;color:var(--muted);max-width:54ch;margin:18px 0 0;line-height:1.75;}
-  #downrabbit-app .lede b{color:var(--text);font-weight:600;}
-
-  /* install widget */
-  #downrabbit-app .inst{margin-top:26px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:16px;}
-  #downrabbit-app .inst-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
-  #downrabbit-app .inst-top span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
-  #downrabbit-app .inst-top a{font-size:11px;color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line2);}
-  #downrabbit-app .inst-top a:hover{color:var(--accent);}
-  #downrabbit-app .cmd{display:flex;align-items:flex-start;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:12px 12px 12px 14px;}
-  #downrabbit-app .cmd code{flex:1;min-width:0;font-size:12.5px;line-height:1.65;color:var(--text);white-space:pre-wrap;word-break:break-all;}
-  #downrabbit-app .cmd code .p{color:var(--accent);}
-  #downrabbit-app .cp{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--line2);color:var(--text);font-size:11px;padding:6px 9px;border-radius:7px;transition:.15s;}
-  #downrabbit-app .cp:hover{border-color:var(--accent);color:var(--accent);}
-  #downrabbit-app .cp svg{width:13px;height:13px;}
-  #downrabbit-app .then{margin-top:12px;font-size:12px;color:var(--muted);}
-  #downrabbit-app .then code{color:var(--accent);background:var(--accent-soft);padding:2px 6px;border-radius:5px;}
-  #downrabbit-app .tiny{margin-top:14px;font-size:11px;color:var(--dim);line-height:1.7;}
-
-  /* rabbit */
-  #downrabbit-app .stage{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:346px;}
-  #downrabbit-app .stage::before{content:"";position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:250px;height:250px;border:1px solid var(--line);border-radius:50%;}
-  #downrabbit-app .bubble{position:absolute;top:0;right:calc(50% - 158px);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:11.5px;color:var(--muted);max-width:230px;line-height:1.6;z-index:2;}
-  #downrabbit-app .bubble::after{content:"";position:absolute;left:26px;bottom:-6px;width:10px;height:10px;background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg);}
-  #downrabbit-app .rabbit{width:236px;height:262px;overflow:visible;position:relative;z-index:1;}
-  #downrabbit-app .r-line{fill:var(--bg);stroke:var(--rabbit-line);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
-  #downrabbit-app .r-stroke{fill:none;stroke:var(--rabbit-line);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
-  #downrabbit-app .r-whisker{fill:none;stroke:var(--rabbit-line);stroke-width:1.5;stroke-linecap:round;opacity:.55;}
-  #downrabbit-app .r-accent{fill:var(--accent);}
-  #downrabbit-app .r-soft{fill:var(--accent-soft);stroke:none;}
-  #downrabbit-app .r-ink{fill:var(--rabbit-line);stroke:none;}
-  #downrabbit-app .r-mouth{fill:none;stroke:var(--rabbit-line);stroke-width:1.9;stroke-linecap:round;}
-  #downrabbit-app .r-tooth{fill:var(--bg);stroke:var(--rabbit-line);stroke-width:1.6;stroke-linejoin:round;}
-  #downrabbit-app .r-sad,#downrabbit-app .r-happy{fill:none;stroke:var(--rabbit-line);stroke-width:2.8;stroke-linecap:round;opacity:0;}
-  #downrabbit-app .r-ear,#downrabbit-app .r-head,#downrabbit-app .r-body,#downrabbit-app .r-all,#downrabbit-app .r-eye,#downrabbit-app .r-nose,#downrabbit-app .r-whisk,#downrabbit-app .r-paw,#downrabbit-app .r-tail{transform-box:fill-box;}
-  #downrabbit-app .r-all{transform-origin:50% 100%;}
-  #downrabbit-app .r-body{transform-origin:50% 100%;animation:s-breathe 3.6s ease-in-out infinite;}
-  #downrabbit-app .r-tail{transform-origin:0% 50%;animation:s-tail 4.2s ease-in-out infinite;}
-  #downrabbit-app .r-head-look{transform-box:fill-box;transform-origin:50% 95%;}
-  #downrabbit-app .r-head{transform-origin:50% 92%;transition:transform .5s cubic-bezier(.34,1.4,.64,1);animation:s-headmicro 6.5s ease-in-out infinite;}
-  #downrabbit-app .r-ear{transform-origin:50% 100%;transition:transform .55s cubic-bezier(.34,1.5,.64,1);}
-  #downrabbit-app .r-ear-l{transform:rotate(-9deg);animation:s-swayl 4.1s ease-in-out infinite;}
-  #downrabbit-app .r-ear-r{transform:rotate(9deg);animation:s-swayr 3.7s ease-in-out infinite;}
-  #downrabbit-app .r-eyes-look{transform-box:fill-box;}
-  #downrabbit-app .r-eye{transform-origin:50% 50%;}
-  #downrabbit-app .r-nose{transform-origin:50% 50%;animation:s-nose .5s ease-in-out infinite;}
-  #downrabbit-app .r-whisk-l{transform-origin:100% 50%;animation:s-whiskl .5s ease-in-out infinite;}
-  #downrabbit-app .r-whisk-r{transform-origin:0% 50%;animation:s-whiskr .5s ease-in-out infinite;}
-  #downrabbit-app .r-paw{transform-origin:50% 0%;}
-  @keyframes s-breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,1.028)}}
-  @keyframes s-tail{0%,100%{transform:rotate(0)}50%{transform:rotate(7deg)}}
-  @keyframes s-headmicro{0%,100%{transform:rotate(0)}30%{transform:rotate(1.1deg)}65%{transform:rotate(-.9deg)}}
-  @keyframes s-swayl{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(-5deg)}}
-  @keyframes s-swayr{0%,100%{transform:rotate(9deg)}50%{transform:rotate(13deg)}}
-  @keyframes s-nose{0%,100%{transform:translate(0,0)}25%{transform:translate(.9px,-.5px)}50%{transform:translate(-.7px,.3px)}75%{transform:translate(.5px,-.3px)}}
-  @keyframes s-whiskl{0%,100%{transform:rotate(0)}50%{transform:rotate(2.4deg)}}
-  @keyframes s-whiskr{0%,100%{transform:rotate(0)}50%{transform:rotate(-2.4deg)}}
-  @keyframes s-blink{0%,100%{transform:scaleY(1)}45%,55%{transform:scaleY(.06)}}
-  #downrabbit-app .r-eye.blink{animation:s-blink .19s ease-in-out;}
-  @keyframes s-flickl{0%,100%{transform:rotate(-9deg)}30%{transform:rotate(-26deg)}60%{transform:rotate(-4deg)}}
-  @keyframes s-flickr{0%,100%{transform:rotate(9deg)}30%{transform:rotate(26deg)}60%{transform:rotate(4deg)}}
-  #downrabbit-app .r-ear-l.flick{animation:s-flickl .55s ease-in-out;}
-  #downrabbit-app .r-ear-r.flick{animation:s-flickr .55s ease-in-out;}
-  @keyframes s-yay{0%{transform:translateY(0) scale(1,1)}10%{transform:translateY(5px) scale(1.12,.86)}28%{transform:translateY(-32px) scale(.9,1.14)}45%{transform:translateY(-34px) scale(.96,1.06)}62%{transform:translateY(0) scale(1.14,.84)}78%{transform:translateY(-11px) scale(.97,1.06)}100%{transform:translateY(0) scale(1,1)}}
-  @keyframes s-flap-l{0%,100%{transform:rotate(-4deg)}25%{transform:rotate(-30deg)}50%{transform:rotate(2deg)}75%{transform:rotate(-22deg)}}
-  @keyframes s-flap-r{0%,100%{transform:rotate(4deg)}25%{transform:rotate(30deg)}50%{transform:rotate(-2deg)}75%{transform:rotate(22deg)}}
-  #downrabbit-app #rig[data-state="success"] .r-all{animation:s-yay 1.15s cubic-bezier(.34,1.2,.64,1) 1;}
-  #downrabbit-app #rig[data-state="success"] .r-ear-l{animation:s-flap-l 1.15s ease-in-out 1;}
-  #downrabbit-app #rig[data-state="success"] .r-ear-r{animation:s-flap-r 1.15s ease-in-out 1;}
-  #downrabbit-app #rig[data-state="success"] .r-eyes{opacity:0;}
-  #downrabbit-app #rig[data-state="success"] .r-happy{opacity:1;}
-  #downrabbit-app #rig[data-state="success"] .r-head{animation:none;}
-  @media (prefers-reduced-motion:reduce){ #downrabbit-app *{animation:none !important;transition:none !important;} }
-
-  /* sections */
-  #downrabbit-app .sec{padding:66px 0;border-top:1px solid var(--line);}
-  #downrabbit-app .sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;}
-  #downrabbit-app h2{font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0;}
-  #downrabbit-app .sec-n{font-size:11px;color:var(--dim);letter-spacing:.1em;}
-  #downrabbit-app .sec-p{font-size:13px;color:var(--muted);margin:0 0 26px;max-width:60ch;line-height:1.75;}
-
-  /* terminal */
-  #downrabbit-app .term{background:var(--surface);border:1px solid var(--line);border-radius:13px;overflow:hidden;max-width:760px;}
-  #downrabbit-app .term-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);}
-  #downrabbit-app .dot{width:9px;height:9px;border-radius:50%;border:1px solid var(--line2);}
-  #downrabbit-app .term-bar span{margin-left:8px;font-size:10.5px;color:var(--dim);letter-spacing:.06em;}
-  #downrabbit-app .term-body{padding:16px 18px 20px;font-size:12.8px;line-height:2;overflow-x:auto;}
-  #downrabbit-app .ln{white-space:pre;opacity:0;transform:translateY(5px);transition:opacity .3s ease,transform .3s ease;}
-  #downrabbit-app .ln.on{opacity:1;transform:none;}
-  #downrabbit-app .ln .p{color:var(--accent);}
-  #downrabbit-app .ln .m{color:var(--muted);}
-  #downrabbit-app .ln .d{color:var(--dim);}
-  #downrabbit-app .ln .ok{color:var(--accent);}
-  #downrabbit-app .ln .bar{background:linear-gradient(90deg,#2dd4bf,#818cf8,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent;}
-  #downrabbit-app .ln .bar-empty{color:var(--dim);}
-  #downrabbit-app .caret{display:inline-block;width:7px;height:14px;background:var(--accent);vertical-align:-2px;animation:s-caret 1.1s steps(1) infinite;}
-  @keyframes s-caret{0%,49%{opacity:1}50%,100%{opacity:0}}
-
-  /* features */
-  #downrabbit-app .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-  #downrabbit-app .feat{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:18px 18px 16px;}
-  #downrabbit-app .feat svg{width:20px;height:20px;color:var(--accent);}
-  #downrabbit-app .feat h3{font-size:12.5px;font-weight:600;margin:12px 0 6px;}
-  #downrabbit-app .feat p{font-size:11.8px;color:var(--muted);margin:0;line-height:1.7;}
-  @media (max-width:900px){ #downrabbit-app .feats{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:560px){ #downrabbit-app .feats{grid-template-columns:1fr;} }
-
-  /* command table */
-  #downrabbit-app .cmds{border-top:1px solid var(--line);}
-  #downrabbit-app .cmdrow{display:grid;grid-template-columns:minmax(0,340px) 1fr;gap:20px;align-items:baseline;padding:13px 2px;border-bottom:1px solid var(--line);}
-  #downrabbit-app .cmdrow code{font-size:12.5px;color:var(--text);}
-  #downrabbit-app .cmdrow code b{color:var(--accent);font-weight:400;}
-  #downrabbit-app .cmdrow p{font-size:12px;color:var(--muted);margin:0;line-height:1.7;}
-  @media (max-width:640px){ #downrabbit-app .cmdrow{grid-template-columns:1fr;gap:5px;} }
-
-  /* install tabs */
-  #downrabbit-app .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
-  #downrabbit-app .tab{background:transparent;border:1px solid var(--line);color:var(--muted);font-size:11.5px;padding:7px 13px;border-radius:99px;transition:.15s;letter-spacing:.02em;}
-  #downrabbit-app .tab:hover{color:var(--text);border-color:var(--line2);}
-  #downrabbit-app .tab.on{background:var(--text);border-color:var(--text);color:var(--bg);font-weight:600;}
-  #downrabbit-app .panel{display:none;}
-  #downrabbit-app .panel.on{display:block;}
-  #downrabbit-app .panel .note{font-size:11.5px;color:var(--dim);margin-top:10px;line-height:1.7;}
-  #downrabbit-app .panel .note b{color:var(--muted);font-weight:400;}
-  #downrabbit-app .req{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;}
-  #downrabbit-app .req span{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:5px 11px;}
-
-  /* faq */
-  #downrabbit-app details{border-bottom:1px solid var(--line);}
-  #downrabbit-app summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 2px;font-size:13px;color:var(--text);}
-  #downrabbit-app summary::-webkit-details-marker{display:none;}
-  #downrabbit-app summary .pm{width:14px;color:var(--accent);font-size:14px;flex:0 0 14px;}
-  #downrabbit-app summary .pm::before{content:"+";}
-  #downrabbit-app details[open] summary .pm::before{content:"–";}
-  #downrabbit-app details p{font-size:12.2px;color:var(--muted);margin:0 0 16px 26px;line-height:1.8;max-width:70ch;}
-  #downrabbit-app details p code{color:var(--accent);background:var(--accent-soft);padding:1px 5px;border-radius:4px;font-size:11.5px;}
-
-  /* footer */
-  #downrabbit-app footer{border-top:1px solid var(--line);padding:34px 0 44px;}
-  #downrabbit-app .foot{display:flex;flex-wrap:wrap;align-items:center;gap:18px;font-size:11.5px;color:var(--dim);}
-  #downrabbit-app .foot a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line2);}
-  #downrabbit-app .foot a:hover{color:var(--accent);}
-  #downrabbit-app .foot .sp{margin-left:auto;}
-
-  /* toast */
-  #downrabbit-app .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);background:var(--text);color:var(--bg);font-size:12px;padding:9px 16px;border-radius:99px;opacity:0;pointer-events:none;transition:.22s;z-index:80;}
-  #downrabbit-app .toast.on{opacity:1;transform:translate(-50%,0);}
-
-  @media (max-width:860px){
-    #downrabbit-app .hero{padding:44px 0 34px;}
-    #downrabbit-app .hero-grid{grid-template-columns:1fr;gap:26px;}
-    #downrabbit-app .stage{order:-1;min-height:300px;}
-    #downrabbit-app .rabbit{width:190px;height:212px;}
-    #downrabbit-app .stage::before{width:200px;height:200px;}
-    #downrabbit-app .bubble{right:auto;left:50%;transform:translateX(-50%);top:0;max-width:260px;text-align:center;}
-    #downrabbit-app .bubble::after{left:50%;margin-left:-5px;}
-    #downrabbit-app .sec{padding:48px 0;}
-  }
-</style>
+<title>downrabbit — built to download, right from your terminal</title>
+<meta name="description" content="A tiny, private download engine for your terminal. YouTube, TikTok, Instagram, X, SoundCloud and thousands more sites. One command, no account, no telemetry.">
+<meta name="theme-color" content="#05070a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2305070a'/%3E%3Crect x='16' y='5' width='9' height='23' fill='%23ff5f56'/%3E%3Crect x='39' y='5' width='9' height='23' fill='%23ffbd2e'/%3E%3Cpath d='M12 21h40v33H12z' fill='%23f2f4f7'/%3E%3Cpath d='M21 31h8v8h-8zM35 31h8v8h-8z' fill='%2305070a'/%3E%3Cpath d='M28 43h8v4h-8z' fill='%2338e07b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="downrabbit-app" data-accent="amber" data-theme="cream">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="rabbit-mark" viewBox="0 0 24 24">
+    <rect x="5" y="1" width="4" height="9" fill="#ff5f56"/>
+    <rect x="15" y="1" width="4" height="9" fill="#ffbd2e"/>
+    <path d="M4 7h16v13H4z" fill="#f2f4f7"/>
+    <path d="M7 10h3v3H7zM14 10h3v3h-3z" fill="#07090c"/>
+    <path d="M10 15h4v2h-4z" fill="#38e07b"/>
+    <path d="M4 17h2v3H4zM18 17h2v3h-2z" fill="#f2f4f7"/>
+  </symbol>
+</svg>
+<div id="downrabbit-app">
+  <div class="page-bg" aria-hidden="true"></div>
 
   <nav class="nav">
     <div class="wrap nav-in">
       <a class="brand" href="#top" aria-label="downrabbit home">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><ellipse cx="8.6" cy="6.6" rx="2.4" ry="5"/><ellipse cx="15.4" cy="6.6" rx="2.4" ry="5"/><ellipse cx="12" cy="15.6" rx="6.2" ry="5.8"/><circle cx="9.7" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="14.3" cy="15" r=".9" fill="currentColor" stroke="none"/></svg>
-        downrabbit<i>.</i>
+        <svg class="brand-mark" aria-hidden="true"><use href="#rabbit-mark"/></svg>
+        <span>DOWNRABBIT</span>
       </a>
-      <a class="lk" href="#how">how it works</a>
-      <a class="lk" href="#commands">commands</a>
-      <a class="lk" href="#faq">faq</a>
-      <a class="cta" href="#install">install</a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#commands">Commands</a>
+        <a href="#install">Install</a>
+        <a href="https://github.com/DiyonGamage/downrabbit#readme" target="_blank" rel="noopener">Docs</a>
+      </div>
+      <div class="nav-right">
+        <span class="version">v1.0.0</span>
+        <a class="nav-cta" href="#install">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
+          Install
+        </a>
+      </div>
     </div>
   </nav>
 
-  <header class="hero" id="top">
-    <div class="wrap hero-grid">
-      <div>
-        <div class="kick">one command · windows · macOS · linux · android</div>
-        <h1>download anything.<br>from your <span class="accent">terminal</span>.</h1>
-        <p class="lede">A tiny engine that grabs video and audio from <b>YouTube, TikTok, Instagram, X, Reddit, SoundCloud</b> and thousands more sites. No browser tab, no account, no ads, no telemetry — just a file in your Downloads folder.</p>
+  <main>
+    <header class="hero" id="top">
+      <div class="hero-inner">
+        <div class="eyebrow"><span class="dot"></span> local download engine <span class="slash">/</span> no account required</div>
+        <h1 class="pixel-title" data-text="DOWNRABBIT"><span>DOWNRABBIT</span></h1>
+        <p class="hero-sub">Built to <span class="fade">download,</span><br>right from your terminal.</p>
+        <p class="hero-copy">Use it in your IDE or any terminal. Same commands, any environment.<br class="wide"> Paste a link. Get the file. <b>Full control from your terminal.</b></p>
 
-        <div class="inst">
-          <div class="inst-top"><span>install for <b id="os-name">windows</b></span><a href="#install">other systems ↓</a></div>
-          <div class="cmd"><code id="hero-cmd">powershell -NoProfile -ExecutionPolicy Bypass -c "irm https://downrabbit.pages.dev/install.ps1 | iex"</code><button class="cp" id="hero-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
-          <div class="then">then type <code>downr &lt;link&gt;</code> — that's it.</div>
+        <div class="hero-actions">
+          <button class="hero-install" id="hero-copy" aria-label="Copy install command">
+            <span class="copy-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span>
+            <span class="prompt" aria-hidden="true">$</span>
+            <code id="hero-cmd">irm https://downrabbit.pages.dev/install.ps1 | iex</code>
+          </button>
+          <a class="docs-btn" href="#commands"><span class="arrow">→</span> View Documentation</a>
         </div>
-        <div class="tiny">~120 MB once · no admin · works offline after install · Apache-2.0</div>
-      </div>
 
-      <div class="stage">
-        <div class="bubble" id="bubble">hi. paste me a link and i'll fetch it.</div>
-        <div id="rig" data-state="idle">
-          <svg class="rabbit" viewBox="0 0 220 235" aria-label="Downrabbit rabbit mascot">
-            <g class="r-all" id="r-all">
-              <g class="r-tail" id="r-tail"><circle class="r-line" cx="170" cy="186" r="13"/></g>
-              <g class="r-body" id="r-body">
-                <ellipse class="r-line" cx="105" cy="180" rx="40" ry="32"/>
-                <ellipse class="r-line" cx="80" cy="208" rx="16" ry="7"/>
-                <ellipse class="r-line" cx="130" cy="208" rx="16" ry="7"/>
-                <ellipse class="r-line r-paw r-paw-l" id="r-paw-l" cx="92" cy="190" rx="9" ry="13"/>
-                <ellipse class="r-line r-paw r-paw-r" id="r-paw-r" cx="118" cy="190" rx="9" ry="13"/>
-              </g>
-              <g class="r-head-look" id="r-head-look">
-                <g class="r-head" id="r-head">
-                  <g class="r-ear r-ear-l" id="r-ear-l"><ellipse class="r-line" cx="82" cy="44" rx="13" ry="42"/><ellipse class="r-soft" cx="82" cy="48" rx="6" ry="30"/></g>
-                  <g class="r-ear r-ear-r" id="r-ear-r"><ellipse class="r-line" cx="128" cy="44" rx="13" ry="42"/><ellipse class="r-soft" cx="128" cy="48" rx="6" ry="30"/></g>
-                  <ellipse class="r-line" cx="105" cy="112" rx="48" ry="44"/>
-                  <circle class="r-soft" cx="70" cy="126" r="8"/><circle class="r-soft" cx="140" cy="126" r="8"/>
-                  <g class="r-eyes-look" id="r-eyes-look">
-                    <g class="r-eyes">
-                      <g class="r-eye r-eye-l" id="r-eye-l"><ellipse class="r-ink" cx="86" cy="106" rx="6.8" ry="8.6"/></g>
-                      <g class="r-eye r-eye-r" id="r-eye-r"><ellipse class="r-ink" cx="124" cy="106" rx="6.8" ry="8.6"/></g>
+        <div class="hero-meta">
+          <span>detected <b id="os-name">windows</b></span><span class="sep">/</span>
+          <span>~120 MB once</span><span class="sep">/</span>
+          <span>no admin</span><span class="sep">/</span>
+          <span>Apache-2.0</span>
+        </div>
+
+        <div class="terminal-stage">
+          <div class="rabbit-perch" id="rig" data-state="idle">
+            <div class="rabbit-bubble" id="rabbit-bubble">paste me a link. i'll fetch it.</div>
+            <svg class="rabbit" viewBox="0 0 220 235" aria-label="Downrabbit rabbit mascot">
+              <g class="r-all" id="r-all">
+                <g class="r-tail" id="r-tail"><circle class="r-line" cx="170" cy="186" r="13"/></g>
+                <g class="r-body" id="r-body">
+                  <ellipse class="r-line" cx="105" cy="180" rx="40" ry="32"/>
+                  <ellipse class="r-line" cx="80" cy="208" rx="16" ry="7"/>
+                  <ellipse class="r-line" cx="130" cy="208" rx="16" ry="7"/>
+                  <ellipse class="r-line r-paw r-paw-l" id="r-paw-l" cx="92" cy="190" rx="9" ry="13"/>
+                  <ellipse class="r-line r-paw r-paw-r" id="r-paw-r" cx="118" cy="190" rx="9" ry="13"/>
+                </g>
+                <g class="r-head-look" id="r-head-look">
+                  <g class="r-head" id="r-head">
+                    <g class="r-ear r-ear-l" id="r-ear-l"><ellipse class="r-line" cx="82" cy="44" rx="13" ry="42"/><ellipse class="r-soft" cx="82" cy="48" rx="6" ry="30"/></g>
+                    <g class="r-ear r-ear-r" id="r-ear-r"><ellipse class="r-line" cx="128" cy="44" rx="13" ry="42"/><ellipse class="r-soft" cx="128" cy="48" rx="6" ry="30"/></g>
+                    <ellipse class="r-line" cx="105" cy="112" rx="48" ry="44"/>
+                    <circle class="r-soft" cx="70" cy="126" r="8"/><circle class="r-soft" cx="140" cy="126" r="8"/>
+                    <g class="r-eyes-look" id="r-eyes-look">
+                      <g class="r-eyes">
+                        <g class="r-eye r-eye-l" id="r-eye-l"><ellipse class="r-ink" cx="86" cy="106" rx="6.8" ry="8.6"/></g>
+                        <g class="r-eye r-eye-r" id="r-eye-r"><ellipse class="r-ink" cx="124" cy="106" rx="6.8" ry="8.6"/></g>
+                      </g>
                     </g>
+                    <g class="r-happy"><path d="M79 106 q7 -8 14 0"/><path d="M117 106 q7 -8 14 0"/></g>
+                    <g class="r-sad"><path d="M79 108 q7 7 14 0"/><path d="M117 108 q7 7 14 0"/></g>
+                    <g class="r-nose" id="r-nose">
+                      <path class="r-ink" d="M99 120 h12 l-6 7 z"/>
+                      <path class="r-mouth" d="M105 127 q-6 7 -12 2 M105 127 q6 7 12 2"/>
+                      <rect class="r-tooth" x="102.5" y="128" width="5" height="6" rx="1.2"/>
+                    </g>
+                    <g class="r-whisk r-whisk-l" id="r-whisk-l"><path class="r-whisker" d="M62 118 h-26 M62 124 l-25 6 M62 112 l-25 -3"/></g>
+                    <g class="r-whisk r-whisk-r" id="r-whisk-r"><path class="r-whisker" d="M148 118 h26 M148 124 l25 6 M148 112 l25 -3"/></g>
                   </g>
-                  <g class="r-happy"><path d="M79 106 q7 -8 14 0"/><path d="M117 106 q7 -8 14 0"/></g>
-                  <g class="r-sad"><path d="M79 108 q7 7 14 0"/><path d="M117 108 q7 7 14 0"/></g>
-                  <g class="r-nose" id="r-nose">
-                    <path class="r-ink" d="M99 120 h12 l-6 7 z"/>
-                    <path class="r-mouth" d="M105 127 q-6 7 -12 2 M105 127 q6 7 12 2"/>
-                    <rect class="r-tooth" x="102.5" y="128" width="5" height="6" rx="1.2"/>
-                  </g>
-                  <g class="r-whisk r-whisk-l" id="r-whisk-l"><path class="r-whisker" d="M62 118 h-26 M62 124 l-25 6 M62 112 l-25 -3"/></g>
-                  <g class="r-whisk r-whisk-r" id="r-whisk-r"><path class="r-whisker" d="M148 118 h26 M148 124 l25 6 M148 112 l25 -3"/></g>
                 </g>
               </g>
-            </g>
-          </svg>
+            </svg>
+          </div>
+
+          <div class="terminal" id="term" aria-label="example terminal session">
+            <div class="term-bar">
+              <span class="dots"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i></span>
+              <span class="term-title">downr — terminal</span>
+              <span class="live">LIVE</span>
+            </div>
+            <div class="term-body">
+              <div class="ln"><span class="p">user@dev</span><span class="dim">:</span><span class="p">~</span><span class="dim">$</span> <span class="cmdtext">downr youtu.be/jNQXAC9IVRw 1080p</span></div>
+              <div class="ln"><span class="green">  ◆</span>  <span class="cmdtext">Me at the zoo</span> <span class="dim">· jawed · 0:19</span></div>
+              <div class="ln">  <span class="bar-fill">██████████████████████████████</span><span class="bar-empty">░░░░░░░░</span>  <span class="cmdtext">63%</span> <span class="dim">· <span class="term-size">727 KB / 1.1 MB · </span>1.4 MB/s</span></div>
+              <div class="ln"><span class="ok">  ✓</span>  <span class="cmdtext">saved  Me at the zoo.mp4</span> <span class="dim">· 744 KB</span></div>
+              <div class="ln"><span class="p">user@dev</span><span class="dim">:</span><span class="p">~</span><span class="dim">$</span> <span class="caret"></span></div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <section class="sec" id="how">
-    <div class="wrap">
-      <div class="sec-h"><h2>what it looks like</h2><span class="sec-n">01 / terminal</span></div>
-      <p class="sec-p">Paste a link, get your file. Titles, qualities and progress all happen right where you already are.</p>
-      <div class="term" id="term" aria-label="example terminal session">
-        <div class="term-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>downr — bash</span></div>
-        <div class="term-body">
-          <div class="ln"><span class="p">$</span> downr youtu.be/jNQXAC9IVRw 1080p</div>
-          <div class="ln"><span class="accent">  ◆</span>  Me at the zoo <span class="d">· jawed · 0:19</span></div>
-          <div class="ln">  <span class="bar">██████████████████████████████</span><span class="bar-empty">░░░░░░░░</span>  <b>63%</b> <span class="d">· 138 KB/s</span></div>
-          <div class="ln ok">  ✓  saved  Me at the zoo.mp4 <span class="d">· 744 KB</span></div>
-          <div class="ln"><span class="p">$</span> <span class="caret"></span></div>
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <div class="sec-kicker">01 / capabilities</div>
+            <h2>Everything, minus the middleman.</h2>
+          </div>
+          <p class="sec-side">No browser tab, no queue, no upload. The engine runs on your machine and fetches directly from the source.</p>
+        </div>
+        <div class="features">
+          <div class="feature">
+            <span class="num">01</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg></div>
+            <h3>any site yt-dlp knows</h3>
+            <p>YouTube, TikTok, Instagram, X, Reddit, SoundCloud, Vimeo, Twitch and thousands more.</p>
+          </div>
+          <div class="feature">
+            <span class="num">02</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg></div>
+            <h3>best quality, or yours</h3>
+            <p>Highest available by default. Add <span class="green">720p</span> when you want a smaller file.</p>
+          </div>
+          <div class="feature">
+            <span class="num">03</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+            <h3>audio and mp3</h3>
+            <p>Add <span class="green">audio</span> for the original stream, or <span class="green">mp3</span> to convert with ffmpeg.</p>
+          </div>
+          <div class="feature">
+            <span class="num">04</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg></div>
+            <h3>parallel by default</h3>
+            <p>Eight range requests at once. Fast on sites that throttle single streams.</p>
+          </div>
+          <div class="feature">
+            <span class="num">05</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h6l2 3h10v10a1 1 0 01-1 1H3z"/><path d="M3 7V5a1 1 0 011-1h5l2 3"/></svg></div>
+            <h3>saves where you want</h3>
+            <p>Downloads by default. <span class="green">-o</span> and <span class="green">--name</span> when you care.</p>
+          </div>
+          <div class="feature">
+            <span class="num">06</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <h3>yours, privately</h3>
+            <p>Runs locally. No account, no analytics, no uploads, no server of ours in the middle.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="sec">
-    <div class="wrap">
-      <div class="sec-h"><h2>what it does</h2><span class="sec-n">02 / features</span></div>
-      <p class="sec-p">Everything the big downloader sites do, minus the popups, the queue waits and the server in between.</p>
-      <div class="feats">
-        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg><h3>any site yt-dlp knows</h3><p>YouTube, TikTok, Instagram, X, Reddit, SoundCloud, Vimeo, Twitch, Dailymotion, Pinterest, Tumblr and thousands more — updated automatically.</p></div>
-        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg><h3>best quality, or yours</h3><p>Highest available video by default. Want a smaller file? Just add <span class="accent">720p</span>.</p></div>
-        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><h3>audio and mp3</h3><p>Add <span class="accent">audio</span> for the original stream, or <span class="accent">mp3</span> to convert it with ffmpeg.</p></div>
-        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg><h3>parallel by default</h3><p>Segmented range requests fetch from 8 connections at once — several times faster on sites that throttle single streams.</p></div>
-        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h6l2 3h10v10a1 1 0 01-1 1H3z"/><path d="M3 7V5a1 1 0 011-1h5l2 3"/></svg><h3>saves where you want</h3><p>Downloads folder by default. <span class="accent">-o "D:\Videos"</span> or <span class="accent">--name "my clip"</span> when you care.</p></div>
-        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg><h3>yours, privately</h3><p>Runs entirely on your machine. No account, no analytics, no uploads, no server of ours in the middle.</p></div>
+    <section class="section alt" id="commands">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <div class="sec-kicker">02 / reference</div>
+            <h2>One word. Plus a link.</h2>
+          </div>
+          <p class="sec-side">Everything after the link is optional. Use a shorthand, or the long-form flags if you prefer.</p>
+        </div>
+        <div class="cmd-ref">
+          <div class="cmdrow"><code>downr <b>&lt;link&gt;</b></code><p>best quality video into your Downloads folder. run it with no arguments and it asks for a link.</p></div>
+          <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> 1080p</code><p>cap the resolution: 2160p / 1440p / 1080p / 720p / 480p / 360p.</p></div>
+          <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> audio</code><p>audio only, original format (m4a, opus…).</p></div>
+          <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> mp3</code><p>audio only, converted to mp3.</p></div>
+          <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> -q 1080 / -a / -m</code><p>the long forms, if you prefer flags.</p></div>
+          <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> -o "D:\Videos"</code><p>save somewhere else. relative paths, ~ and folders with spaces all work.</p></div>
+          <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> --name "my clip"</code><p>choose the file name (the extension is kept correct).</p></div>
+          <div class="cmdrow"><code>downr <b>&lt;link1&gt; &lt;link2&gt;</b> …</code><p>more than one link is fine. they download one after another.</p></div>
+          <div class="cmdrow"><code>downr --help</code><p>this page, in your terminal.</p></div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="sec" id="commands">
-    <div class="wrap">
-      <div class="sec-h"><h2>commands</h2><span class="sec-n">03 / reference</span></div>
-      <p class="sec-p">Everything is one word plus a link. The rest is optional.</p>
-      <div class="cmds">
-        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b></code><p>best quality video into your Downloads folder. run it with no arguments and it asks for a link.</p></div>
-        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> 1080p</code><p>cap the resolution: 2160p / 1440p / 1080p / 720p / 480p / 360p.</p></div>
-        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> audio</code><p>audio only, original format (m4a, opus…).</p></div>
-        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> mp3</code><p>audio only, converted to mp3.</p></div>
-        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> -q 1080 / -a / -m</code><p>the long forms, if you prefer flags.</p></div>
-        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> -o "D:\Videos"</code><p>save somewhere else. relative paths, <span class="accent">~</span> and folders with spaces all work.</p></div>
-        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> --name "my clip"</code><p>choose the file name (the extension is kept correct).</p></div>
-        <div class="cmdrow"><code>downr <b>&lt;link1&gt; &lt;link2&gt;</b> …</code><p>more than one link is fine — they download one after another.</p></div>
-        <div class="cmdrow"><code>downr --help</code><p>this page, in your terminal.</p></div>
-      </div>
-    </div>
-  </section>
+    <section class="section" id="install">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <div class="sec-kicker">03 / one command</div>
+            <h2>Install it. Keep it local.</h2>
+          </div>
+          <p class="sec-side">Installs the engine, yt-dlp and ffmpeg next to your user account. No admin, no dependencies to manage.</p>
+        </div>
+        <div class="tabs" role="tablist">
+          <button class="tab" data-os="windows" role="tab">windows</button>
+          <button class="tab" data-os="macos" role="tab">macOS</button>
+          <button class="tab" data-os="linux" role="tab">linux</button>
+          <button class="tab" data-os="android" role="tab">android</button>
+        </div>
 
-  <section class="sec" id="install">
-    <div class="wrap">
-      <div class="sec-h"><h2>install</h2><span class="sec-n">04 / one command</span></div>
-      <p class="sec-p">One line installs the engine, yt-dlp and ffmpeg next to your user account — no admin, no dependencies to manage. Works on Windows 10/11, macOS, Linux and Android (Termux).</p>
-      <div class="tabs" role="tablist">
-        <button class="tab" data-os="windows" role="tab">windows</button>
-        <button class="tab" data-os="macos" role="tab">macOS</button>
-        <button class="tab" data-os="linux" role="tab">linux</button>
-        <button class="tab" data-os="android" role="tab">android</button>
-      </div>
+        <div class="panel" data-panel="windows">
+          <div class="cmdbox"><span class="prompt">$</span><code>powershell -NoProfile -ExecutionPolicy Bypass -c "irm https://downrabbit.pages.dev/install.ps1 | iex"</code><button class="cp" data-copy aria-label="Copy Windows install command"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+          <div class="note">paste into <b>cmd</b> or <b>PowerShell</b>. installs to <b>%LOCALAPPDATA%\downrabbit</b> and puts <b>downr</b> on your PATH. open a new terminal afterwards. to remove: delete that folder and drop it from PATH.</div>
+        </div>
+        <div class="panel" data-panel="macos">
+          <div class="cmdbox"><span class="prompt">$</span><code>curl -fsSL https://downrabbit.pages.dev/install.sh | sh</code><button class="cp" data-copy aria-label="Copy macOS install command"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+          <div class="note">paste into <b>Terminal</b>. needs <b>node 18+</b> (brew install node). installs to <b>~/.local/share/downrabbit</b>, command in <b>~/.local/bin</b>.</div>
+        </div>
+        <div class="panel" data-panel="linux">
+          <div class="cmdbox"><span class="prompt">$</span><code>curl -fsSL https://downrabbit.pages.dev/install.sh | sh</code><button class="cp" data-copy aria-label="Copy Linux install command"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+          <div class="note">paste into your shell. needs <b>node 18+</b>. installs to <b>~/.local/share/downrabbit</b>, command in <b>~/.local/bin</b> (it tells you if that folder isn't on PATH).</div>
+        </div>
+        <div class="panel" data-panel="android">
+          <div class="cmdbox"><span class="prompt">$</span><code>curl -fsSL https://downrabbit.pages.dev/install.sh | sh</code><button class="cp" data-copy aria-label="Copy Android install command"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+          <div class="note">paste into <b>Termux</b> (free on Play Store / F-Droid). it installs node, yt-dlp and ffmpeg with <b>pkg</b> and asks once for storage permission so files land in your Downloads folder. phones on iOS can't run local programs — download on a computer instead.</div>
+        </div>
 
-      <div class="panel" data-panel="windows">
-        <div class="cmd"><code>powershell -NoProfile -ExecutionPolicy Bypass -c "irm https://downrabbit.pages.dev/install.ps1 | iex"</code><button class="cp" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
-        <div class="note">paste into <b>cmd</b> or <b>PowerShell</b>. installs to <b>%LOCALAPPDATA%\downrabbit</b> and puts <b>downr</b> on your PATH — open a new terminal afterwards. to remove: delete that folder and drop it from PATH.</div>
+        <div class="req"><span>windows 10/11</span><span>macOS 10.15+</span><span>linux x86_64 / arm64</span><span>android · termux</span><span>~120 MB disk</span><span>no admin</span></div>
       </div>
-      <div class="panel" data-panel="macos">
-        <div class="cmd"><code>curl -fsSL https://downrabbit.pages.dev/install.sh | sh</code><button class="cp" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
-        <div class="note">paste into <b>Terminal</b>. needs <b>node 18+</b> (brew install node). installs to <b>~/.local/share/downrabbit</b>, command in <b>~/.local/bin</b>.</div>
-      </div>
-      <div class="panel" data-panel="linux">
-        <div class="cmd"><code>curl -fsSL https://downrabbit.pages.dev/install.sh | sh</code><button class="cp" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
-        <div class="note">paste into your shell. needs <b>node 18+</b>. installs to <b>~/.local/share/downrabbit</b>, command in <b>~/.local/bin</b> (it tells you if that folder isn't on PATH).</div>
-      </div>
-      <div class="panel" data-panel="android">
-        <div class="cmd"><code>curl -fsSL https://downrabbit.pages.dev/install.sh | sh</code><button class="cp" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
-        <div class="note">paste into <b>Termux</b> (free on Play Store / F-Droid). it installs node, yt-dlp and ffmpeg with <b>pkg</b> and asks once for storage permission so files land in your Downloads folder. phones on iOS can't run local programs — download on a computer instead.</div>
-      </div>
+    </section>
 
-      <div class="req"><span>windows 10/11</span><span>macOS 10.15+</span><span>linux x86_64 / arm64</span><span>android · termux</span><span>~120 MB disk</span><span>no admin</span></div>
-    </div>
-  </section>
+    <section class="section alt" id="faq">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <div class="sec-kicker">04 / questions</div>
+            <h2>Small footprint. Fewer surprises.</h2>
+          </div>
+          <p class="sec-side">Everything runs on your machine. Here is what that means in practice.</p>
+        </div>
+        <details><summary><span class="pm"></span>is it really free?</summary><p>Yes. Apache-2.0 source, no account, no ads, no paid tier, no analytics. The only cost is your own bandwidth and about 120 MB of disk.</p></details>
+        <details><summary><span class="pm"></span>is it safe?</summary><p>The installer is a plain text script you can read before running (<a href="https://github.com/DiyonGamage/downrabbit" class="green" style="text-decoration:none">github.com/DiyonGamage/downrabbit</a>). It downloads signed Node.js, yt-dlp and an ffmpeg build from their official releases into your user folder. Nothing runs as admin, nothing listens on a public port, and downloads only happen when you ask for them.</p></details>
+        <details><summary><span class="pm"></span>where do my files go?</summary><p>Your Downloads folder — <code>%USERPROFILE%\Downloads</code> on Windows, <code>~/Downloads</code> on macOS/Linux, <code>~/storage/downloads</code> on Android. Use <code>-o</code> to pick a different folder.</p></details>
+        <details><summary><span class="pm"></span>YouTube wants me to sign in for some videos</summary><p>Private, age-restricted or members-only videos need your browser session. Start a download with your cookies available: set <code>BRIDGE_COOKIES_FROM_BROWSER=chrome</code> (or edge / firefox) in the terminal before running <code>downr</code>. Public videos never need this.</p></details>
+        <details><summary><span class="pm"></span>does it keep working when sites change?</summary><p>The engine refreshes yt-dlp automatically in the background. If a site still breaks, re-run the install command — it updates everything in place and keeps your files and settings.</p></details>
+        <details><summary><span class="pm"></span>can i use it on my phone?</summary><p>Android, yes — through Termux with the same one-line install. Files land in your Downloads folder and play in any app. iPhones and iPads can't run local programs, so use a computer for platform links.</p></details>
+        <details><summary><span class="pm"></span>why is it faster than downloader websites?</summary><p>Those sites queue you behind everyone else and stream through their server. Downrabbit runs on your machine, fetches from 8 parallel connections and never uploads your file anywhere — the ceiling is your own internet, not someone else's queue.</p></details>
+        <details><summary><span class="pm"></span>how do i uninstall it?</summary><p>Windows: delete <code>%LOCALAPPDATA%\downrabbit</code> and remove that <code>bin</code> folder from your PATH. macOS/Linux: <code>rm -rf ~/.local/share/downrabbit ~/.local/bin/downr</code>. That's the whole footprint.</p></details>
+      </div>
+    </section>
 
-  <section class="sec" id="faq">
-    <div class="wrap">
-      <div class="sec-h"><h2>questions</h2><span class="sec-n">05 / faq</span></div>
-
-      <details><summary><span class="pm"></span>is it really free?</summary><p>Yes. Apache-2.0 source, no account, no ads, no paid tier, no analytics. The only cost is your own bandwidth and about 120 MB of disk.</p></details>
-      <details><summary><span class="pm"></span>is it safe?</summary><p>The installer is a plain text script you can read before running (<a href="https://github.com/DiyonGamage/downrabbit" class="accent" style="text-decoration:none">github.com/DiyonGamage/downrabbit</a>). It downloads signed Node.js, yt-dlp and an ffmpeg build from their official releases into your user folder. Nothing runs as admin, nothing listens on a public port, and downloads only happen when you ask for them.</p></details>
-      <details><summary><span class="pm"></span>where do my files go?</summary><p>Your Downloads folder — <code>%USERPROFILE%\Downloads</code> on Windows, <code>~/Downloads</code> on macOS/Linux, <code>~/storage/downloads</code> on Android. Use <code>-o</code> to pick a different folder.</p></details>
-      <details><summary><span class="pm"></span>YouTube wants me to sign in for some videos</summary><p>Private, age-restricted or members-only videos need your browser session. Start a download with your cookies available: set <code>BRIDGE_COOKIES_FROM_BROWSER=chrome</code> (or edge / firefox) in the terminal before running <code>downr</code>. Public videos never need this.</p></details>
-      <details><summary><span class="pm"></span>does it keep working when sites change?</summary><p>The engine refreshes yt-dlp automatically in the background. If a site still breaks, re-run the install command — it updates everything in place and keeps your files and settings.</p></details>
-      <details><summary><span class="pm"></span>can i use it on my phone?</summary><p>Android, yes — through Termux with the same one-line install. Files land in your Downloads folder and play in any app. iPhones and iPads can't run local programs, so use a computer for platform links.</p></details>
-      <details><summary><span class="pm"></span>why is it faster than downloader websites?</summary><p>Those sites queue you behind everyone else and stream through their server. Downrabbit runs on your machine, fetches from 8 parallel connections and never uploads your file anywhere — the ceiling is your own internet, not someone else's queue.</p></details>
-      <details><summary><span class="pm"></span>how do i uninstall it?</summary><p>Windows: delete <code>%LOCALAPPDATA%\downrabbit</code> and remove that <code>bin</code> folder from your PATH. macOS/Linux: <code>rm -rf ~/.local/share/downrabbit ~/.local/bin/downr</code>. That's the whole footprint.</p></details>
-    </div>
-  </section>
+    <section class="final">
+      <div class="wrap final-in">
+        <div>
+          <div class="sec-kicker">ready when you are</div>
+          <h2>Paste a link.<br>Get the file.</h2>
+        </div>
+        <a class="docs-btn" href="#install"><span class="arrow">→</span> Install downrabbit</a>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    <div class="wrap foot">
-      <span>downrabbit — download anything, one command.</span>
-      <a href="https://github.com/DiyonGamage/downrabbit">source · Apache-2.0</a>
-      <span class="sp">no account · no telemetry · runs on your machine</span>
+    <div class="wrap foot-in">
+      <span class="foot-brand"><svg aria-hidden="true"><use href="#rabbit-mark"/></svg> DOWNRABBIT</span>
+      <span class="foot-links"><a href="#features">Features</a><a href="#commands">Commands</a><a href="#install">Install</a><a href="https://github.com/DiyonGamage/downrabbit">Source</a></span>
+      <span class="foot-note">no account · no telemetry · runs on your machine</span>
     </div>
   </footer>
 
+  <div class="built-with" id="built-with">built with node + yt-dlp <button id="built-close" aria-label="Dismiss">×</button></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
-
-<script>
-(function(){
-  'use strict';
-  var root=document.getElementById('downrabbit-app');
-  var $=function(s,c){ return (c||document).querySelector(s); };
-  var $$=function(s,c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); };
-  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if(window.matchMedia('(prefers-color-scheme: dark)').matches) root.setAttribute('data-theme','dark');
-
-  var CMDS={
-    windows:'powershell -NoProfile -ExecutionPolicy Bypass -c "irm https://downrabbit.pages.dev/install.ps1 | iex"',
-    macos:'curl -fsSL https://downrabbit.pages.dev/install.sh | sh',
-    linux:'curl -fsSL https://downrabbit.pages.dev/install.sh | sh',
-    android:'curl -fsSL https://downrabbit.pages.dev/install.sh | sh'
-  };
-  var NAMES={ windows:'windows', macos:'macOS', linux:'linux', android:'android' };
-  var ua=navigator.userAgent||'';
-  var os=/android/i.test(ua)?'android':/win/i.test(ua)?'windows':/mac/i.test(ua)?'macos':'linux';
-  $('#os-name').textContent=NAMES[os];
-  $('#hero-cmd').textContent=CMDS[os];
-  $$('.tab').forEach(function(t){ if(t.getAttribute('data-os')===os)t.classList.add('on'); });
-  $$('.panel').forEach(function(p){ if(p.getAttribute('data-panel')===os)p.classList.add('on'); });
-  $$('.tab').forEach(function(t){ t.addEventListener('click',function(){
-    $$('.tab').forEach(function(x){x.classList.remove('on');}); t.classList.add('on');
-    $$('.panel').forEach(function(p){ p.classList.toggle('on',p.getAttribute('data-panel')===t.getAttribute('data-os')); });
-  }); });
-
-  /* rabbit */
-  var Rig=(function(){
-    var rig=$('#rig'), headLook=$('#r-head-look'), eyesLook=$('#r-eyes-look');
-    var eyeL=$('#r-eye-l'), eyeR=$('#r-eye-r'), earL=$('#r-ear-l'), earR=$('#r-ear-r');
-    if(!rig||!eyeL) return {setState:function(){}};
-    var state='idle', look={x:0,y:0}, target={x:0,y:0};
-    var blinkT=null, flickT=null, raf=null, revertT=null;
-    function doBlink(){ eyeL.classList.add('blink');eyeR.classList.add('blink');
-      setTimeout(function(){eyeL.classList.remove('blink');eyeR.classList.remove('blink');},210); }
-    function scheduleBlink(){ blinkT=setTimeout(function(){ if(!reduced){ doBlink();
-      if(Math.random()<0.22) setTimeout(doBlink,280); } scheduleBlink(); }, 1900+Math.random()*4300); }
-    function scheduleFlick(){ flickT=setTimeout(function(){ if(!reduced&&state==='idle'){
-      var e=Math.random()<0.5?earL:earR; e.classList.add('flick'); setTimeout(function(){e.classList.remove('flick');},580); }
-      scheduleFlick(); }, 3600+Math.random()*5200); }
-    function frame(){ look.x+=(target.x-look.x)*0.1; look.y+=(target.y-look.y)*0.1;
-      if(eyesLook) eyesLook.style.transform='translate('+(look.x*4.5).toFixed(2)+'px,'+(look.y*3.5).toFixed(2)+'px)';
-      if(headLook) headLook.style.transform='rotate('+(look.x*3.2).toFixed(2)+'deg)';
-      raf=requestAnimationFrame(frame); }
-    function onMove(e){ var r=rig.getBoundingClientRect(); if(!r.width)return;
-      var cx=r.left+r.width/2, cy=r.top+r.height*0.42;
-      target.x=Math.max(-1,Math.min(1,(e.clientX-cx)/(r.width*0.9)));
-      target.y=Math.max(-1,Math.min(1,(e.clientY-cy)/(r.height*0.9))); }
-    document.addEventListener('mousemove',onMove);
-    if(!reduced){ raf=requestAnimationFrame(frame); scheduleBlink(); scheduleFlick(); }
-    function setState(s){ state=s; rig.setAttribute('data-state',s);
-      if(s==='success'){ target.x=0; target.y=-0.3; clearTimeout(revertT); revertT=setTimeout(function(){ setState('idle'); },1500); }
-      else if(s==='idle'){ target.x=0; target.y=0; } }
-    return {setState:setState};
-  })();
-
-  /* toast */
-  var toastT=null;
-  function toast(msg){ var t=$('#toast'); t.textContent=msg; t.classList.add('on');
-    clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('on');},2200); }
-
-  function copyText(text){
-    function legacy(){ return new Promise(function(res,rej){ var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy')?res():rej(new Error('copy failed')); }catch(e){ rej(e); } finally{ document.body.removeChild(ta); } }); }
-    if(navigator.clipboard&&navigator.clipboard.writeText){ return navigator.clipboard.writeText(text).catch(legacy); }
-    return legacy();
-  }
-  function wireCopy(btn, getText){
-    btn.addEventListener('click',function(){
-      copyText(getText()).then(function(){ toast('copied — paste it in your terminal'); Rig.setState('success'); })
-        .catch(function(){ toast('copy failed — select the text manually'); });
-    });
-  }
-  wireCopy($('#hero-copy'), function(){ return $('#hero-cmd').textContent; });
-  $$('.panel .cp').forEach(function(b){ wireCopy(b, function(){ return $('code', b.parentNode).textContent; }); });
-
-  /* terminal reveal */
-  var lines=$$('#term .ln');
-  if(reduced||!('IntersectionObserver' in window)){ lines.forEach(function(l){l.classList.add('on');}); }
-  else {
-    var io=new IntersectionObserver(function(es){
-      es.forEach(function(e){
-        if(!e.isIntersecting) return;
-        io.disconnect();
-        lines.forEach(function(l,i){ setTimeout(function(){ l.classList.add('on'); }, 170*i); });
-      });
-    },{threshold:.35});
-    io.observe($('#term'));
-  }
-})();
-</script>
+<script src="app.js"></script>
 </body>
 </html>
