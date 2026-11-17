@@ -1,251 +1,82 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="dark light">
-<meta name="theme-color" content="#0a0a0a">
-<meta name="description" content="Downrabbit — a tiny, no-nonsense media downloader that runs entirely in your browser. Paste a direct file link, get the file. No install, no account, no telemetry.">
-<title>Downrabbit — paste a link, get the file</title>
-<link rel="preconnect" href="https://i.ytimg.com">
-<link rel="dns-prefetch" href="https://i.ytimg.com">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 130'%3E%3Cg fill='none' stroke='%23ffb43a' stroke-width='6'%3E%3Cellipse cx='46' cy='30' rx='8' ry='24' transform='rotate(-9 46 54)'/%3E%3Cellipse cx='74' cy='30' rx='8' ry='24' transform='rotate(9 74 54)'/%3E%3Cellipse cx='60' cy='74' rx='29' ry='26'/%3E%3C/g%3E%3Ccircle cx='49' cy='72' r='4' fill='%23ffb43a'/%3E%3Ccircle cx='71' cy='72' r='4' fill='%23ffb43a'/%3E%3C/svg%3E">
-<style>
-  html,body{height:100%;margin:0;padding:0;box-sizing:border-box;}
-  body{background:#050505;font-family:ui-monospace,"Cascadia Code","JetBrains Mono","Consolas","SF Mono",monospace;}
-  #downrabbit-app{height:100vh;height:100dvh;width:100%;border-radius:0;}
-</style>
-</head>
-<body>
-<!--APP-FRAGMENT-START-->
-<div id="downrabbit-app" data-accent="amber" data-theme="cream" data-motion="full">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>downrabbit — download anything from your terminal</title>
+<meta name="description" content="One command installs a tiny, fast downloader for YouTube, TikTok, Instagram, X, SoundCloud and thousands more sites. No account, no ads, no telemetry.">
+<meta name="theme-color" content="#f3ede1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f3ede1'/%3E%3Cg fill='none' stroke='%232c271f' stroke-width='3.4' stroke-linecap='round'%3E%3Cellipse cx='24' cy='18' rx='6' ry='13'/%3E%3Cellipse cx='40' cy='18' rx='6' ry='13'/%3E%3Cellipse cx='32' cy='41' rx='16' ry='15'/%3E%3C/g%3E%3Ccircle cx='26' cy='39' r='2.2' fill='%232c271f'/%3E%3Ccircle cx='38' cy='39' r='2.2' fill='%232c271f'/%3E%3Cpath d='M29.5 45.5h5l-2.5 3z' fill='%23c97a06'/%3E%3C/svg%3E">
 <style>
   #downrabbit-app{
-    --bg:#0a0a0a; --sidebar:#0e0e0e; --surface:#141414; --surface2:#1c1c1c;
+    --bg:#0a0a0a; --surface:#121212; --surface2:#1a1a1a;
     --line:#242424; --line2:#343434; --text:#ededed; --muted:#8a8a8a; --dim:#565656;
-    --white:#f2f2f2; --rabbit-line:#f2f2f2; --danger:#ff5f56;
-    --active-bg:#f2f2f2; --active-fg:#0a0a0a;
-    --accent:#ffb43a; --accent-soft:rgba(255,180,58,.13); --accent-glow:rgba(255,180,58,.45); --on-accent:#1a1206;
+    --rabbit-line:#f2f2f2; --danger:#ff5f56;
+    --accent:#ffb43a; --accent-soft:rgba(255,180,58,.13); --on-accent:#1a1206;
     --mono:ui-monospace,"Cascadia Code","JetBrains Mono","Consolas","SF Mono",monospace;
     font-family:var(--mono); color:var(--text); background:var(--bg);
-    overflow:hidden; line-height:1.5; -webkit-font-smoothing:antialiased; position:relative;
+    line-height:1.55; -webkit-font-smoothing:antialiased; min-height:100vh;
   }
-  #downrabbit-app[data-accent="green"]{ --accent:#3ef07e; --accent-soft:rgba(62,240,126,.13); --accent-glow:rgba(62,240,126,.45); --on-accent:#08130c; }
   #downrabbit-app[data-theme="cream"]{
-    --bg:#f3ede1; --sidebar:#eae2d2; --surface:#faf6ec; --surface2:#efe7d7;
+    --bg:#f3ede1; --surface:#faf6ec; --surface2:#efe7d7;
     --line:#ddd3bf; --line2:#c9bda3; --text:#2c271f; --muted:#7a7060; --dim:#a89c85;
-    --white:#2c271f; --rabbit-line:#2c271f; --danger:#c0392b;
-    --active-bg:#2c271f; --active-fg:#f3ede1;
-    --accent:#c97a06; --accent-soft:rgba(201,122,6,.15); --accent-glow:rgba(201,122,6,.3); --on-accent:#fff8ec;
+    --rabbit-line:#2c271f; --danger:#c0392b;
+    --accent:#c97a06; --accent-soft:rgba(201,122,6,.15); --on-accent:#fff8ec;
   }
-  #downrabbit-app[data-theme="cream"][data-accent="green"]{ --accent:#1f9d57; --accent-soft:rgba(31,157,87,.15); --accent-glow:rgba(31,157,87,.3); --on-accent:#f3ede1; }
+  html,body{margin:0;padding:0;background:#f3ede1;}
+  html{scroll-behavior:smooth;}
   #downrabbit-app *{box-sizing:border-box;}
+  #downrabbit-app ::selection{background:var(--accent-soft);}
   #downrabbit-app ::-webkit-scrollbar{width:9px;height:9px;}
   #downrabbit-app ::-webkit-scrollbar-track{background:var(--bg);}
   #downrabbit-app ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:9px;border:2px solid var(--bg);}
-  #downrabbit-app ::-webkit-scrollbar-thumb:hover{background:var(--accent);}
   #downrabbit-app button{font-family:var(--mono);cursor:pointer;}
-  #downrabbit-app a{color:var(--muted);}
+  #downrabbit-app a{color:inherit;}
   #downrabbit-app .accent{color:var(--accent);}
-  #downrabbit-app .inline-link{background:none;border:none;color:var(--accent);text-decoration:underline;text-underline-offset:2px;font-family:var(--mono);font-size:inherit;padding:0;cursor:pointer;}
+  #downrabbit-app .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
 
-  #downrabbit-app .app{display:flex;height:100%;position:relative;z-index:1;}
+  /* nav */
+  #downrabbit-app .nav{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40;background:var(--bg);}
+  #downrabbit-app .nav-in{display:flex;align-items:center;gap:22px;height:62px;}
+  #downrabbit-app .brand{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;letter-spacing:.01em;text-decoration:none;margin-right:auto;}
+  #downrabbit-app .brand svg{width:22px;height:22px;color:var(--rabbit-line);}
+  #downrabbit-app .brand i{font-style:normal;color:var(--accent);}
+  #downrabbit-app .nav a.lk{font-size:12px;color:var(--muted);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent;transition:.16s;}
+  #downrabbit-app .nav a.lk:hover{color:var(--text);border-bottom-color:var(--line2);}
+  #downrabbit-app .nav .cta{font-size:12px;text-decoration:none;border:1px solid var(--line2);border-radius:8px;padding:7px 13px;color:var(--text);transition:.16s;}
+  #downrabbit-app .nav .cta:hover{border-color:var(--accent);color:var(--accent);}
+  @media (max-width:700px){ #downrabbit-app .nav a.lk{display:none;} }
 
-  /* sidebar */
-  #downrabbit-app .sidebar{flex:0 0 118px;background:var(--sidebar);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:18px 12px;animation:s-enter .5s ease both;}
-  #downrabbit-app .logo{width:34px;height:34px;margin-bottom:26px;color:var(--rabbit-line);}
-  #downrabbit-app .logo svg{width:100%;height:100%;}
-  #downrabbit-app .nav-top,#downrabbit-app .nav-bottom{display:flex;flex-direction:column;gap:8px;width:100%;}
-  #downrabbit-app .nav-bottom{margin-top:auto;}
-  #downrabbit-app .nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;padding:11px 4px;border:none;border-radius:11px;background:transparent;color:var(--muted);font-size:11px;letter-spacing:.04em;transition:.18s;position:relative;}
-  #downrabbit-app .nav svg{width:20px;height:20px;}
-  #downrabbit-app .nav:hover{color:var(--text);background:var(--surface);}
-  #downrabbit-app .nav.on{background:var(--active-bg);color:var(--active-fg);font-weight:600;}
+  /* hero */
+  #downrabbit-app .hero{padding:74px 0 54px;}
+  #downrabbit-app .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:48px;align-items:center;}
+  #downrabbit-app .kick{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);}
+  #downrabbit-app h1{font-size:clamp(30px,4.4vw,48px);line-height:1.08;letter-spacing:-.02em;margin:14px 0 0;font-weight:600;text-wrap:balance;}
+  #downrabbit-app .lede{font-size:14px;color:var(--muted);max-width:54ch;margin:18px 0 0;line-height:1.75;}
+  #downrabbit-app .lede b{color:var(--text);font-weight:600;}
 
-  /* main */
-  #downrabbit-app .main{flex:1;min-width:0;background:transparent;position:relative;display:flex;flex-direction:column;}
-  #downrabbit-app .topbar{display:flex;align-items:center;gap:12px;padding:16px 20px;position:relative;}
-  #downrabbit-app .help-pill{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid transparent;color:var(--muted);font-size:12px;letter-spacing:.03em;padding:7px 12px;border-radius:9px;transition:.18s;}
-  #downrabbit-app .help-pill:hover{color:var(--text);background:var(--surface);border-color:var(--line);}
-  #downrabbit-app .help-pill svg{width:15px;height:15px;}
-  #downrabbit-app .res-badge{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--surface);white-space:nowrap;}
-  #downrabbit-app .res-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px var(--accent-glow);flex:0 0 auto;}
-  #downrabbit-app .res-badge .dot.live{animation:s-pulse 1.2s ease-in-out infinite;}
-  @keyframes s-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-  #downrabbit-app .circ{width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;transition:.18s;flex:0 0 auto;}
-  #downrabbit-app .circ:hover{color:var(--accent);border-color:var(--accent);box-shadow:0 0 14px var(--accent-soft);}
-  #downrabbit-app .circ svg{width:18px;height:18px;}
-  #downrabbit-app .view{display:none;flex:1;min-height:0;}
-  #downrabbit-app .view.on{display:flex;}
-  #downrabbit-app .view-save{flex-direction:column;}
-  #downrabbit-app .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 24px 0;overflow-y:auto;}
+  /* install widget */
+  #downrabbit-app .inst{margin-top:26px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:16px;}
+  #downrabbit-app .inst-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+  #downrabbit-app .inst-top span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
+  #downrabbit-app .inst-top a{font-size:11px;color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line2);}
+  #downrabbit-app .inst-top a:hover{color:var(--accent);}
+  #downrabbit-app .cmd{display:flex;align-items:flex-start;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:12px 12px 12px 14px;}
+  #downrabbit-app .cmd code{flex:1;min-width:0;font-size:12.5px;line-height:1.65;color:var(--text);white-space:pre-wrap;word-break:break-all;}
+  #downrabbit-app .cmd code .p{color:var(--accent);}
+  #downrabbit-app .cp{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--line2);color:var(--text);font-size:11px;padding:6px 9px;border-radius:7px;transition:.15s;}
+  #downrabbit-app .cp:hover{border-color:var(--accent);color:var(--accent);}
+  #downrabbit-app .cp svg{width:13px;height:13px;}
+  #downrabbit-app .then{margin-top:12px;font-size:12px;color:var(--muted);}
+  #downrabbit-app .then code{color:var(--accent);background:var(--accent-soft);padding:2px 6px;border-radius:5px;}
+  #downrabbit-app .tiny{margin-top:14px;font-size:11px;color:var(--dim);line-height:1.7;}
 
-  /* mascot + bubble */
-  #downrabbit-app .mascot-row{position:relative;width:100%;max-width:660px;height:230px;display:flex;align-items:flex-end;justify-content:center;flex:0 0 auto;animation:s-enter .6s .05s ease both;}
-  #downrabbit-app .rabbit-stage{width:200px;height:222px;display:flex;align-items:flex-end;justify-content:center;}
-  #downrabbit-app .bubble{position:absolute;left:0;bottom:78px;max-width:250px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 15px;font-size:12px;color:var(--muted);line-height:1.55;box-shadow:0 10px 28px rgba(0,0,0,.35);transition:.25s;z-index:2;}
-  #downrabbit-app .bubble::after{content:"";position:absolute;right:-7px;bottom:22px;width:12px;height:12px;background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(-45deg);}
-  #downrabbit-app .bubble .accent{text-shadow:0 0 8px var(--accent-glow);}
-
-  /* paste */
-  #downrabbit-app .paste-wrap{width:100%;max-width:660px;flex:0 0 auto;animation:s-enter .6s .12s ease both;}
-  #downrabbit-app .field{display:flex;align-items:center;gap:11px;background:var(--bg);border:1px solid var(--line2);border-radius:13px;padding:0 16px;height:54px;transition:border-color .2s, box-shadow .2s;}
-  #downrabbit-app .field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
-  #downrabbit-app .field.busy{border-color:var(--accent);}
-  #downrabbit-app .field-ico{flex:0 0 auto;width:18px;height:18px;color:var(--dim);display:flex;align-items:center;justify-content:center;}
-  #downrabbit-app .field-ico svg{width:18px;height:18px;}
-  #downrabbit-app .field.busy .field-ico{color:var(--accent);}
-  #downrabbit-app .spin{animation:s-spin 1s linear infinite;}
-  @keyframes s-spin{to{transform:rotate(360deg)}}
-  #downrabbit-app .field input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:15px;caret-color:var(--accent);height:100%;}
-  #downrabbit-app .field input::placeholder{color:var(--dim);}
-  #downrabbit-app .mode-row{display:flex;align-items:center;gap:12px;margin-top:13px;}
-  #downrabbit-app .paste-btn{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:11px;color:var(--text);font-size:13px;padding:11px 18px;transition:.16s;}
-  #downrabbit-app .paste-btn svg{width:15px;height:15px;}
-  #downrabbit-app .paste-btn:hover{border-color:var(--line2);background:var(--surface2);}
-  #downrabbit-app .paste-btn:active{transform:translateY(1px);}
-  #downrabbit-app .go-btn{display:flex;align-items:center;gap:8px;background:var(--accent);border:none;border-radius:11px;color:var(--on-accent);font-size:13px;font-weight:600;padding:11px 18px;box-shadow:0 0 16px var(--accent-soft);transition:.16s;}
-  #downrabbit-app .go-btn:hover{filter:brightness(1.08);}
-  #downrabbit-app .go-btn:active{transform:translateY(1px);}
-  #downrabbit-app .go-btn svg{width:15px;height:15px;}
-  #downrabbit-app .hint{margin-top:12px;font-size:11px;color:var(--dim);text-align:center;}
-
-  /* queue */
-  #downrabbit-app .queue{margin-top:18px;display:flex;flex-direction:column;gap:10px;width:100%;}
-  #downrabbit-app .job{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;animation:s-rise .3s ease;}
-  @keyframes s-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  #downrabbit-app .job-top{display:flex;align-items:baseline;gap:10px;margin-bottom:11px;}
-  #downrabbit-app .job-title{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
-  #downrabbit-app .job-svc{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 7px;flex:0 0 auto;}
-  #downrabbit-app .track{position:relative;height:7px;background:var(--surface2);border-radius:999px;}
-  #downrabbit-app .bar{position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--accent);border-radius:999px;box-shadow:0 0 10px var(--accent-glow);transition:width .22s linear;}
-  #downrabbit-app .bar.indet{background:linear-gradient(90deg,transparent,var(--accent),transparent);background-size:200% 100%;animation:s-shimmer 1.2s linear infinite;}
-  @keyframes s-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-  #downrabbit-app .hop{position:absolute;right:-10px;top:-20px;width:21px;height:21px;opacity:0;transition:opacity .2s;}
-  #downrabbit-app .job.downloading .hop{opacity:1;}
-  #downrabbit-app .job.error .bar,#downrabbit-app .job.blocked .bar{background:var(--danger);box-shadow:0 0 10px rgba(255,95,86,.4);}
-  #downrabbit-app .job-meta{display:flex;align-items:center;gap:13px;margin-top:11px;font-size:11px;color:var(--muted);flex-wrap:wrap;}
-  #downrabbit-app .job-meta .sp{color:var(--accent);}
-  #downrabbit-app .job.error .job-meta .sp,#downrabbit-app .job.blocked .job-meta .sp{color:var(--danger);}
-  #downrabbit-app .job-meta .ctl{margin-left:auto;display:flex;gap:13px;}
-  #downrabbit-app .job-meta .ctl button{background:none;border:none;color:var(--dim);font-size:11px;padding:0;transition:.15s;}
-  #downrabbit-app .job-meta .ctl button:hover{color:var(--text);}
-  #downrabbit-app .footer{text-align:center;font-size:11px;color:var(--dim);padding:16px;flex:0 0 auto;animation:s-enter .6s .2s ease both;}
-  #downrabbit-app .footer a{color:var(--muted);text-decoration:underline;text-underline-offset:2px;}
-
-  /* panels */
-  #downrabbit-app .view-panel{flex-direction:column;overflow-y:auto;padding:30px 40px;}
-  #downrabbit-app .panel-h{font-size:18px;letter-spacing:.04em;margin:0 0 4px;color:var(--text);}
-  #downrabbit-app .panel-sub{font-size:12px;color:var(--muted);margin:0 0 26px;}
-  #downrabbit-app .set-group{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:6px 18px;margin-bottom:16px;max-width:640px;}
-  #downrabbit-app .set-row{display:flex;align-items:center;gap:16px;padding:15px 0;border-bottom:1px solid var(--line);}
-  #downrabbit-app .set-row:last-child{border-bottom:none;}
-  #downrabbit-app .set-lab{flex:1;min-width:0;}
-  #downrabbit-app .set-lab b{display:block;font-size:13px;font-weight:500;color:var(--text);}
-  #downrabbit-app .set-lab span{font-size:11px;color:var(--dim);}
-  #downrabbit-app .set-ctl{flex:0 0 auto;display:flex;align-items:center;gap:10px;}
-  #downrabbit-app .lan-ctl code{font-family:var(--mono);font-size:11px;color:var(--muted);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  #downrabbit-app input[type=text]{background:var(--bg);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 11px;outline:none;width:210px;}
-  #downrabbit-app input[type=text]:focus{border-color:var(--accent);}
-  #downrabbit-app input[type=range]{-webkit-appearance:none;width:150px;height:4px;background:var(--line2);border-radius:9px;outline:none;}
-  #downrabbit-app input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);cursor:pointer;}
-  #downrabbit-app .val{font-size:12px;color:var(--accent);min-width:34px;text-align:right;}
-  #downrabbit-app .stepper{display:flex;align-items:center;border:1px solid var(--line2);border-radius:8px;overflow:hidden;}
-  #downrabbit-app .stepper button{width:30px;height:30px;background:var(--bg);border:none;color:var(--muted);font-size:15px;}
-  #downrabbit-app .stepper button:hover{color:var(--accent);}
-  #downrabbit-app .stepper .num{width:34px;text-align:center;font-size:13px;color:var(--text);}
-  #downrabbit-app .toggle{width:42px;height:24px;border-radius:999px;background:var(--line2);border:none;position:relative;transition:.2s;flex:0 0 auto;}
-  #downrabbit-app .toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:.2s;}
-  #downrabbit-app .toggle.on{background:var(--accent-soft);}
-  #downrabbit-app .toggle.on::after{left:21px;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);}
-  #downrabbit-app .mini-seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;}
-  #downrabbit-app .mini-seg button{background:var(--bg);border:none;color:var(--muted);font-size:11px;padding:7px 13px;}
-  #downrabbit-app .mini-seg button.on{background:var(--accent);color:var(--on-accent);font-weight:600;}
-  #downrabbit-app .btn-line{background:var(--surface2);border:1px solid var(--line2);border-radius:9px;color:var(--text);font-size:12px;padding:9px 16px;transition:.16s;}
-  #downrabbit-app .btn-line:hover{border-color:var(--accent);color:var(--accent);}
-  #downrabbit-app .btn-solid{background:var(--accent);border:none;border-radius:9px;color:var(--on-accent);font-size:12px;font-weight:600;padding:10px 18px;box-shadow:0 0 16px var(--accent-soft);}
-  #downrabbit-app .about-card{max-width:640px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:24px;}
-  #downrabbit-app .about-card p{font-size:12px;color:var(--muted);margin:0 0 12px;}
-  #downrabbit-app .tagrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
-  #downrabbit-app .tag{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:4px 9px;}
-  #downrabbit-app .opt-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
-  #downrabbit-app [hidden]{display:none!important;}
-  #downrabbit-app .opt-head{display:flex;gap:12px;align-items:center;margin-bottom:12px;}
-  #downrabbit-app .opt-head img{width:104px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex:0 0 auto;background:var(--sidebar);}
-  #downrabbit-app .opt-head-t{min-width:0;}
-  #downrabbit-app .opt-head-t b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  #downrabbit-app .opt-head-t span{font-size:11px;color:var(--muted);}
-  #downrabbit-app .preview{width:100%;max-width:660px;display:flex;gap:14px;align-items:center;background:var(--bg);border:1px solid var(--line2);border-radius:13px;padding:14px;animation:s-rise .3s ease both;}
-  #downrabbit-app .pv-thumb{position:relative;flex:0 0 168px;aspect-ratio:16/9;border-radius:9px;overflow:hidden;border:1px solid var(--line);background:var(--sidebar);}
-  #downrabbit-app .pv-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  #downrabbit-app .pv-skel{position:absolute;inset:0;background:linear-gradient(90deg,var(--sidebar) 25%,var(--line) 50%,var(--sidebar) 75%);background-size:200% 100%;animation:s-shimmer 1.1s linear infinite;}
-  #downrabbit-app .pv-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;}
-  #downrabbit-app .pv-title{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:18px;}
-  #downrabbit-app .pv-skel-line{display:block;height:14px;width:70%;border-radius:6px;background:linear-gradient(90deg,var(--sidebar) 25%,var(--line) 50%,var(--sidebar) 75%);background-size:200% 100%;animation:s-shimmer 1.1s linear infinite;}
-  #downrabbit-app .pv-meta{display:flex;gap:8px;flex-wrap:wrap;}
-  #downrabbit-app .pv-stage{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
-  #downrabbit-app .pv-spin{width:12px;height:12px;border:1.5px solid var(--line2);border-top-color:var(--accent);border-radius:50%;animation:s-spin .8s linear infinite;flex:0 0 auto;}
-  #downrabbit-app .pv-cancel{flex:0 0 auto;align-self:center;}
-  @media (max-width:560px){
-    #downrabbit-app .preview{flex-direction:column;align-items:stretch;}
-    #downrabbit-app .pv-thumb{flex:0 0 auto;width:100%;}
-    #downrabbit-app .pv-cancel{align-self:stretch;justify-content:center;}
-  }
-  #downrabbit-app .opt-row{display:flex;align-items:center;gap:14px;padding:13px 0;}
-  #downrabbit-app .opt-row + .opt-row{border-top:1px solid var(--line);}
-  #downrabbit-app .opt-lab{flex:1;min-width:0;}
-  #downrabbit-app .opt-lab b{display:block;font-size:13px;font-weight:500;color:var(--text);}
-  #downrabbit-app .opt-lab span{font-size:11px;color:var(--dim);}
-  #downrabbit-app #opt-name{width:240px;}
-  #downrabbit-app #opt-quality{min-width:190px;}
-  #downrabbit-app select{background:var(--bg);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 11px;outline:none;max-width:100%;}
-  #downrabbit-app select:focus{border-color:var(--accent);}
-  #downrabbit-app .opt-note{font-size:11px;color:var(--dim);margin:12px 0 4px;}
-  #downrabbit-app .opt-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:10px;}
-  #downrabbit-app .prep-meta{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--muted);margin-top:12px;flex-wrap:wrap;}
-  #downrabbit-app .prep-meta .sp{color:var(--accent);}
-  #downrabbit-app .prep-err{display:none;font-size:12px;color:var(--danger);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:11px 13px;margin-top:14px;line-height:1.5;}
-  #downrabbit-app .bridge-state{font-size:11px;color:var(--dim);}
-  #downrabbit-app .bridge-state.ok{color:var(--accent);}
-  #downrabbit-app .bridge-state.bad{color:var(--danger);}
-
-  /* overlays */
-  #downrabbit-app .overlay{position:absolute;inset:0;background:rgba(5,5,5,.72);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:64px 24px 24px;z-index:20;}
-  #downrabbit-app[data-theme="cream"] .overlay{background:rgba(60,50,30,.4);}
-  #downrabbit-app .overlay.on{display:flex;}
-  #downrabbit-app .sheet{width:100%;max-width:600px;max-height:100%;overflow-y:auto;background:var(--sidebar);border:1px solid var(--line2);border-radius:14px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:s-rise .25s ease;}
-  #downrabbit-app .sheet-h{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
-  #downrabbit-app .sheet-h h3{flex:1;font-size:15px;margin:0;letter-spacing:.03em;}
-  #downrabbit-app .sheet-h .x{background:none;border:none;color:var(--muted);font-size:18px;width:30px;height:30px;border-radius:8px;}
-  #downrabbit-app .sheet-h .x:hover{color:var(--text);background:var(--surface);}
-  #downrabbit-app .search{display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--line2);border-radius:9px;padding:0 12px;height:40px;margin-bottom:16px;}
-  #downrabbit-app .search svg{width:15px;height:15px;color:var(--dim);}
-  #downrabbit-app .search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:13px;caret-color:var(--accent);}
-  #downrabbit-app .help-block{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:14px 16px;margin-bottom:12px;}
-  #downrabbit-app .help-block b{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;}
-  #downrabbit-app .help-block p{font-size:12px;color:var(--muted);margin:0 0 8px;}
-  #downrabbit-app .help-block code{display:block;font-size:11px;color:var(--accent);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 10px;word-break:break-all;}
-  #downrabbit-app .help-block .ok{color:var(--accent);}
-  #downrabbit-app .help-block .no{color:var(--danger);}
-  #downrabbit-app .hist-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
-  #downrabbit-app .hist-ico{width:30px;height:30px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--accent);flex:0 0 auto;}
-  #downrabbit-app .hist-ico svg{width:15px;height:15px;}
-  #downrabbit-app .hist-main{flex:1;min-width:0;}
-  #downrabbit-app .hist-main b{display:block;font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  #downrabbit-app .hist-main span{font-size:10px;color:var(--dim);}
-  #downrabbit-app .hist-act{display:flex;gap:6px;flex:0 0 auto;}
-  #downrabbit-app .hist-act button{width:28px;height:28px;border-radius:7px;background:var(--bg);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;}
-  #downrabbit-app .hist-act button svg{width:13px;height:13px;}
-  #downrabbit-app .hist-act button:hover{color:var(--accent);border-color:var(--accent);}
-  #downrabbit-app .hist-empty{font-size:12px;color:var(--dim);text-align:center;padding:24px;}
-  #downrabbit-app .toast{position:absolute;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:11px 16px;font-size:12px;color:var(--text);display:flex;align-items:center;gap:14px;opacity:0;pointer-events:none;transition:.25s;z-index:40;box-shadow:0 12px 30px rgba(0,0,0,.4);max-width:90%;}
-  #downrabbit-app .toast.on{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
-  #downrabbit-app .toast button{background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;}
-
-  @keyframes s-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-
-  /* ============ RABBIT RIG ============ */
-  #downrabbit-app .rabbit{width:196px;height:218px;overflow:visible;}
+  /* rabbit */
+  #downrabbit-app .stage{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:346px;}
+  #downrabbit-app .stage::before{content:"";position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:250px;height:250px;border:1px solid var(--line);border-radius:50%;}
+  #downrabbit-app .bubble{position:absolute;top:0;right:calc(50% - 158px);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:11.5px;color:var(--muted);max-width:230px;line-height:1.6;z-index:2;}
+  #downrabbit-app .bubble::after{content:"";position:absolute;left:26px;bottom:-6px;width:10px;height:10px;background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg);}
+  #downrabbit-app .rabbit{width:236px;height:262px;overflow:visible;position:relative;z-index:1;}
   #downrabbit-app .r-line{fill:var(--bg);stroke:var(--rabbit-line);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
   #downrabbit-app .r-stroke{fill:none;stroke:var(--rabbit-line);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
   #downrabbit-app .r-whisker{fill:none;stroke:var(--rabbit-line);stroke-width:1.5;stroke-linecap:round;opacity:.55;}
@@ -270,7 +101,6 @@
   #downrabbit-app .r-whisk-l{transform-origin:100% 50%;animation:s-whiskl .5s ease-in-out infinite;}
   #downrabbit-app .r-whisk-r{transform-origin:0% 50%;animation:s-whiskr .5s ease-in-out infinite;}
   #downrabbit-app .r-paw{transform-origin:50% 0%;}
-
   @keyframes s-breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,1.028)}}
   @keyframes s-tail{0%,100%{transform:rotate(0)}50%{transform:rotate(7deg)}}
   @keyframes s-headmicro{0%,100%{transform:rotate(0)}30%{transform:rotate(1.1deg)}65%{transform:rotate(-.9deg)}}
@@ -285,17 +115,6 @@
   @keyframes s-flickr{0%,100%{transform:rotate(9deg)}30%{transform:rotate(26deg)}60%{transform:rotate(4deg)}}
   #downrabbit-app .r-ear-l.flick{animation:s-flickl .55s ease-in-out;}
   #downrabbit-app .r-ear-r.flick{animation:s-flickr .55s ease-in-out;}
-
-  #downrabbit-app #rig[data-state="link"] .r-ear-l{transform:rotate(-2deg);animation:none;}
-  #downrabbit-app #rig[data-state="link"] .r-ear-r{transform:rotate(2deg);animation:none;}
-  #downrabbit-app #rig[data-state="link"] .r-head{transform:rotate(6deg);animation:none;}
-  @keyframes s-hop{0%{transform:translateY(0) scale(1,1)}12%{transform:translateY(3px) scale(1.07,.9)}30%{transform:translateY(-17px) scale(.93,1.1)}50%{transform:translateY(-19px) scale(.97,1.05)}70%{transform:translateY(0) scale(1.09,.88)}84%{transform:translateY(-5px) scale(.98,1.04)}100%{transform:translateY(0) scale(1,1)}}
-  @keyframes s-earhop-l{0%,100%{transform:rotate(-15deg)}30%{transform:rotate(-24deg)}70%{transform:rotate(-6deg)}}
-  @keyframes s-earhop-r{0%,100%{transform:rotate(15deg)}30%{transform:rotate(24deg)}70%{transform:rotate(6deg)}}
-  #downrabbit-app #rig[data-state="download"] .r-all{animation:s-hop .8s cubic-bezier(.36,.07,.19,.97) infinite;}
-  #downrabbit-app #rig[data-state="download"] .r-ear-l{animation:s-earhop-l .8s ease-in-out infinite;}
-  #downrabbit-app #rig[data-state="download"] .r-ear-r{animation:s-earhop-r .8s ease-in-out infinite .04s;}
-  #downrabbit-app #rig[data-state="download"] .r-head{animation:none;}
   @keyframes s-yay{0%{transform:translateY(0) scale(1,1)}10%{transform:translateY(5px) scale(1.12,.86)}28%{transform:translateY(-32px) scale(.9,1.14)}45%{transform:translateY(-34px) scale(.96,1.06)}62%{transform:translateY(0) scale(1.14,.84)}78%{transform:translateY(-11px) scale(.97,1.06)}100%{transform:translateY(0) scale(1,1)}}
   @keyframes s-flap-l{0%,100%{transform:rotate(-4deg)}25%{transform:rotate(-30deg)}50%{transform:rotate(2deg)}75%{transform:rotate(-22deg)}}
   @keyframes s-flap-r{0%,100%{transform:rotate(4deg)}25%{transform:rotate(30deg)}50%{transform:rotate(-2deg)}75%{transform:rotate(22deg)}}
@@ -305,345 +124,317 @@
   #downrabbit-app #rig[data-state="success"] .r-eyes{opacity:0;}
   #downrabbit-app #rig[data-state="success"] .r-happy{opacity:1;}
   #downrabbit-app #rig[data-state="success"] .r-head{animation:none;}
-  @keyframes s-sigh{0%,100%{transform:scale(1,1)}40%{transform:scale(1.02,.96)}}
-  #downrabbit-app #rig[data-state="error"] .r-ear-l{transform:rotate(-54deg);animation:none;}
-  #downrabbit-app #rig[data-state="error"] .r-ear-r{transform:rotate(54deg);animation:none;}
-  #downrabbit-app #rig[data-state="error"] .r-head{transform:rotate(-6deg) translateY(4px);animation:none;}
-  #downrabbit-app #rig[data-state="error"] .r-body{animation:s-sigh .9s ease-in-out 1;}
-  #downrabbit-app #rig[data-state="error"] .r-eyes{opacity:0;}
-  #downrabbit-app #rig[data-state="error"] .r-sad{opacity:1;}
-  #downrabbit-app #rig[data-state="error"] .r-nose{animation:none;}
-  #downrabbit-app #rig[data-state="sorry"] .r-ear-l{transform:rotate(-30deg);animation:none;}
-  #downrabbit-app #rig[data-state="sorry"] .r-ear-r{transform:rotate(30deg);animation:none;}
-  #downrabbit-app #rig[data-state="sorry"] .r-head{transform:rotate(7deg) translateY(2px);animation:none;}
-  #downrabbit-app #rig[data-state="sorry"] .r-nose{animation:none;}
-  #downrabbit-app #rig[data-state="empty"] .r-head{animation:s-headmicro 3s ease-in-out infinite;}
-  #downrabbit-app #rig[data-state="empty"] .r-paw-r{animation:s-pawtap 1.4s ease-in-out infinite;}
-  @keyframes s-pawtap{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-
-  #downrabbit-app[data-motion="reduced"] *{animation:none !important;transition:none !important;}
   @media (prefers-reduced-motion:reduce){ #downrabbit-app *{animation:none !important;transition:none !important;} }
 
-  /* responsive */
-  @media (max-width:760px){
-    #downrabbit-app .app{flex-direction:column;}
-    #downrabbit-app .sidebar{flex:0 0 auto;flex-direction:row;width:100%;border-right:none;border-top:1px solid var(--line);padding:8px 10px;order:2;justify-content:center;gap:6px;}
-    #downrabbit-app .logo{display:none;}
-    #downrabbit-app .nav-top,#downrabbit-app .nav-bottom{flex-direction:row;width:auto;margin:0;gap:6px;}
-    #downrabbit-app .nav{width:auto;flex-direction:row;padding:9px 14px;gap:8px;}
-    #downrabbit-app .main{order:1;flex:1;}
-    #downrabbit-app .mascot-row{height:180px;justify-content:flex-end;}
-    #downrabbit-app .rabbit-stage{width:160px;height:178px;}
-    #downrabbit-app .rabbit{width:156px;height:174px;}
-    #downrabbit-app .bubble{max-width:150px;font-size:11px;bottom:60px;}
-    #downrabbit-app .view-panel{padding:22px 18px;}
-    #downrabbit-app .topbar{padding:12px 14px;}
-    #downrabbit-app .res-badge{display:none;}
-    #downrabbit-app input[type=text]{width:140px;}
-    #downrabbit-app .set-row{flex-wrap:wrap;}
-  }
+  /* sections */
+  #downrabbit-app .sec{padding:66px 0;border-top:1px solid var(--line);}
+  #downrabbit-app .sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;}
+  #downrabbit-app h2{font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0;}
+  #downrabbit-app .sec-n{font-size:11px;color:var(--dim);letter-spacing:.1em;}
+  #downrabbit-app .sec-p{font-size:13px;color:var(--muted);margin:0 0 26px;max-width:60ch;line-height:1.75;}
 
-  /* phone ergonomics */
-  @media (max-width:560px){
-    #downrabbit-app .topbar{padding-top:calc(12px + env(safe-area-inset-top));}
-    #downrabbit-app .sidebar{padding-bottom:calc(8px + env(safe-area-inset-bottom));}
-    #downrabbit-app .footer{padding-bottom:calc(16px + env(safe-area-inset-bottom));}
-    #downrabbit-app input[type=text]{width:auto;font-size:16px;}
-    #downrabbit-app #url{flex:1;min-width:0;width:auto;font-size:16px;}
-    #downrabbit-app .field{height:56px;}
-    #downrabbit-app .mode-row{gap:10px;}
-    #downrabbit-app .go-btn{flex:1;min-height:48px;padding:13px 20px;justify-content:center;}
-    #downrabbit-app .paste-btn{min-height:48px;}
-    #downrabbit-app .nav{min-height:44px;}
-    #downrabbit-app .stepper button{width:44px;height:44px;}
-    #downrabbit-app .stepper .num{width:40px;}
-    #downrabbit-app .sheet-h .x{width:44px;height:44px;font-size:22px;}
-    #downrabbit-app .overlay{align-items:flex-end;padding:0;}
-    #downrabbit-app .sheet{max-width:100%;width:100%;max-height:90vh;border-radius:20px 20px 0 0;border-left:none;border-right:none;border-bottom:none;padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:s-sheet .28s ease;}
-    #downrabbit-app .opt-row{min-height:52px;padding:14px 0;}
-    #downrabbit-app .opt-row select{min-height:44px;font-size:16px;}
-    #downrabbit-app .opt-row{flex-direction:column;align-items:stretch;gap:8px;}
-    #downrabbit-app .opt-row .set-ctl{width:100%;}
-    #downrabbit-app #opt-quality{width:100%;min-width:0;}
-    #downrabbit-app #opt-name{width:100%;}
-    #downrabbit-app .opt-actions{position:sticky;bottom:0;background:var(--sidebar);padding:12px 0 4px;margin-top:12px;border-top:1px solid var(--line);}
-    #downrabbit-app .opt-actions .btn-line,#downrabbit-app .opt-actions .btn-solid{flex:1;min-height:48px;justify-content:center;}
-    #downrabbit-app #lan-row,#downrabbit-app #template-row{flex-direction:column;align-items:stretch;gap:10px;}
-    #downrabbit-app #lan-row .set-lab,#downrabbit-app #template-row .set-lab{flex:0 0 auto;width:100%;}
-    #downrabbit-app .lan-ctl{width:100%;}
-    #downrabbit-app .lan-ctl code{flex:1;max-width:none;font-size:12px;}
-    #downrabbit-app .lan-ctl .btn-line{min-height:44px;}
-    #downrabbit-app #template-row .set-ctl{width:100%;}
-    #downrabbit-app #template-row input[type=text]{width:100%;}
+  /* terminal */
+  #downrabbit-app .term{background:var(--surface);border:1px solid var(--line);border-radius:13px;overflow:hidden;max-width:760px;}
+  #downrabbit-app .term-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);}
+  #downrabbit-app .dot{width:9px;height:9px;border-radius:50%;border:1px solid var(--line2);}
+  #downrabbit-app .term-bar span{margin-left:8px;font-size:10.5px;color:var(--dim);letter-spacing:.06em;}
+  #downrabbit-app .term-body{padding:16px 18px 20px;font-size:12.8px;line-height:2;overflow-x:auto;}
+  #downrabbit-app .ln{white-space:pre;opacity:0;transform:translateY(5px);transition:opacity .3s ease,transform .3s ease;}
+  #downrabbit-app .ln.on{opacity:1;transform:none;}
+  #downrabbit-app .ln .p{color:var(--accent);}
+  #downrabbit-app .ln .m{color:var(--muted);}
+  #downrabbit-app .ln .d{color:var(--dim);}
+  #downrabbit-app .ln .ok{color:var(--accent);}
+  #downrabbit-app .caret{display:inline-block;width:7px;height:14px;background:var(--accent);vertical-align:-2px;animation:s-caret 1.1s steps(1) infinite;}
+  @keyframes s-caret{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+  /* features */
+  #downrabbit-app .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  #downrabbit-app .feat{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:18px 18px 16px;}
+  #downrabbit-app .feat svg{width:20px;height:20px;color:var(--accent);}
+  #downrabbit-app .feat h3{font-size:12.5px;font-weight:600;margin:12px 0 6px;}
+  #downrabbit-app .feat p{font-size:11.8px;color:var(--muted);margin:0;line-height:1.7;}
+  @media (max-width:900px){ #downrabbit-app .feats{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ #downrabbit-app .feats{grid-template-columns:1fr;} }
+
+  /* command table */
+  #downrabbit-app .cmds{border-top:1px solid var(--line);}
+  #downrabbit-app .cmdrow{display:grid;grid-template-columns:minmax(0,340px) 1fr;gap:20px;align-items:baseline;padding:13px 2px;border-bottom:1px solid var(--line);}
+  #downrabbit-app .cmdrow code{font-size:12.5px;color:var(--text);}
+  #downrabbit-app .cmdrow code b{color:var(--accent);font-weight:400;}
+  #downrabbit-app .cmdrow p{font-size:12px;color:var(--muted);margin:0;line-height:1.7;}
+  @media (max-width:640px){ #downrabbit-app .cmdrow{grid-template-columns:1fr;gap:5px;} }
+
+  /* install tabs */
+  #downrabbit-app .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  #downrabbit-app .tab{background:transparent;border:1px solid var(--line);color:var(--muted);font-size:11.5px;padding:7px 13px;border-radius:99px;transition:.15s;letter-spacing:.02em;}
+  #downrabbit-app .tab:hover{color:var(--text);border-color:var(--line2);}
+  #downrabbit-app .tab.on{background:var(--text);border-color:var(--text);color:var(--bg);font-weight:600;}
+  #downrabbit-app .panel{display:none;}
+  #downrabbit-app .panel.on{display:block;}
+  #downrabbit-app .panel .note{font-size:11.5px;color:var(--dim);margin-top:10px;line-height:1.7;}
+  #downrabbit-app .panel .note b{color:var(--muted);font-weight:400;}
+  #downrabbit-app .req{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;}
+  #downrabbit-app .req span{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:5px 11px;}
+
+  /* faq */
+  #downrabbit-app details{border-bottom:1px solid var(--line);}
+  #downrabbit-app summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 2px;font-size:13px;color:var(--text);}
+  #downrabbit-app summary::-webkit-details-marker{display:none;}
+  #downrabbit-app summary .pm{width:14px;color:var(--accent);font-size:14px;flex:0 0 14px;}
+  #downrabbit-app summary .pm::before{content:"+";}
+  #downrabbit-app details[open] summary .pm::before{content:"–";}
+  #downrabbit-app details p{font-size:12.2px;color:var(--muted);margin:0 0 16px 26px;line-height:1.8;max-width:70ch;}
+  #downrabbit-app details p code{color:var(--accent);background:var(--accent-soft);padding:1px 5px;border-radius:4px;font-size:11.5px;}
+
+  /* footer */
+  #downrabbit-app footer{border-top:1px solid var(--line);padding:34px 0 44px;}
+  #downrabbit-app .foot{display:flex;flex-wrap:wrap;align-items:center;gap:18px;font-size:11.5px;color:var(--dim);}
+  #downrabbit-app .foot a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line2);}
+  #downrabbit-app .foot a:hover{color:var(--accent);}
+  #downrabbit-app .foot .sp{margin-left:auto;}
+
+  /* toast */
+  #downrabbit-app .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);background:var(--text);color:var(--bg);font-size:12px;padding:9px 16px;border-radius:99px;opacity:0;pointer-events:none;transition:.22s;z-index:80;}
+  #downrabbit-app .toast.on{opacity:1;transform:translate(-50%,0);}
+
+  @media (max-width:860px){
+    #downrabbit-app .hero{padding:44px 0 34px;}
+    #downrabbit-app .hero-grid{grid-template-columns:1fr;gap:26px;}
+    #downrabbit-app .stage{order:-1;min-height:300px;}
+    #downrabbit-app .rabbit{width:190px;height:212px;}
+    #downrabbit-app .stage::before{width:200px;height:200px;}
+    #downrabbit-app .bubble{right:auto;left:50%;transform:translateX(-50%);top:0;max-width:260px;text-align:center;}
+    #downrabbit-app .bubble::after{left:50%;margin-left:-5px;}
+    #downrabbit-app .sec{padding:48px 0;}
   }
-  @keyframes s-sheet{from{transform:translateY(40px);opacity:.4;}to{transform:translateY(0);opacity:1;}}
 </style>
+</head>
+<body>
+<div id="downrabbit-app" data-accent="amber" data-theme="cream">
 
-<div class="app">
-  <aside class="sidebar">
-    <div class="logo" title="downrabbit">
-      <svg viewBox="0 0 120 130" aria-hidden="true">
-        <g style="transform:rotate(-9deg);transform-box:fill-box;transform-origin:50% 100%"><ellipse class="r-line" cx="46" cy="30" rx="8" ry="24"/></g>
-        <g style="transform:rotate(9deg);transform-box:fill-box;transform-origin:50% 100%"><ellipse class="r-line" cx="74" cy="30" rx="8" ry="24"/></g>
-        <ellipse class="r-line" cx="60" cy="74" rx="29" ry="26"/>
-        <circle class="r-accent" cx="49" cy="72" r="3.4"/><circle class="r-accent" cx="71" cy="72" r="3.4"/>
-        <path class="r-accent" d="M57 82 h6 l-3 4 z"/>
-      </svg>
+  <nav class="nav">
+    <div class="wrap nav-in">
+      <a class="brand" href="#top" aria-label="downrabbit home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><ellipse cx="8.6" cy="6.6" rx="2.4" ry="5"/><ellipse cx="15.4" cy="6.6" rx="2.4" ry="5"/><ellipse cx="12" cy="15.6" rx="6.2" ry="5.8"/><circle cx="9.7" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="14.3" cy="15" r=".9" fill="currentColor" stroke="none"/></svg>
+        downrabbit<i>.</i>
+      </a>
+      <a class="lk" href="#how">how it works</a>
+      <a class="lk" href="#commands">commands</a>
+      <a class="lk" href="#faq">faq</a>
+      <a class="cta" href="#install">install</a>
     </div>
-    <nav class="nav-top">
-      <button class="nav on" data-view="save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>save</button>
-    </nav>
-    <nav class="nav-bottom">
-      <button class="nav" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1V21a2 2 0 11-4 0v-.1A1.6 1.6 0 006 19.4a1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00-1.1-2.7H3a2 2 0 110-4h.1A1.6 1.6 0 004.6 6a1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>settings</button>
-      <button class="nav" data-view="about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>about</button>
-    </nav>
-  </aside>
+  </nav>
 
-  <main class="main">
-    <div class="topbar">
-      <button class="help-pill" id="help-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 013.8 2.1c0 1.6-2.3 2-2.3 3.4M12 17h.01"/></svg>what can i download?</button>
-      <div class="res-badge" id="res-badge"><span class="dot"></span>~18 MB</div>
-      <button class="circ" id="hist-open" title="history & downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9 9.7 9.7 0 00-6.7 2.8L3 8"/><path d="M3 3v5h5M12 7v5l3 3"/></svg></button>
-    </div>
+  <header class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="kick">one command · windows · macOS · linux · android</div>
+        <h1>download anything.<br>from your <span class="accent">terminal</span>.</h1>
+        <p class="lede">A tiny engine that grabs video and audio from <b>YouTube, TikTok, Instagram, X, Reddit, SoundCloud</b> and thousands more sites. No browser tab, no account, no ads, no telemetry — just a file in your Downloads folder.</p>
 
-    <section class="view view-save on" data-view="save">
-      <div class="center">
-        <div class="mascot-row">
-          <div class="bubble" id="bubble"><span id="bubble-text">paste a link — i'll do the rest.</span></div>
-          <div class="rabbit-stage" id="rig" data-state="idle">
-            <svg class="rabbit" viewBox="0 0 220 235" aria-label="Downrabbit rabbit mascot">
-              <g class="r-all" id="r-all">
-                <g class="r-tail" id="r-tail"><circle class="r-line" cx="170" cy="186" r="13"/></g>
-                <g class="r-body" id="r-body">
-                  <ellipse class="r-line" cx="105" cy="180" rx="40" ry="32"/>
-                  <ellipse class="r-line" cx="80" cy="208" rx="16" ry="7"/>
-                  <ellipse class="r-line" cx="130" cy="208" rx="16" ry="7"/>
-                  <ellipse class="r-line r-paw r-paw-l" id="r-paw-l" cx="92" cy="190" rx="9" ry="13"/>
-                  <ellipse class="r-line r-paw r-paw-r" id="r-paw-r" cx="118" cy="190" rx="9" ry="13"/>
-                </g>
-                <g class="r-head-look" id="r-head-look">
-                  <g class="r-head" id="r-head">
-                    <g class="r-ear r-ear-l" id="r-ear-l"><ellipse class="r-line" cx="82" cy="44" rx="13" ry="42"/><ellipse class="r-soft" cx="82" cy="48" rx="6" ry="30"/></g>
-                    <g class="r-ear r-ear-r" id="r-ear-r"><ellipse class="r-line" cx="128" cy="44" rx="13" ry="42"/><ellipse class="r-soft" cx="128" cy="48" rx="6" ry="30"/></g>
-                    <ellipse class="r-line" cx="105" cy="112" rx="48" ry="44"/>
-                    <circle class="r-soft" cx="70" cy="126" r="8"/><circle class="r-soft" cx="140" cy="126" r="8"/>
-                    <g class="r-eyes-look" id="r-eyes-look">
-                      <g class="r-eyes">
-                        <g class="r-eye r-eye-l" id="r-eye-l"><ellipse class="r-ink" cx="86" cy="106" rx="6.8" ry="8.6"/></g>
-                        <g class="r-eye r-eye-r" id="r-eye-r"><ellipse class="r-ink" cx="124" cy="106" rx="6.8" ry="8.6"/></g>
-                      </g>
+        <div class="inst">
+          <div class="inst-top"><span>install for <b id="os-name">windows</b></span><a href="#install">other systems ↓</a></div>
+          <div class="cmd"><code id="hero-cmd">powershell -NoProfile -ExecutionPolicy Bypass -c "irm https://downrabbit.pages.dev/install.ps1 | iex"</code><button class="cp" id="hero-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
+          <div class="then">then type <code>downr &lt;link&gt;</code> — that's it.</div>
+        </div>
+        <div class="tiny">~120 MB once · no admin · works offline after install · Apache-2.0</div>
+      </div>
+
+      <div class="stage">
+        <div class="bubble" id="bubble">hi. paste me a link and i'll fetch it.</div>
+        <div id="rig" data-state="idle">
+          <svg class="rabbit" viewBox="0 0 220 235" aria-label="Downrabbit rabbit mascot">
+            <g class="r-all" id="r-all">
+              <g class="r-tail" id="r-tail"><circle class="r-line" cx="170" cy="186" r="13"/></g>
+              <g class="r-body" id="r-body">
+                <ellipse class="r-line" cx="105" cy="180" rx="40" ry="32"/>
+                <ellipse class="r-line" cx="80" cy="208" rx="16" ry="7"/>
+                <ellipse class="r-line" cx="130" cy="208" rx="16" ry="7"/>
+                <ellipse class="r-line r-paw r-paw-l" id="r-paw-l" cx="92" cy="190" rx="9" ry="13"/>
+                <ellipse class="r-line r-paw r-paw-r" id="r-paw-r" cx="118" cy="190" rx="9" ry="13"/>
+              </g>
+              <g class="r-head-look" id="r-head-look">
+                <g class="r-head" id="r-head">
+                  <g class="r-ear r-ear-l" id="r-ear-l"><ellipse class="r-line" cx="82" cy="44" rx="13" ry="42"/><ellipse class="r-soft" cx="82" cy="48" rx="6" ry="30"/></g>
+                  <g class="r-ear r-ear-r" id="r-ear-r"><ellipse class="r-line" cx="128" cy="44" rx="13" ry="42"/><ellipse class="r-soft" cx="128" cy="48" rx="6" ry="30"/></g>
+                  <ellipse class="r-line" cx="105" cy="112" rx="48" ry="44"/>
+                  <circle class="r-soft" cx="70" cy="126" r="8"/><circle class="r-soft" cx="140" cy="126" r="8"/>
+                  <g class="r-eyes-look" id="r-eyes-look">
+                    <g class="r-eyes">
+                      <g class="r-eye r-eye-l" id="r-eye-l"><ellipse class="r-ink" cx="86" cy="106" rx="6.8" ry="8.6"/></g>
+                      <g class="r-eye r-eye-r" id="r-eye-r"><ellipse class="r-ink" cx="124" cy="106" rx="6.8" ry="8.6"/></g>
                     </g>
-                    <g class="r-happy"><path d="M79 106 q7 -8 14 0"/><path d="M117 106 q7 -8 14 0"/></g>
-                    <g class="r-sad"><path d="M79 108 q7 7 14 0"/><path d="M117 108 q7 7 14 0"/></g>
-                    <g class="r-nose" id="r-nose">
-                      <path class="r-ink" d="M99 120 h12 l-6 7 z"/>
-                      <path class="r-mouth" d="M105 127 q-6 7 -12 2 M105 127 q6 7 12 2"/>
-                      <rect class="r-tooth" x="102.5" y="128" width="5" height="6" rx="1.2"/>
-                    </g>
-                    <g class="r-whisk r-whisk-l" id="r-whisk-l"><path class="r-whisker" d="M62 118 h-26 M62 124 l-25 6 M62 112 l-25 -3"/></g>
-                    <g class="r-whisk r-whisk-r" id="r-whisk-r"><path class="r-whisker" d="M148 118 h26 M148 124 l25 6 M148 112 l25 -3"/></g>
                   </g>
+                  <g class="r-happy"><path d="M79 106 q7 -8 14 0"/><path d="M117 106 q7 -8 14 0"/></g>
+                  <g class="r-sad"><path d="M79 108 q7 7 14 0"/><path d="M117 108 q7 7 14 0"/></g>
+                  <g class="r-nose" id="r-nose">
+                    <path class="r-ink" d="M99 120 h12 l-6 7 z"/>
+                    <path class="r-mouth" d="M105 127 q-6 7 -12 2 M105 127 q6 7 12 2"/>
+                    <rect class="r-tooth" x="102.5" y="128" width="5" height="6" rx="1.2"/>
+                  </g>
+                  <g class="r-whisk r-whisk-l" id="r-whisk-l"><path class="r-whisker" d="M62 118 h-26 M62 124 l-25 6 M62 112 l-25 -3"/></g>
+                  <g class="r-whisk r-whisk-r" id="r-whisk-r"><path class="r-whisker" d="M148 118 h26 M148 124 l25 6 M148 112 l25 -3"/></g>
                 </g>
               </g>
-            </svg>
-          </div>
-        </div>
-
-        <div class="paste-wrap">
-          <div class="field" id="field">
-            <span class="field-ico" id="field-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7l1.5-1.5"/></svg></span>
-            <input id="url" placeholder="paste a link — direct file or YouTube/TikTok…" spellcheck="false" autocomplete="off" inputmode="url">
-          </div>
-          <div class="mode-row">
-            <button class="paste-btn" id="paste-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg>paste</button>
-            <button class="go-btn" id="go-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>download</button>
-          </div>
-          <div class="hint">direct files + platform pages via the local bridge · <button class="inline-link" id="sample-chip">try a sample</button></div>
-          <div class="queue" id="queue"></div>
-        </div>
-
-        <div class="preview" id="preview" hidden>
-          <div class="pv-thumb"><div class="pv-skel" id="pv-skel"></div><img id="pv-img" alt="" hidden></div>
-          <div class="pv-body">
-            <div class="pv-title" id="pv-title"><span class="pv-skel-line"></span></div>
-            <div class="pv-meta" id="pv-meta"></div>
-            <div class="pv-stage"><span class="pv-spin"></span><span id="pv-stage">contacting the local bridge…</span></div>
-          </div>
-          <button class="btn-line pv-cancel" id="pv-cancel">cancel</button>
+            </g>
+          </svg>
         </div>
       </div>
-      <div class="footer">in-browser · zero telemetry · Apache-2.0</div>
-    </section>
+    </div>
+  </header>
 
-    <section class="view view-panel" data-view="settings">
-      <h2 class="panel-h">settings</h2>
-      <p class="panel-sub">everything stays in this browser.</p>
-      <div class="set-group">
-        <div class="set-row"><div class="set-lab"><b>theme</b><span>matte terminal or creamy paper</span></div><div class="set-ctl"><div class="mini-seg" id="theme-seg"><button data-theme="dark">matte black</button><button class="on" data-theme="cream">creamy white</button></div></div></div>
-        <div class="set-row"><div class="set-lab"><b>phosphor accent</b><span>the live color · no blue</span></div><div class="set-ctl"><div class="mini-seg" id="accent-seg"><button data-accent="green">green</button><button class="on" data-accent="amber">amber</button></div></div></div>
-        <div class="set-row"><div class="set-lab"><b>reduced motion</b><span>calm the rabbit</span></div><div class="set-ctl"><button class="toggle" id="motion-tog" role="switch" aria-checked="false"></button></div></div>
+  <section class="sec" id="how">
+    <div class="wrap">
+      <div class="sec-h"><h2>what it looks like</h2><span class="sec-n">01 / terminal</span></div>
+      <p class="sec-p">Paste a link, get your file. Titles, qualities and progress all happen right where you already are.</p>
+      <div class="term" id="term" aria-label="example terminal session">
+        <div class="term-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>downr — bash</span></div>
+        <div class="term-body">
+          <div class="ln"><span class="p">$</span> downr youtu.be/jNQXAC9IVRw</div>
+          <div class="ln m">saving to /Users/you/Downloads</div>
+          <div class="ln m">starting the downrabbit engine...</div>
+          <div class="ln">resolving https://youtu.be/jNQXAC9IVRw</div>
+          <div class="ln">&nbsp;&nbsp;Me at the zoo — jawed&nbsp;&nbsp;<span class="d">0:19</span></div>
+          <div class="ln">&nbsp;&nbsp;downloading <span class="d">63%</span>  138 KB/s</div>
+          <div class="ln">&nbsp;&nbsp;saving -&gt; /Users/you/Downloads/Me at the zoo.mp4</div>
+          <div class="ln ok">saved Me at the zoo.mp4 (744 KB)</div>
+          <div class="ln"><span class="p">$</span> <span class="caret"></span></div>
+        </div>
       </div>
-      <div class="set-group">
-        <div class="set-row"><div class="set-lab"><b>connections per file</b><span>parallel range requests · more = faster, a bit more RAM</span></div><div class="set-ctl"><input type="range" id="set-conn" min="1" max="8" value="6"><span class="val" id="conn-val">6</span></div></div>
-        <div class="set-row"><div class="set-lab"><b>concurrent jobs</b><span>how many files at once</span></div><div class="set-ctl"><div class="stepper"><button id="conc-minus">−</button><span class="num" id="conc-val">3</span><button id="conc-plus">+</button></div></div></div>
-        <div class="set-row" id="template-row"><div class="set-lab"><b>filename template</b><span>{name} and {ext} are replaced</span></div><div class="set-ctl"><input type="text" id="set-template" value="{name}.{ext}"></div></div>
-        <div class="set-row"><div class="set-lab"><b>background downloads</b><span>hand files to your browser so they finish even if you close this tab (works on more hosts, no in-app progress)</span></div><div class="set-ctl"><button class="toggle" id="bg-tog" role="switch" aria-checked="false"></button></div></div>
-        <div class="set-row"><div class="set-lab"><b>clipboard watch</b><span>capture a copied link when you return to this tab</span></div><div class="set-ctl"><button class="toggle" id="clip-tog" role="switch" aria-checked="false"></button></div></div>
-        <div class="set-row"><div class="set-lab"><b>local bridge</b><span class="bridge-state" id="bridge-state">checking…</span></div><div class="set-ctl"><button class="btn-line" id="bridge-recheck">recheck</button></div></div>
-        <div class="set-row" id="lan-row" hidden><div class="set-lab"><b>open on another device</b><span>same Wi-Fi · phone, tablet, other PC</span></div><div class="set-ctl lan-ctl"><code id="bridge-lan"></code><button class="btn-line" id="bridge-lan-copy">copy</button></div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-h"><h2>what it does</h2><span class="sec-n">02 / features</span></div>
+      <p class="sec-p">Everything the big downloader sites do, minus the popups, the queue waits and the server in between.</p>
+      <div class="feats">
+        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg><h3>any site yt-dlp knows</h3><p>YouTube, TikTok, Instagram, X, Reddit, SoundCloud, Vimeo, Twitch, Dailymotion, Pinterest, Tumblr and thousands more — updated automatically.</p></div>
+        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg><h3>best quality, or yours</h3><p>Highest available video by default. Want a smaller file? <span class="accent">-q 720</span> and friends.</p></div>
+        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><h3>audio and mp3</h3><p><span class="accent">-a</span> keeps the original audio stream, <span class="accent">-m</span> converts it to mp3 with ffmpeg.</p></div>
+        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg><h3>parallel by default</h3><p>Segmented range requests fetch from 8 connections at once — several times faster on sites that throttle single streams.</p></div>
+        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h6l2 3h10v10a1 1 0 01-1 1H3z"/><path d="M3 7V5a1 1 0 011-1h5l2 3"/></svg><h3>saves where you want</h3><p>Downloads folder by default. <span class="accent">-o "D:\Videos"</span> or <span class="accent">--name "my clip"</span> when you care.</p></div>
+        <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg><h3>yours, privately</h3><p>Runs entirely on your machine. No account, no analytics, no uploads, no server of ours in the middle.</p></div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn-line" id="clear-hist">clear history</button>
-        <button class="btn-line" id="reset-set">reset to defaults</button>
+    </div>
+  </section>
+
+  <section class="sec" id="commands">
+    <div class="wrap">
+      <div class="sec-h"><h2>commands</h2><span class="sec-n">03 / reference</span></div>
+      <p class="sec-p">Everything is one word plus a link. The rest is optional.</p>
+      <div class="cmds">
+        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b></code><p>best quality video into your Downloads folder. run it with no arguments and it asks for a link.</p></div>
+        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> -q 1080</code><p>cap the resolution: best / 2160 / 1440 / 1080 / 720 / 480 / 360.</p></div>
+        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> -a</code><p>audio only, original format (m4a, opus…).</p></div>
+        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> -m</code><p>audio only, converted to mp3.</p></div>
+        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> -o "D:\Videos"</code><p>save somewhere else. relative paths, <span class="accent">~</span> and folders with spaces all work.</p></div>
+        <div class="cmdrow"><code>downr <b>&lt;link&gt;</b> --name "my clip"</code><p>choose the file name (the extension is kept correct).</p></div>
+        <div class="cmdrow"><code>downr <b>&lt;link1&gt; &lt;link2&gt;</b> …</code><p>more than one link is fine — they download one after another.</p></div>
+        <div class="cmdrow"><code>downr --help</code><p>this page, in your terminal.</p></div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="view view-panel" data-view="about">
-      <h2 class="panel-h">about downrabbit</h2>
-      <p class="panel-sub">a tiny media downloader that lives in your browser.</p>
-      <div class="about-card">
-        <p><b style="color:var(--text)">paste a link, get the file.</b> direct links stream straight to your disk — multi-connection, resumable, no account. platform pages run through the optional local bridge.</p>
-        <p><b style="color:var(--text)">honest scope:</b> the webapp itself is still serverless. YouTube/TikTok/etc. need the small bridge on your machine; Spotify is DRM and stays unsupported.</p>
-        <div class="tagrow"><span class="tag">Apache-2.0</span><span class="tag">clean-room</span><span class="tag">zero telemetry</span><span class="tag">no server</span><span class="tag">local bridge</span><span class="tag">streams to disk</span><span class="tag">Chromium best</span></div>
+  <section class="sec" id="install">
+    <div class="wrap">
+      <div class="sec-h"><h2>install</h2><span class="sec-n">04 / one command</span></div>
+      <p class="sec-p">One line installs the engine, yt-dlp and ffmpeg next to your user account — no admin, no dependencies to manage. Works on Windows 10/11, macOS, Linux and Android (Termux).</p>
+      <div class="tabs" role="tablist">
+        <button class="tab" data-os="windows" role="tab">windows</button>
+        <button class="tab" data-os="macos" role="tab">macOS</button>
+        <button class="tab" data-os="linux" role="tab">linux</button>
+        <button class="tab" data-os="android" role="tab">android</button>
       </div>
-    </section>
 
-    <div class="overlay" id="help-overlay"><div class="sheet">
-      <div class="sheet-h"><h3>what can i download?</h3><button class="x" data-close>×</button></div>
-      <div class="help-block"><b><span class="ok">✓</span> direct file links</b><p>a URL that points straight at a file — usually ends in an extension, and the host allows cross-origin reads.</p><code>https://cdn.example.com/clip.mp4<br>https://files.example.org/song.mp3</code></div>
-      <div class="help-block"><b><span class="ok">✓</span> platform pages · with the local bridge</b><p>start the tiny local bridge once and downrabbit can fetch YouTube, TikTok, Instagram, Reddit, X, Facebook, Vimeo, Twitch, SoundCloud, Bilibili, Dailymotion, Pinterest, Tumblr and most other sites yt-dlp supports. the download runs on your machine — no server of ours.</p><code>cd bridge<br>.\setup.ps1<br>.\start.ps1</code><p style="margin-top:8px">some sites (Instagram, Facebook, X, age-restricted YouTube) need your browser cookies. start the bridge with <span class="accent">BRIDGE_COOKIES_FROM_BROWSER=chrome</span> (or edge/firefox).</p><p style="margin-top:8px">first time? your browser may ask to allow local network access — click <span class="accent">Allow</span> so the bridge can connect.</p><p style="margin-top:8px">1080p+ and MP3 conversion use ffmpeg; setup.ps1 installs a build with MP3 support.</p></div>
-      <div class="help-block"><b><span class="ok">✓</span> use it on your phone or another PC</b><p>the bridge runs on one computer. to download from a phone, tablet or second PC on the <span class="accent">same Wi-Fi</span>, open the bridge's network address there — find it in <span class="accent">settings → open on another device</span> and copy it.</p><code>http://192.168.1.20:8765</code><p style="margin-top:8px">first time only: on the PC running the bridge, double-click <span class="accent">bridge/allow-firewall.cmd</span> once so other devices can reach it. it's plain http on your own network, so no browser permission prompt.</p></div>
-      <div class="help-block"><b><span class="no">✕</span> spotify</b><p>Spotify streams are DRM-protected, so no downloader can save them. use SoundCloud or a video mirror instead.</p></div>
-      <div class="help-block"><b>tip</b><p>if a host blocks in-app reads, downrabbit offers a <span class="accent">browser download</span> fallback. turn on <span class="accent">background downloads</span> in settings to let your browser finish files even after you close this tab.</p></div>
-      <button class="btn-solid" id="help-sample">try a sample direct link</button>
-    </div></div>
-
-    <div class="overlay" id="hist-overlay"><div class="sheet">
-      <div class="sheet-h"><h3>history &amp; downloads</h3><button class="x" data-close>×</button></div>
-      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="hist-search" placeholder="search downloads…"></div>
-      <div id="hist-list"></div>
-    </div></div>
-
-    <div class="overlay" id="opt-overlay"><div class="sheet">
-      <div class="sheet-h"><h3>before you download</h3><button class="x" data-close>×</button></div>
-      <div class="opt-head" id="opt-head" hidden><img id="opt-thumb" alt=""><div class="opt-head-t"><b id="opt-title"></b><span id="opt-sub"></span></div></div>
-      <div class="opt-meta" id="opt-meta"></div>
-      <div class="opt-row" id="opt-quality-row" style="display:none"><div class="opt-lab"><b>quality</b><span>real formats from the source · no fake toggles</span></div><div class="set-ctl"><select id="opt-quality"></select></div></div>
-      <div class="opt-row"><div class="opt-lab"><b>save as</b><span>filename on your disk</span></div><div class="set-ctl"><input type="text" id="opt-name" spellcheck="false"></div></div>
-      <div class="opt-row"><div class="opt-lab"><b>connections</b><span>parallel ranges · more = faster</span></div><div class="set-ctl"><div class="stepper"><button id="opt-conn-minus">−</button><span class="num" id="opt-conn-val">6</span><button id="opt-conn-plus">+</button></div></div></div>
-      <p class="opt-note" id="opt-note">quality &amp; audio are whatever the source file has.</p>
-      <div class="opt-actions"><button class="btn-line" id="opt-cancel">cancel</button><button class="btn-solid" id="opt-go">download</button></div>
-    </div></div>
-
-    <div class="overlay" id="prep-overlay"><div class="sheet">
-      <div class="sheet-h"><h3 id="prep-title">preparing…</h3></div>
-      <div class="track"><div class="bar indet" id="prep-bar" style="width:0%"></div></div>
-      <div class="prep-meta"><span class="sp" id="prep-stage">starting…</span><span id="prep-pct"></span></div>
-      <div class="prep-err" id="prep-err"></div>
-      <div class="opt-actions"><button class="btn-line" id="prep-cancel">cancel</button></div>
-    </div></div>
-
-    <div class="overlay" id="bridge-connect-overlay"><div class="sheet">
-      <div class="sheet-h"><h3>connect the local bridge</h3><button class="x" data-close>×</button></div>
-      <div class="help-block">
-        <b>easiest: run the local app — no permission needed</b>
-        <p>double-click <span class="accent">bridge/Downrabbit.cmd</span>. it opens downrabbit at <span class="accent">http://127.0.0.1:8765</span>, already connected — your browser never asks for local-network access.</p>
-        <p>or stay here and grant one permission: choose <span class="accent">Allow</span> (or <span class="accent">Allow local network access</span>) so the bridge can fetch <span id="bridge-connect-what">that page</span>. bridge not running? start it:</p>
-        <code>cd bridge<br>.\start.ps1</code>
+      <div class="panel" data-panel="windows">
+        <div class="cmd"><code>powershell -NoProfile -ExecutionPolicy Bypass -c "irm https://downrabbit.pages.dev/install.ps1 | iex"</code><button class="cp" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
+        <div class="note">paste into <b>cmd</b> or <b>PowerShell</b>. installs to <b>%LOCALAPPDATA%\downrabbit</b> and puts <b>downr</b> on your PATH — open a new terminal afterwards. to remove: delete that folder and drop it from PATH.</div>
       </div>
-      <div class="prep-err" id="bridge-connect-err"></div>
-      <div class="opt-actions"><button class="btn-line" id="bridge-connect-cancel">not now</button><button class="btn-solid" id="bridge-connect-go">allow &amp; connect</button></div>
-    </div></div>
+      <div class="panel" data-panel="macos">
+        <div class="cmd"><code>curl -fsSL https://downrabbit.pages.dev/install.sh | sh</code><button class="cp" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
+        <div class="note">paste into <b>Terminal</b>. needs <b>node 18+</b> (brew install node). installs to <b>~/.local/share/downrabbit</b>, command in <b>~/.local/bin</b>.</div>
+      </div>
+      <div class="panel" data-panel="linux">
+        <div class="cmd"><code>curl -fsSL https://downrabbit.pages.dev/install.sh | sh</code><button class="cp" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
+        <div class="note">paste into your shell. needs <b>node 18+</b>. installs to <b>~/.local/share/downrabbit</b>, command in <b>~/.local/bin</b> (it tells you if that folder isn't on PATH).</div>
+      </div>
+      <div class="panel" data-panel="android">
+        <div class="cmd"><code>curl -fsSL https://downrabbit.pages.dev/install.sh | sh</code><button class="cp" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>copy</button></div>
+        <div class="note">paste into <b>Termux</b> (free on Play Store / F-Droid). it installs node, yt-dlp and ffmpeg with <b>pkg</b> and asks once for storage permission so files land in your Downloads folder. phones on iOS can't run local programs — download on a computer instead.</div>
+      </div>
 
-    <div class="toast" id="toast"><span id="toast-text"></span><button id="toast-act" style="display:none">undo</button></div>
-  </main>
+      <div class="req"><span>windows 10/11</span><span>macOS 10.15+</span><span>linux x86_64 / arm64</span><span>android · termux</span><span>~120 MB disk</span><span>no admin</span></div>
+    </div>
+  </section>
+
+  <section class="sec" id="faq">
+    <div class="wrap">
+      <div class="sec-h"><h2>questions</h2><span class="sec-n">05 / faq</span></div>
+
+      <details><summary><span class="pm"></span>is it really free?</summary><p>Yes. Apache-2.0 source, no account, no ads, no paid tier, no analytics. The only cost is your own bandwidth and about 120 MB of disk.</p></details>
+      <details><summary><span class="pm"></span>is it safe?</summary><p>The installer is a plain text script you can read before running (<a href="https://github.com/DiyonGamage/downrabbit" class="accent" style="text-decoration:none">github.com/DiyonGamage/downrabbit</a>). It downloads signed Node.js, yt-dlp and an ffmpeg build from their official releases into your user folder. Nothing runs as admin, nothing listens on a public port, and downloads only happen when you ask for them.</p></details>
+      <details><summary><span class="pm"></span>where do my files go?</summary><p>Your Downloads folder — <code>%USERPROFILE%\Downloads</code> on Windows, <code>~/Downloads</code> on macOS/Linux, <code>~/storage/downloads</code> on Android. Use <code>-o</code> to pick a different folder.</p></details>
+      <details><summary><span class="pm"></span>YouTube wants me to sign in for some videos</summary><p>Private, age-restricted or members-only videos need your browser session. Start a download with your cookies available: set <code>BRIDGE_COOKIES_FROM_BROWSER=chrome</code> (or edge / firefox) in the terminal before running <code>downr</code>. Public videos never need this.</p></details>
+      <details><summary><span class="pm"></span>does it keep working when sites change?</summary><p>The engine refreshes yt-dlp automatically in the background. If a site still breaks, re-run the install command — it updates everything in place and keeps your files and settings.</p></details>
+      <details><summary><span class="pm"></span>can i use it on my phone?</summary><p>Android, yes — through Termux with the same one-line install. Files land in your Downloads folder and play in any app. iPhones and iPads can't run local programs, so use a computer for platform links.</p></details>
+      <details><summary><span class="pm"></span>why is it faster than downloader websites?</summary><p>Those sites queue you behind everyone else and stream through their server. Downrabbit runs on your machine, fetches from 8 parallel connections and never uploads your file anywhere — the ceiling is your own internet, not someone else's queue.</p></details>
+      <details><summary><span class="pm"></span>how do i uninstall it?</summary><p>Windows: delete <code>%LOCALAPPDATA%\downrabbit</code> and remove that <code>bin</code> folder from your PATH. macOS/Linux: <code>rm -rf ~/.local/share/downrabbit ~/.local/bin/downr</code>. That's the whole footprint.</p></details>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap foot">
+      <span>downrabbit — download anything, one command.</span>
+      <a href="https://github.com/DiyonGamage/downrabbit">source · Apache-2.0</a>
+      <span class="sp">no account · no telemetry · runs on your machine</span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 
 <script>
 (function(){
-  var root=document.getElementById('downrabbit-app'); if(!root) return;
-  var $=function(s){return root.querySelector(s);};
-  var $$=function(s){return Array.prototype.slice.call(root.querySelectorAll(s));};
-  var SAMPLE='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
-  var LS_SET='downrabbit.settings.v1', LS_HIST='downrabbit.history.v1';
-  var BRIDGE=(location.protocol==='http:'&&location.port==='8765')?'':'http://127.0.0.1:8765';
-  var BRIDGE_ALLOW_KEY='downrabbit.bridge.v1';
-  var bridge=null, bridgeLastCheck=0, bridgeTried=false, pendingBridge=null;
+  'use strict';
+  var root=document.getElementById('downrabbit-app');
+  var $=function(s,c){ return (c||document).querySelector(s); };
+  var $$=function(s,c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); };
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var S={ view:'save', accent:'amber', theme:'cream', motion:'full',
-    connections:6, concurrency:3, template:'{name}.{ext}', bg:false, clip:false,
-    jobs:[], history:[], seq:0, focus:null };
+  if(window.matchMedia('(prefers-color-scheme: dark)').matches) root.setAttribute('data-theme','dark');
 
-  /* ---------- persistence ---------- */
-  function saveSettings(){ try{localStorage.setItem(LS_SET,JSON.stringify({accent:S.accent,theme:S.theme,motion:S.motion,connections:S.connections,concurrency:S.concurrency,template:S.template,bg:S.bg,clip:S.clip}));}catch(e){} }
-  function loadSettings(){
-    try{var o=JSON.parse(localStorage.getItem(LS_SET)||'{}'); for(var k in o){ if(k in S) S[k]=o[k]; }}catch(e){}
-    try{
-      if(!localStorage.getItem('downrabbit.speed.v2')){
-        if(S.connections===4) S.connections=6;
-        if(S.concurrency===2) S.concurrency=3;
-        localStorage.setItem('downrabbit.speed.v2','1');
-        saveSettings();
-      }
-    }catch(e){}
-  }
-  function saveHistory(){ try{localStorage.setItem(LS_HIST,JSON.stringify(S.history.slice(0,60)));}catch(e){} }
-  function loadHistory(){ try{var o=JSON.parse(localStorage.getItem(LS_HIST)||'null'); if(Array.isArray(o)) S.history=o; else S.history=[
-      {title:'flower.mp4',url:SAMPLE,size:'1.1 MB',when:'sample',kind:'video',host:'interactive-examples.mdn.mozilla.net'},
-      {title:'direct-link-guide.pdf',url:'https://files.example.org/direct-link-guide.pdf',size:'0.4 MB',when:'sample',kind:'file',host:'files.example.org'}
-    ];}catch(e){ S.history=[]; } }
+  var CMDS={
+    windows:'powershell -NoProfile -ExecutionPolicy Bypass -c "irm https://downrabbit.pages.dev/install.ps1 | iex"',
+    macos:'curl -fsSL https://downrabbit.pages.dev/install.sh | sh',
+    linux:'curl -fsSL https://downrabbit.pages.dev/install.sh | sh',
+    android:'curl -fsSL https://downrabbit.pages.dev/install.sh | sh'
+  };
+  var NAMES={ windows:'windows', macos:'macOS', linux:'linux', android:'android' };
+  var ua=navigator.userAgent||'';
+  var os=/android/i.test(ua)?'android':/win/i.test(ua)?'windows':/mac/i.test(ua)?'macos':'linux';
+  $('#os-name').textContent=NAMES[os];
+  $('#hero-cmd').textContent=CMDS[os];
+  $$('.tab').forEach(function(t){ if(t.getAttribute('data-os')===os)t.classList.add('on'); });
+  $$('.panel').forEach(function(p){ if(p.getAttribute('data-panel')===os)p.classList.add('on'); });
+  $$('.tab').forEach(function(t){ t.addEventListener('click',function(){
+    $$('.tab').forEach(function(x){x.classList.remove('on');}); t.classList.add('on');
+    $$('.panel').forEach(function(p){ p.classList.toggle('on',p.getAttribute('data-panel')===t.getAttribute('data-os')); });
+  }); });
 
-  /* ---------- helpers ---------- */
-  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-  function sanitize(n){ return (n||'media').replace(/[<>:"/\\|?*\x00-\x1f]/g,'').replace(/\s+/g,' ').replace(/[. ]+$/,'').trim().slice(0,120)||'media'; }
-  function hostOf(u){ try{return new URL(u).hostname.replace(/^www\./,'');}catch(e){return 'direct';} }
-  function nameFromUrl(u){ try{ var p=new URL(u).pathname; var seg=decodeURIComponent(p.split('/').filter(Boolean).pop()||''); if(seg&&seg.indexOf('.')>-1){ var parts=seg.split('.'); var ext=parts.pop(); return {name:parts.join('.')||'media',ext:ext}; } return {name:seg||'media',ext:'bin'}; }catch(e){ return {name:'media',ext:'bin'}; } }
-  function fmtSize(b){ if(b==null)return '—'; if(b<1024)return b+' B'; if(b<1048576)return (b/1024).toFixed(1)+' KB'; if(b<1073741824)return (b/1048576).toFixed(1)+' MB'; return (b/1073741824).toFixed(2)+' GB'; }
-  function fmtSpeed(bps){ if(!bps)return '0 KB/s'; if(bps<1048576)return Math.round(bps/1024)+' KB/s'; return (bps/1048576).toFixed(1)+' MB/s'; }
-  function applyTemplate(j){ var t=S.template||'{name}.{ext}'; return sanitize(t.replace(/\{name\}/g,j.name).replace(/\{ext\}/g,j.ext)); }
-  var PLATFORMS=[
-    [/(^|\.)youtube\.com$|(^|\.)youtu\.be$/,'YouTube'],
-    [/(^|\.)tiktok\.com$/,'TikTok'],
-    [/(^|\.)instagram\.com$/,'Instagram'],
-    [/(^|\.)reddit\.com$|(^|\.)redd\.it$/,'Reddit'],
-    [/(^|\.)twitter\.com$|(^|\.)x\.com$/,'X'],
-    [/(^|\.)facebook\.com$|(^|\.)fb\.watch$/,'Facebook'],
-    [/(^|\.)vimeo\.com$/,'Vimeo'],
-    [/(^|\.)twitch\.tv$/,'Twitch'],
-    [/(^|\.)soundcloud\.com$/,'SoundCloud'],
-    [/(^|\.)spotify\.com$/,'Spotify'],
-    [/(^|\.)bilibili\.com$|(^|\.)b23\.tv$/,'Bilibili'],
-    [/(^|\.)dailymotion\.com$|(^|\.)dai\.ly$/,'Dailymotion'],
-    [/(^|\.)pinterest\.[a-z.]+$|(^|\.)pin\.it$/,'Pinterest'],
-    [/(^|\.)tumblr\.com$/,'Tumblr'],
-    [/(^|\.)kick\.com$/,'Kick'],
-    [/(^|\.)rumble\.com$/,'Rumble'],
-    [/(^|\.)odysee\.com$/,'Odysee'],
-    [/(^|\.)streamable\.com$/,'Streamable'],
-    [/(^|\.)imgur\.com$/,'Imgur'],
-    [/(^|\.)giphy\.com$/,'Giphy'],
-    [/(^|\.)linkedin\.com$/,'LinkedIn'],
-    [/(^|\.)snapchat\.com$/,'Snapchat']
-  ];
-  function platformOf(u){ var h=hostOf(u); for(var i=0;i<PLATFORMS.length;i++){ if(PLATFORMS[i][0].test(h)) return PLATFORMS[i][1]; } return null; }
-  function canonicalPlatform(u){ try{ var x=new URL(u); var h=x.hostname.replace(/^www\./,''); if(/(^|\.)youtube\.com$/.test(h)){ var m=/^\/(shorts|live|embed)\/([^/?#]+)/i.exec(x.pathname); if(m){ x.pathname='/watch'; x.search='?v='+m[2]; return x.toString(); } } }catch(e){} return u; }
-  function isBlock(e){ return e && (e.name==='TypeError' || /fetch|network|cors|failed/i.test(e.message||'')); }
-  function fmtDur(s){ s=Math.max(0,Math.round(Number(s)||0)); var h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60; return (h?h+':':'')+(h&&m<10?'0':'')+m+':'+(ss<10?'0':'')+ss; }
-  function ensureExt(n,ext){ var b=sanitize(n).replace(/\.[a-z0-9]{1,5}$/i,''); return b+'.'+(ext||'mp4'); }
-  function swapExt(n,oldExt,newExt){ n=sanitize(n); if(oldExt&&new RegExp('\\.'+oldExt+'$','i').test(n)) return n.replace(new RegExp('\\.'+oldExt+'$','i'),'.'+newExt); var m=n.match(/^(.*)\.[a-z0-9]{1,5}$/i); return (m?m[1]:n)+'.'+newExt; }
-
-  /* ---------- rabbit rig ---------- */
+  /* rabbit */
   var Rig=(function(){
-    var rig=$('#rig'); if(!rig) return {setState:function(){},setReduced:function(){}};
-    var headLook=$('#r-head-look'), eyesLook=$('#r-eyes-look');
+    var rig=$('#rig'), headLook=$('#r-head-look'), eyesLook=$('#r-eyes-look');
     var eyeL=$('#r-eye-l'), eyeR=$('#r-eye-r'), earL=$('#r-ear-l'), earR=$('#r-ear-r');
-    var state='idle', reduced=false, look={x:0,y:0}, target={x:0,y:0};
-    var blinkT=null, flickT=null, raf=null;
+    if(!rig||!eyeL) return {setState:function(){}};
+    var state='idle', look={x:0,y:0}, target={x:0,y:0};
+    var blinkT=null, flickT=null, raf=null, revertT=null;
     function doBlink(){ eyeL.classList.add('blink');eyeR.classList.add('blink');
       setTimeout(function(){eyeL.classList.remove('blink');eyeR.classList.remove('blink');},210); }
     function scheduleBlink(){ blinkT=setTimeout(function(){ if(!reduced){ doBlink();
       if(Math.random()<0.22) setTimeout(doBlink,280); } scheduleBlink(); }, 1900+Math.random()*4300); }
-    function scheduleFlick(){ flickT=setTimeout(function(){ if(!reduced&&(state==='idle'||state==='link'||state==='empty')){
+    function scheduleFlick(){ flickT=setTimeout(function(){ if(!reduced&&state==='idle'){
       var e=Math.random()<0.5?earL:earR; e.classList.add('flick'); setTimeout(function(){e.classList.remove('flick');},580); }
       scheduleFlick(); }, 3600+Math.random()*5200); }
     function frame(){ look.x+=(target.x-look.x)*0.1; look.y+=(target.y-look.y)*0.1;
@@ -654,686 +445,47 @@
       var cx=r.left+r.width/2, cy=r.top+r.height*0.42;
       target.x=Math.max(-1,Math.min(1,(e.clientX-cx)/(r.width*0.9)));
       target.y=Math.max(-1,Math.min(1,(e.clientY-cy)/(r.height*0.9))); }
-    function setState(s){ state=s; rig.setAttribute('data-state',s);
-      if(s==='link'||s==='empty'){target.x=0.15;target.y=0.6;}
-      else if(s==='download'){target.x=0;target.y=0.5;}
-      else if(s==='success'){target.x=0;target.y=-0.3;}
-      else if(s==='error'){target.x=0;target.y=0.7;}
-      else if(s==='sorry'){target.x=0;target.y=0.5;}
-      else {target.x=0;target.y=0;} }
-    function setReduced(v){ reduced=v;
-      if(v){ if(raf)cancelAnimationFrame(raf); raf=null; clearTimeout(blinkT);clearTimeout(flickT);
-        if(eyesLook)eyesLook.style.transform=''; if(headLook)headLook.style.transform=''; }
-      else { if(!raf)raf=requestAnimationFrame(frame); scheduleBlink(); scheduleFlick(); } }
     document.addEventListener('mousemove',onMove);
-    raf=requestAnimationFrame(frame); scheduleBlink(); scheduleFlick();
-    return {setState:setState,setReduced:setReduced};
+    if(!reduced){ raf=requestAnimationFrame(frame); scheduleBlink(); scheduleFlick(); }
+    function setState(s){ state=s; rig.setAttribute('data-state',s);
+      if(s==='success'){ target.x=0; target.y=-0.3; clearTimeout(revertT); revertT=setTimeout(function(){ setState('idle'); },1500); }
+      else if(s==='idle'){ target.x=0; target.y=0; } }
+    return {setState:setState};
   })();
 
-  var ICO={
-    link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7l1.5-1.5"/></svg>',
-    spin:'<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 019 9"/></svg>',
-    video:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>',
-    audio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
-    file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>',
-    redo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7M21 4v5h-5"/></svg>',
-    copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>',
-    trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>'
-  };
-  var HOP='<svg class="hop" viewBox="0 0 120 130"><g style="transform:rotate(-9deg);transform-box:fill-box;transform-origin:50% 100%"><ellipse class="r-line" cx="46" cy="30" rx="8" ry="24"/></g><g style="transform:rotate(9deg);transform-box:fill-box;transform-origin:50% 100%"><ellipse class="r-line" cx="74" cy="30" rx="8" ry="24"/></g><ellipse class="r-line" cx="60" cy="74" rx="29" ry="26"/><circle class="r-accent" cx="49" cy="72" r="3.4"/><circle class="r-accent" cx="71" cy="72" r="3.4"/></svg>';
-
-  function setRabbit(state){ Rig.setState(state); }
-  function setBubble(html){ $('#bubble-text').innerHTML=html; }
-  function fieldBusy(b){ $('#field').classList.toggle('busy',b); $('#field-ico').innerHTML=b?ICO.spin:ICO.link; }
-
-  /* ---------- views & theme ---------- */
-  function setView(v){ S.view=v;
-    $$('.nav').forEach(function(n){n.classList.toggle('on',n.getAttribute('data-view')===v);});
-    $$('.view').forEach(function(s){s.classList.toggle('on',s.getAttribute('data-view')===v);}); }
-  $$('.nav').forEach(function(n){n.addEventListener('click',function(){setView(n.getAttribute('data-view'));});});
-  function setAccent(a){ S.accent=a; root.setAttribute('data-accent',a);
-    $$('#accent-seg button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-accent')===a);}); saveSettings(); }
-  function setTheme(t){ S.theme=t; root.setAttribute('data-theme',t);
-    $$('#theme-seg button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-theme')===t);}); saveSettings(); }
-  function setMotion(m){ S.motion=m; root.setAttribute('data-motion',m); Rig.setReduced(m==='reduced');
-    $('#motion-tog').classList.toggle('on',m==='reduced'); $('#motion-tog').setAttribute('aria-checked',m==='reduced'); saveSettings(); }
-  $$('#accent-seg button').forEach(function(b){b.addEventListener('click',function(){setAccent(b.getAttribute('data-accent'));});});
-  $$('#theme-seg button').forEach(function(b){b.addEventListener('click',function(){setTheme(b.getAttribute('data-theme'));});});
-  $('#motion-tog').addEventListener('click',function(){setMotion(S.motion==='full'?'reduced':'full');});
-
-  /* ---------- settings ---------- */
-  function applySettingsToUI(){
-    root.setAttribute('data-accent',S.accent); root.setAttribute('data-theme',S.theme); root.setAttribute('data-motion',S.motion);
-    $$('#accent-seg button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-accent')===S.accent);});
-    $$('#theme-seg button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-theme')===S.theme);});
-    $('#motion-tog').classList.toggle('on',S.motion==='reduced'); $('#motion-tog').setAttribute('aria-checked',S.motion==='reduced');
-    Rig.setReduced(S.motion==='reduced');
-    $('#set-conn').value=S.connections; $('#conn-val').textContent=S.connections;
-    $('#conc-val').textContent=S.concurrency; $('#set-template').value=S.template;
-    $('#bg-tog').classList.toggle('on',S.bg); $('#bg-tog').setAttribute('aria-checked',S.bg);
-    $('#clip-tog').classList.toggle('on',S.clip); $('#clip-tog').setAttribute('aria-checked',S.clip);
-  }
-  $('#set-conn').addEventListener('input',function(){S.connections=+this.value;$('#conn-val').textContent=this.value;saveSettings();});
-  $('#conc-minus').addEventListener('click',function(){S.concurrency=Math.max(1,S.concurrency-1);$('#conc-val').textContent=S.concurrency;saveSettings();pump();});
-  $('#conc-plus').addEventListener('click',function(){S.concurrency=Math.min(4,S.concurrency+1);$('#conc-val').textContent=S.concurrency;saveSettings();pump();});
-  $('#set-template').addEventListener('input',function(){S.template=this.value||'{name}.{ext}';saveSettings();});
-  $('#bg-tog').addEventListener('click',function(){S.bg=!S.bg;this.classList.toggle('on',S.bg);this.setAttribute('aria-checked',S.bg);saveSettings();
-    toast(S.bg?'files will hand off to your browser downloader':'downloads stay in this tab');});
-  $('#clip-tog').addEventListener('click',function(){S.clip=!S.clip;this.classList.toggle('on',S.clip);this.setAttribute('aria-checked',S.clip);saveSettings();});
-  $('#clear-hist').addEventListener('click',function(){S.history=[];saveHistory();renderHistory('');toast('history cleared');});
-  $('#reset-set').addEventListener('click',function(){
-    S.connections=6;S.concurrency=3;S.template='{name}.{ext}';S.bg=false;S.clip=false;S.accent='amber';S.theme='cream';S.motion='full';
-    applySettingsToUI();saveSettings();toast('settings reset to defaults');});
-  window.addEventListener('focus',function(){ if(!S.clip)return;
-    if(navigator.clipboard&&navigator.clipboard.readText){ navigator.clipboard.readText().then(function(t){ t=(t||'').trim();
-      if(/^https?:\/\//i.test(t)&&t!==$('#url').value){ $('#url').value=t; setRabbit('link'); setBubble('captured a link from your clipboard — press <span class="accent">enter</span>.'); } }).catch(function(){}); } });
-
-  /* ---------- local bridge ---------- */
-  async function bridgeFetch(path,opts,ms){
-    var ctrl=new AbortController(); var timer=setTimeout(function(){ctrl.abort();},ms||15000);
-    var o=Object.assign({cache:'no-store',signal:ctrl.signal},opts||{});
-    try{
-      var r=await fetch(BRIDGE+path,o);
-      var txt=await r.text(); var data={};
-      try{ data=txt?JSON.parse(txt):{}; }catch(e){ data={error:txt||('bridge HTTP '+r.status)}; }
-      if(!r.ok) throw new Error(data.error||('bridge HTTP '+r.status));
-      return data;
-    }catch(e){
-      if(e&&e.name==='AbortError') throw new Error('the bridge took too long to answer');
-      throw e;
-    }finally{ clearTimeout(timer); }
-  }
-  async function detectBridge(ms){
-    bridgeLastCheck=Date.now(); bridgeTried=true;
-    try{ bridge=await bridgeFetch('/ping',{},ms||3000); }
-    catch(e){ bridge=null; }
-    if(bridge&&bridge.ready){ try{ localStorage.setItem(BRIDGE_ALLOW_KEY,'1'); }catch(e){} }
-    updateBridgeUI();
-    return bridge;
-  }
-  function recheckBridge(){ if(bridge && Date.now()-bridgeLastCheck<4000) return Promise.resolve(bridge); return detectBridge(); }
-  function updateBridgeUI(){
-    var el=$('#bridge-state'); if(!el)return;
-    if(!bridge){
-      el.className='bridge-state';
-      if(location.protocol==='https:'){
-        el.textContent=bridgeTried?'offline · allow local access or start bridge/start.ps1':'not connected · connect on first download';
-      } else {
-        el.textContent='offline · run bridge/start.ps1';
-      }
-    }
-    else if(!bridge.ready){ el.className='bridge-state bad'; el.textContent='online · yt-dlp missing'; }
-    else { el.className='bridge-state ok'; el.textContent='connected · yt-dlp '+(bridge.ytdlp||'ok')+(bridge.ffmpeg?' · ffmpeg ok':''); }
-    var lr=$('#lan-row'), lc=$('#bridge-lan');
-    if(lr&&lc){ var lans=(bridge&&bridge.lan)||[]; if(lans.length){ lc.textContent=lans[0]; lr.hidden=false; } else { lr.hidden=true; } }
-  }
-  function bindBridgeHelp(){ var b=$('#bridge-help'); if(b) b.onclick=function(){ openHelp(); }; }
-  function bridgeMissing(label){
-    setRabbit('sorry');
-    setBubble("that's a <span class='accent'>"+esc(label)+"</span> page. start the <button class='inline-link' id='bridge-help'>local bridge</button> and i can fetch it — or paste a direct file link.");
-    bindBridgeHelp();
-  }
-  function bridgeConnectOpen(url,label){
-    pendingBridge={url:url,label:label};
-    $('#bridge-connect-what').textContent=label||'that page';
-    $('#bridge-connect-err').style.display='none'; $('#bridge-connect-err').textContent='';
-    var go=$('#bridge-connect-go'); go.disabled=false; go.textContent='allow & connect';
-    $('#bridge-connect-overlay').classList.add('on');
-    setRabbit('link'); setBubble('one quick permission — your browser will ask to allow the local bridge.');
-  }
-  function bridgeConnectClose(){
-    pendingBridge=null;
-    $('#bridge-connect-overlay').classList.remove('on');
-    setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.');
-  }
-  async function bridgeConnectGo(){
-    if(!pendingBridge)return;
-    var go=$('#bridge-connect-go'); go.disabled=true; go.textContent='connecting…';
-    var err=$('#bridge-connect-err'); err.style.display='none'; err.textContent='';
-    await detectBridge(30000);
-    if(bridge&&bridge.ready){
-      var p=pendingBridge; pendingBridge=null;
-      $('#bridge-connect-overlay').classList.remove('on');
-      bridgeFlow(p.url,p.label);
-      return;
-    }
-    go.disabled=false; go.textContent='allow & connect';
-    err.textContent = (bridge&&!bridge.ready)
-      ? 'the bridge is online, but yt-dlp is missing. run bridge/setup.ps1 and restart it.'
-      : 'could not reach the bridge. make sure bridge/start.ps1 is running, then allow local network access in your browser\'s site settings.';
-    err.style.display='block';
-    setRabbit('error');
-  }
-  var pendingPreview=null;
-  function showPreview(url,label){
-    pendingPreview=url;
-    $('#pv-img').hidden=true; $('#pv-img').removeAttribute('src');
-    $('#pv-skel').style.display='';
-    $('#pv-title').innerHTML='<span class="pv-skel-line"></span>';
-    $('#pv-meta').innerHTML='<span class="tag">'+esc(label)+'</span>';
-    $('#pv-stage').textContent='contacting the local bridge…';
-    $('#preview').hidden=false;
-    document.querySelector('.paste-wrap').style.display='none';
-    setRabbit('link');
-  }
-  function fillPreview(p,label){
-    if(pendingPreview===null)return;
-    if(p.thumbnail){ $('#pv-img').src=p.thumbnail; $('#pv-img').hidden=false; $('#pv-skel').style.display='none'; }
-    if(p.title){ $('#pv-title').textContent=p.title; }
-    var tags='<span class="tag">'+esc(label)+'</span>';
-    if(p.uploader)tags+='<span class="tag">'+esc(p.uploader)+'</span>';
-    $('#pv-meta').innerHTML=tags;
-    $('#pv-stage').textContent='reading formats…';
-  }
-  function hidePreview(){
-    pendingPreview=null;
-    $('#preview').hidden=true;
-    document.querySelector('.paste-wrap').style.display='';
-  }
-  function cancelPreview(){
-    hidePreview(); fieldBusy(false); setRabbit('idle');
-    setBubble('paste a link — i\'ll do the rest.');
-  }
-  function isMobileUA(){ return /Android|iPhone|iPad|iPod|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent||''); }
-  function phoneGuidance(){
-    setRabbit('sorry');
-    setBubble('platform pages download on your <span class="accent">PC</span>, not this phone. open your PC\'s downrabbit address (below) on this phone — direct file links still work here.');
-    $('#help-overlay').classList.add('on');
-    var bs=$$('#help-overlay .help-block'); var t=null;
-    for(var i=0;i<bs.length;i++){ if(/use it on your phone/i.test(bs[i].textContent)){ t=bs[i]; break; } }
-    if(t) t.scrollIntoView({block:'center'});
-  }
-  async function bridgeFlow(url,label){
-    if(bridge && !bridge.ready){
-      setRabbit('error');
-      setBubble('the bridge is online, but <span class="accent">yt-dlp</span> is missing. run <span class="accent">bridge/setup.ps1</span> and restart it.');
-      return;
-    }
-    if(!bridge && location.protocol==='https:'){
-      if(isMobileUA()){ phoneGuidance(); return; }
-      location.href=BRIDGE+'/?url='+encodeURIComponent(url); return;
-    }
-    if(!bridge) await recheckBridge();
-    if(!bridge){ bridgeMissing(label); return; }
-    showPreview(url,label); fieldBusy(true);
-    setBubble('reading that <span class="accent">'+esc(label)+'</span> link…');
-    bridgeFetch('/preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})},8000)
-      .then(function(p){ if(pendingPreview===url) fillPreview(p,label); }).catch(function(){});
-    try{
-      var meta=await bridgeFetch('/resolve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})},90000);
-      if(pendingPreview!==url) return;
-      hidePreview(); openBridgeOptions(url,label,meta);
-    }catch(e){
-      if(pendingPreview!==url) return;
-      hidePreview(); fieldBusy(false); setRabbit('error');
-      setBubble('bridge: <span style="color:var(--danger)">'+esc(e.message||'could not resolve that link')+'</span>');
-    }
-  }
-  function openBridgeOptions(url,label,meta){
-    if(meta.thumbnail){ $('#opt-thumb').src=meta.thumbnail; $('#opt-head').hidden=false; } else { $('#opt-head').hidden=true; }
-    $('#opt-title').textContent=meta.title||label;
-    $('#opt-sub').textContent=(meta.uploader?meta.uploader+' · ':'')+(meta.duration?fmtDur(meta.duration):'');
-    var qs=meta.qualities||[];
-    $('#opt-quality').innerHTML=qs.map(function(q){ return '<option value="'+esc(q.key)+'">'+esc(q.label)+(q.filesize?' · ~'+fmtSize(q.filesize):'')+'</option>'; }).join('');
-    $('#opt-quality-row').style.display='';
-    $('#opt-quality').value='best';
-    var tags='<span class="tag">'+esc(label)+'</span>';
-    if(meta.duration) tags+='<span class="tag">'+fmtDur(meta.duration)+'</span>';
-    if(meta.extractor) tags+='<span class="tag">'+esc(meta.extractor)+'</span>';
-    if(meta.isLive) tags+='<span class="tag">live</span>';
-    $('#opt-meta').innerHTML=tags;
-    var suggested=meta.suggestedName||'media.mp4';
-    $('#opt-name').value=suggested;
-    $('#opt-conn-val').textContent=S.connections;
-    $('#opt-note').textContent=meta.isLive?'live stream — the bridge records until you cancel.':'the local bridge downloads and merges on your machine. quality is real, not a fake toggle.';
-    pendingOpt={kind:'bridge',url:url,label:label,meta:meta,connections:S.connections,suggested:suggested,suggestedExt:(meta.videoExt||'mp4'),quality:'best'};
-    fieldBusy(false); setRabbit('link'); setBubble('pick a quality — the bridge will fetch it locally.');
-    $('#opt-overlay').classList.add('on');
-  }
-  var prep={id:null,url:'',label:'',name:'',mode:'video',handle:null,timer:null,active:false};
-  var prepFails=0;
-  async function startBridgePrepare(p,q,name,handle){
-    var mode=q==='audio-mp3'?'audio-mp3':q==='audio'?'audio':'video';
-    var height=(q==='best'||q==='audio'||q==='audio-mp3')?0:(Number(q)||0);
-    prep={id:null,url:p.url,label:p.label,name:name,mode:mode,handle:handle,timer:null,active:true};
-    prepFails=0;
-    $('#prep-title').textContent='preparing '+(name||'media');
-    $('#prep-stage').textContent='starting…';
-    $('#prep-pct').textContent='';
-    $('#prep-bar').style.width='0%';
-    $('#prep-bar').classList.add('indet');
-    $('#prep-err').style.display='none'; $('#prep-err').textContent='';
-    $('#prep-cancel').textContent='cancel';
-    $('#prep-overlay').classList.add('on');
-    fieldBusy(true); setRabbit('download');
-    setBubble('the bridge is fetching it on your machine…');
-    try{
-      var r=await bridgeFetch('/prepare',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:p.url,mode:mode,height:height,name:name})},30000);
-      if(!prep.active){ fetch(BRIDGE+'/job/'+r.id+'/cancel',{method:'POST'}).catch(function(){}); return; }
-      prep.id=r.id; pollPrep();
-    }catch(e){ if(prep.active) prepError(e.message||'could not start the bridge job'); }
-  }
-  function prepError(msg){
-    prep.active=false;
-    if(prep.timer){clearTimeout(prep.timer);prep.timer=null;}
-    $('#prep-bar').classList.remove('indet'); $('#prep-bar').style.width='0%';
-    $('#prep-stage').textContent='failed';
-    $('#prep-err').textContent=msg; $('#prep-err').style.display='block';
-    $('#prep-cancel').textContent='close';
-    setRabbit('error'); setBubble('bridge: <span style="color:var(--danger)">'+esc(msg)+'</span>');
-  }
-  function updatePrep(j){
-    var stage=j.stage||'downloading';
-    var label=stage==='queued'?'waiting for a slot…':stage==='merging'?'merging video + audio…':stage==='converting'?'converting audio…':stage==='finishing'?'finishing…':'downloading…';
-    $('#prep-stage').textContent=label;
-    if(j.total){
-      $('#prep-bar').classList.remove('indet');
-      $('#prep-bar').style.width=Math.min(100,j.percent||0)+'%';
-      $('#prep-pct').textContent=Math.round(j.percent||0)+'%'+(j.speed?' · '+fmtSpeed(j.speed):'')+(j.eta?' · '+j.eta+'s left':'');
-    } else {
-      $('#prep-bar').classList.add('indet');
-      $('#prep-pct').textContent=j.downloaded?fmtSize(j.downloaded):'';
-    }
-    setBubble('bridge · <span class="accent">'+esc(label)+'</span>'+(j.total?' · '+Math.round(j.percent||0)+'%':''));
-  }
-  async function pollPrep(){
-    if(!prep.active||!prep.id)return;
-    try{
-      var j=await bridgeFetch('/job/'+prep.id,{},15000);
-      if(!prep.active)return;
-      prepFails=0;
-      if(j.status==='done'){
-        var done=prep; prep.active=false; if(prep.timer){clearTimeout(prep.timer);prep.timer=null;}
-        $('#prep-overlay').classList.remove('on'); fieldBusy(false);
-        enqueueBridge(j,done);
-        return;
-      }
-      if(j.status==='error'||j.status==='cancelled'){ prepError(j.error||'the bridge job failed'); return; }
-      updatePrep(j);
-    }catch(e){
-      prepFails++;
-      if(prepFails>=10){ prepError('lost contact with the bridge'); return; }
-    }
-    if(prep.active) prep.timer=setTimeout(pollPrep,500);
-  }
-  function enqueueBridge(j,p){
-    var ext=j.ext||'mp4';
-    var display=ensureExt(p.name||j.fileName||'media',ext);
-    var kind=/^(m4a|mp3|opus|ogg|oga|wav|flac|aac)$/i.test(ext)?'audio':'video';
-    var fileUrl=BRIDGE+'/file/'+j.fileId;
-    if(p.handle){
-      enqueue(fileUrl,p.handle,{info:{kind:kind,total:j.size||0,range:true,name:display,ext:ext},name:display,origin:p.url,host:p.label,viaBridge:true,bridgeFileId:j.fileId});
-      setRabbit('download'); setBubble('saving <span class="accent">'+esc(display)+'</span> to your disk…');
-    } else {
-      browserDlUrl(fileUrl,display);
-      S.history.unshift({title:display,url:p.url,size:fmtSize(j.size),when:'just now',kind:kind,host:p.label});
-      if(S.history.length>60)S.history.length=60; saveHistory(); renderHistory($('#hist-search').value);
-      setRabbit('success'); setBubble('handed <span class="accent">'+esc(display)+'</span> to your browser ✓');
-      updateBadge();
-    }
-  }
-  function closePrepOverlay(){
-    var wasActive=!!(prep.active&&prep.id);
-    if(wasActive){
-      var id=prep.id; prep.active=false;
-      if(prep.timer){clearTimeout(prep.timer);prep.timer=null;}
-      fetch(BRIDGE+'/job/'+id+'/cancel',{method:'POST'}).catch(function(){});
-      setRabbit('idle'); setBubble('cancelled. paste another whenever.');
-    }
-    prep.active=false;
-    if(prep.timer){clearTimeout(prep.timer);prep.timer=null;}
-    $('#prep-overlay').classList.remove('on');
-    fieldBusy(false);
-    if(!wasActive){ setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.'); }
-  }
-  function dropBridgeFile(j){
-    if(j&&j.bridgeFileId){ fetch(BRIDGE+'/file/'+j.bridgeFileId,{method:'DELETE'}).catch(function(){}); j.bridgeFileId=null; }
-  }
-
-  /* ---------- download engine ---------- */
-  function abortAll(j){ j.controllers.forEach(function(c){try{c.abort();}catch(e){}}); j.controllers=[]; }
-  function startTicker(j){ stopTicker(j); j.lastT=performance.now(); j.lastB=j.got;
-    j.ticker=setInterval(function(){
-      var now=performance.now(); var dt=(now-j.lastT)/1000;
-      if(dt>0.2){ var inst=(j.got-j.lastB)/dt; j.speed=j.speed?(j.speed*0.6+inst*0.4):inst; j.lastT=now; j.lastB=j.got; }
-      updateJob(j); if(S.focus===j.id) bubbleProgress(j); updateBadge();
-    },300); }
-  function stopTicker(j){ if(j.ticker){clearInterval(j.ticker);j.ticker=null;} }
-  function bubbleProgress(j){ if(j.status!=='downloading')return;
-    var pct=j.total?' · '+Math.round(j.got/j.total*100)+'%':'';
-    setBubble('downloading · <span class="accent">'+fmtSpeed(j.speed)+'</span>'+pct); }
-  function updateBadge(){ var act=S.jobs.filter(function(j){return j.status==='downloading';}); var el=$('#res-badge'); if(!el)return;
-    if(act.length){ var sp=act.reduce(function(a,j){return a+j.speed;},0); el.innerHTML='<span class="dot live"></span>'+act.length+' active · '+fmtSpeed(sp); }
-    else { el.innerHTML='<span class="dot"></span>~18 MB'; } }
-
-  function enqueue(url,handle,opts){
-    opts=opts||{};
-    var g=nameFromUrl(url);
-    var j={ id:++S.seq, url:url, host:opts.host||hostOf(url), origin:opts.origin||url,
-      viaBridge:!!opts.viaBridge, bridgeFileId:opts.bridgeFileId||null,
-      name:sanitize(g.name), ext:(g.ext||'bin').toLowerCase(), displayName:'',
-      kind:'file', total:0, got:0, status:'queued', speed:0, range:false, chunkSize:8*1024*1024,
-      conn:opts.connections||S.connections, preProbed:false,
-      controllers:[], sink: handle?{type:'file',handle:handle,w:null}:{type:'blob',parts:[]},
-      pending:{}, nextChunk:0, ticker:null, lastT:0, lastB:0, err:'' };
-    if(opts.info){ j.kind=opts.info.kind; j.total=opts.info.total; j.range=opts.info.range; j.name=opts.info.name; j.ext=opts.info.ext; j.preProbed=true; }
-    j.displayName=opts.name?sanitize(opts.name):applyTemplate(j);
-    S.jobs.push(j); renderQueue(); pump();
-    setRabbit('link'); setBubble('ooh — a link. fetching…'); fieldBusy(true);
-  }
-  function pump(){ var active=S.jobs.filter(function(j){return j.status==='downloading';}).length;
-    S.jobs.forEach(function(j){ if(j.status==='queued'&&active<S.concurrency){ active++; runJob(j); } });
-    updateBadge(); }
-
-  async function runJob(j){
-    j.status='downloading'; j.lastT=performance.now(); j.lastB=j.got; S.focus=j.id;
-    renderQueue(); setRabbit('download'); startTicker(j);
-    try{
-      if(!j.preProbed) await probe(j);
-      if(j.sink.type==='file'){ try{ j.sink.w=await j.sink.handle.createWritable(); }catch(e){ j.sink={type:'blob',parts:[]}; } }
-      if(j.range) await startRange(j); else await startStream(j);
-      if(j.status==='downloading'){ await closeSink(j,true); finish(j); }
-    }catch(e){
-      if(j.status==='paused'||j.status==='cancelled') return;
-      if(isBlock(e)) block(j); else fail(j,(e&&e.message)||'network error');
-    }
-  }
-  async function probe(j){
-    var ctrl=new AbortController(); j.controllers.push(ctrl);
-    var res=await fetch(j.url,{headers:{Range:'bytes=0-0'},signal:ctrl.signal});
-    if(!res.ok && res.status!==206){ throw new Error('HTTP '+res.status); }
-    var ct=(res.headers.get('Content-Type')||'').toLowerCase();
-    if(ct.indexOf('text/html')===0){ try{res.body&&res.body.cancel();}catch(e){} throw new Error('that link is a web page, not a direct file'); }
-    j.kind= ct.indexOf('audio')===0?'audio': ct.indexOf('video')===0?'video': ct.indexOf('image')===0?'image':'file';
-    var was206=(res.status===206);
-    var cr=res.headers.get('Content-Range'); var tot=0;
-    if(cr){ var m=cr.match(/\/(\d+)\s*$/); if(m) tot=+m[1]; }
-    try{res.body&&res.body.cancel();}catch(e){}
-    if(!tot){ try{ var r2=await fetch(j.url,{signal:ctrl.signal}); var cl2=r2.headers.get('Content-Length'); if(cl2) tot=+cl2; try{r2.body&&r2.body.cancel();}catch(e){} }catch(e){} }
-    if(tot>0){ j.total=tot; j.range=was206; } else { j.total=0; j.range=false; }
-    var cd=res.headers.get('Content-Disposition')||''; var nm=null;
-    var fm=cd.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i); if(fm){ try{nm=decodeURIComponent(fm[1].replace(/"/g,''));}catch(e){nm=fm[1];} }
-    var g=nameFromUrl(j.url); var base=nm||g.name; var ext=g.ext;
-    if(nm&&nm.indexOf('.')>-1){ var parts=nm.split('.'); ext=parts.pop(); base=parts.join('.'); }
-    j.ext=(ext||'bin').toLowerCase().replace(/[^a-z0-9]/g,'')||'bin';
-    j.name=sanitize(base||'media'); j.displayName=applyTemplate(j);
-  }
-  async function flush(j){
-    while(j.pending[j.nextChunk]!=null){
-      var buf=j.pending[j.nextChunk]; delete j.pending[j.nextChunk];
-      if(j.sink.type==='file'){ if(j.sink.w) await j.sink.w.write(buf); }
-      else { j.sink.parts.push(buf); }
-      j.nextChunk++;
-    }
-  }
-  async function startRange(j){
-    var total=j.total, cs=j.chunkSize, n=Math.ceil(total/cs);
-    var startIdx=j.nextChunk; j.got=Math.min(total,startIdx*cs); j.pending={};
-    var idx=startIdx, workers=Math.max(1,Math.min(j.conn||S.connections,n-startIdx));
-    async function worker(){
-      while(j.status==='downloading'){
-        var i=idx++; if(i>=n) return;
-        var s=i*cs, e=Math.min(total-1,s+cs-1);
-        var ctrl=new AbortController(); j.controllers.push(ctrl);
-        try{
-          var res=await fetch(j.url,{headers:{Range:'bytes='+s+'-'+e},signal:ctrl.signal});
-          if(res.status!==206){ throw new Error('range not honored'); }
-          var reader=res.body.getReader(), bufs=[], got=0;
-          while(true){ var r=await reader.read(); if(r.done)break; bufs.push(r.value); got+=r.value.length; j.got+=r.value.length; }
-          var size=e-s+1; if(got!==size){ throw new Error('short chunk'); }
-          var buf=new Uint8Array(size), off=0; for(var b of bufs){ buf.set(b,off); off+=b.length; }
-          j.pending[i]=buf; await flush(j);
-        }catch(err){ if(j.status==='downloading') throw err; return; }
-      }
-    }
-    var ws=[]; for(var w=0;w<workers;w++) ws.push(worker());
-    await Promise.all(ws);
-    if(j.status==='downloading' && j.got<total){ throw new Error('incomplete download'); }
-  }
-  async function startStream(j){
-    var ctrl=new AbortController(); j.controllers.push(ctrl);
-    var res=await fetch(j.url,{signal:ctrl.signal});
-    if(!res.ok){ throw new Error('HTTP '+res.status); }
-    var reader=res.body.getReader();
-    while(j.status==='downloading'){ var r=await reader.read(); if(r.done)break;
-      j.got+=r.value.length;
-      if(j.sink.type==='file'){ if(j.sink.w) await j.sink.w.write(r.value); } else { j.sink.parts.push(r.value); } }
-    try{reader.cancel();}catch(e){}
-  }
-  async function closeSink(j,save){
-    try{
-      if(j.sink.type==='file'){ if(j.sink.w){ if(save) await j.sink.w.close(); else await j.sink.w.abort(); } }
-      else if(save){ var blob=new Blob(j.sink.parts); var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-        a.download=j.displayName|| (j.name+'.'+j.ext); document.body.appendChild(a); a.click(); a.remove();
-        setTimeout(function(){URL.revokeObjectURL(a.href);},4000); }
-    }catch(e){}
-    j.sink.w=null;
-  }
-  function addHistory(j){ S.history.unshift({title:j.displayName|| (j.name+'.'+j.ext), url:j.origin||j.url, size:fmtSize(j.got), when:'just now', kind:j.kind, host:j.host});
-    if(S.history.length>60)S.history.length=60; saveHistory(); renderHistory($('#hist-search').value); }
-  function finish(j){ j.status='done'; if(j.total)j.got=j.total; stopTicker(j); abortAll(j);
-    addHistory(j); renderQueue(); updateBadge(); fieldBusy(S.jobs.some(function(x){return x.status==='downloading';}));
-    setRabbit('success'); setBubble('done! saved <span class="accent">'+esc(j.displayName)+'</span> ✓'); pump(); }
-  function fail(j,msg){ j.status='error'; j.err=msg; stopTicker(j); abortAll(j); closeSink(j,false);
-    renderQueue(); updateBadge(); fieldBusy(false); setRabbit('error'); setBubble("aww — <span style='color:var(--danger)'>"+esc(msg)+"</span>."); pump(); }
-  function block(j){ j.status='blocked'; stopTicker(j); abortAll(j); closeSink(j,false);
-    renderQueue(); updateBadge(); fieldBusy(false); setRabbit('sorry');
-    setBubble("this host won't let me read it in-app. try a <span class='accent'>browser download</span> below."); pump(); }
-  function pause(j){ if(!j.range)return; j.status='paused'; abortAll(j); stopTicker(j);
-    j.got=Math.min(j.total,j.nextChunk*j.chunkSize); renderQueue(); updateBadge(); fieldBusy(false);
-    setRabbit('idle'); setBubble('paused. take your time.'); }
-  async function resume(j){ j.status='downloading'; j.controllers=[]; j.got=Math.min(j.total,j.nextChunk*j.chunkSize);
-    S.focus=j.id; renderQueue(); setRabbit('download'); setBubble('resuming — picking up where we left off…'); startTicker(j); fieldBusy(true);
-    try{ if(j.sink.type==='file'&&!j.sink.w){ j.sink.w=await j.sink.handle.createWritable(); }
-      await startRange(j); if(j.status==='downloading'){ await closeSink(j,true); finish(j); } }
-    catch(e){ if(j.status==='paused')return; if(isBlock(e))block(j); else fail(j,(e&&e.message)||'error'); } }
-  function cancel(j){ j.status='cancelled'; abortAll(j); stopTicker(j); closeSink(j,false); dropBridgeFile(j);
-    S.jobs=S.jobs.filter(function(x){return x.id!==j.id;}); renderQueue(); updateBadge(); fieldBusy(false);
-    setRabbit('idle'); setBubble('cancelled. paste another whenever.'); pump(); }
-  function dismiss(j){ dropBridgeFile(j); S.jobs=S.jobs.filter(function(x){return x.id!==j.id;}); renderQueue(); updateBadge();
-    if(!S.jobs.length){setRabbit('idle');setBubble('paste a link — i\'ll do the rest.');fieldBusy(false);} pump(); }
-  function retry(j){
-    if(j.viaBridge&&j.origin){ dismiss(j); submit(j.origin); return; }
-    j.status='queued'; j.err=''; j.got=0; j.nextChunk=0; j.pending={}; j.controllers=[];
-    if(j.sink.type==='file'){ j.sink={type:'blob',parts:[]}; } renderQueue(); pump(); }
-  function browserDlUrl(url,name){ var a=document.createElement('a'); a.href=url; if(name)a.download=name; a.target='_blank'; a.rel='noopener';
-    document.body.appendChild(a); a.click(); a.remove(); }
-  function browserDl(j){ browserDlUrl(j.url,j.displayName); toast('handing off to your browser’s downloader'); }
-  function again(j){ submit(j.viaBridge&&j.origin?j.origin:j.url); }
-
-  /* ---------- queue UI ---------- */
-  function jobMeta(j){
-    var pct=j.total?Math.min(100,j.got/j.total*100):0;
-    if(j.status==='queued')return '<span class="sp">queued</span><span>waiting…</span><span class="ctl"><button data-act="cancel">cancel</button></span>';
-    if(j.status==='downloading')return '<span class="sp">'+fmtSpeed(j.speed)+'</span><span>'+(j.total?Math.round(pct)+'%':fmtSize(j.got))+'</span><span>'+(j.range?(j.conn||S.connections)+' connections':'1 stream')+'</span><span class="ctl">'+(j.range?'<button data-act="pause">pause</button>':'')+'<button data-act="cancel">cancel</button></span>';
-    if(j.status==='paused')return '<span class="sp">paused</span><span>'+Math.round(pct)+'%</span><span class="ctl"><button data-act="resume">resume</button><button data-act="cancel">cancel</button></span>';
-    if(j.status==='done')return '<span class="sp">✓ saved</span><span>'+fmtSize(j.got)+'</span><span class="ctl"><button data-act="again">save again</button><button data-act="dismiss">dismiss</button></span>';
-    if(j.status==='blocked')return '<span class="sp">host blocks in-app fetch</span><span class="ctl"><button data-act="browser">browser download</button><button data-act="retry">retry</button><button data-act="dismiss">dismiss</button></span>';
-    if(j.status==='error')return '<span class="sp">✕ '+esc(j.err||'failed')+'</span><span class="ctl"><button data-act="retry">retry</button><button data-act="dismiss">dismiss</button></span>';
-    return '';
-  }
-  function jobRow(j){
-    var pct=j.total?Math.min(100,j.got/j.total*100):0;
-    var barW=j.total?pct:(j.status==='downloading'?100:0);
-    var indet=(!j.total&&j.status==='downloading')?' indet':'';
-    var hop=(j.status==='downloading')?HOP:'';
-    var kindIco=j.kind==='audio'?ICO.audio:j.kind==='video'?ICO.video:ICO.file;
-    return '<div class="job '+j.status+'" data-id="'+j.id+'"><div class="job-top"><span class="job-title">'+esc(j.displayName||j.name)+'</span><span class="job-svc">'+esc(j.host||'direct')+'</span></div><div class="track"><div class="bar'+indet+'" style="width:'+barW+'%">'+hop+'</div></div><div class="job-meta">'+jobMeta(j)+'</div></div>';
-  }
-  function renderQueue(){ $('#queue').innerHTML=S.jobs.map(jobRow).join(''); bindJobActs(); }
-  function updateJob(j){ var el=$('#queue .job[data-id="'+j.id+'"]'); if(!el){renderQueue();return;}
-    el.className='job '+j.status; var bar=el.querySelector('.bar');
-    if(j.total){ bar.style.width=Math.min(100,j.got/j.total*100)+'%'; bar.classList.remove('indet'); }
-    else { bar.style.width='100%'; bar.classList.add('indet'); }
-    el.querySelector('.job-meta').innerHTML=jobMeta(j); bindJobActs(); }
-  function bindJobActs(){ $$('#queue [data-act]').forEach(function(b){ b.onclick=function(){
-    var row=b.closest('.job'); var id=+row.getAttribute('data-id');
-    var j=S.jobs.find(function(x){return x.id===id;}); if(!j)return;
-    var act=b.getAttribute('data-act');
-    if(act==='pause')pause(j); else if(act==='resume')resume(j); else if(act==='cancel')cancel(j);
-    else if(act==='retry')retry(j); else if(act==='dismiss')dismiss(j); else if(act==='browser')browserDl(j);
-    else if(act==='again')again(j); }; }); }
-
-  /* ---------- submit ---------- */
-  function submit(raw){
-    var url=(raw!=null?raw:$('#url').value).trim();
-    if(!url){ setRabbit('empty'); setBubble('no link yet. i\'m waiting…'); return; }
-    if(!/^https?:\/\//i.test(url)){ setRabbit('error'); setBubble("that doesn't look like a link. paste a full http(s) URL."); return; }
-    url=canonicalPlatform(url);
-    var plat=platformOf(url);
-    if(plat==='Spotify'){ setRabbit('sorry'); setBubble('Spotify is <span class="accent">DRM-protected</span> — no downloader can save it. try SoundCloud or a video mirror.'); return; }
-    if(plat){ bridgeFlow(url,plat); return; }
-    var g=nameFromUrl(url); var suggested=sanitize(g.name)+'.'+(g.ext||'bin');
-    if(S.bg){ browserDlUrl(url,suggested); setRabbit('success'); setBubble('handed to your browser’s downloader ✓');
-      S.history.unshift({title:suggested,url:url,size:'—',when:'just now',kind:'file',host:hostOf(url)}); saveHistory(); renderHistory(''); return; }
-    fieldBusy(true); setRabbit('link'); setBubble('checking the link…');
-    var pj={url:url,controllers:[]};
-    probe(pj).then(function(){ abortAll(pj); openOptions(url,pj,suggested); })
-      .catch(function(){ abortAll(pj); fieldBusy(false);
-        var ext=(g.ext||'').toLowerCase();
-        if(ext&&ext!=='bin'){ startDownload(url,suggested,null); return; }
-        recheckBridge().then(function(b){
-          if(b&&b.ready){ bridgeFlow(url,platformOf(url)||hostOf(url)); }
-          else { startDownload(url,suggested,null); }
-        });
-      });
-  }
-  function startDownload(url,suggested,opts){
-    if(window.showSaveFilePicker){
-      window.showSaveFilePicker({suggestedName:suggested})
-        .then(function(h){ enqueue(url,h,opts); })
-        .catch(function(e){ if(e&&e.name==='AbortError'){ setRabbit('idle'); setBubble('no save location picked — the link stayed put.'); } else { enqueue(url,null,opts); } });
-    } else { enqueue(url,null,opts); }
-  }
-  var pendingOpt=null;
-  function openOptions(url,info,suggested){
-    pendingOpt={kind:'direct',url:url,info:info,connections:S.connections,suggested:suggested};
-    $('#opt-quality-row').style.display='none';
-    $('#opt-note').textContent='quality & audio are whatever the source file has.';
-    $('#opt-meta').innerHTML='<span class="tag">'+esc(info.kind)+'</span><span class="tag">'+(info.total?fmtSize(info.total):'size unknown')+'</span><span class="tag">'+esc(hostOf(url))+'</span>';
-    $('#opt-name').value=info.displayName||suggested;
-    $('#opt-conn-val').textContent=S.connections;
-    fieldBusy(false); setRabbit('link'); setBubble('set your options, then hit download.');
-    $('#opt-overlay').classList.add('on');
-  }
-  function resetOptState(){ pendingOpt=null; setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.'); }
-  function closeOptions(){ $('#opt-overlay').classList.remove('on'); resetOptState(); }
-  $('#opt-conn-minus').addEventListener('click',function(){ if(!pendingOpt)return; pendingOpt.connections=Math.max(1,pendingOpt.connections-1); $('#opt-conn-val').textContent=pendingOpt.connections; });
-  $('#opt-conn-plus').addEventListener('click',function(){ if(!pendingOpt)return; pendingOpt.connections=Math.min(8,pendingOpt.connections+1); $('#opt-conn-val').textContent=pendingOpt.connections; });
-  $('#opt-cancel').addEventListener('click',closeOptions);
-  $('#opt-overlay [data-close]').addEventListener('click',closeOptions);
-  $('#opt-quality').addEventListener('change',function(){
-    if(!pendingOpt||pendingOpt.kind!=='bridge')return;
-    var q=this.value, meta=pendingOpt.meta;
-    var qmeta=(meta.qualities||[]).find(function(x){return x.key===q;});
-    var ext=(qmeta&&qmeta.ext)||(q==='audio-mp3'?'mp3':q==='audio'?(meta.audioExt||'m4a'):(meta.videoExt||'mp4'));
-    var v=$('#opt-name').value||pendingOpt.suggested;
-    $('#opt-name').value=swapExt(v,pendingOpt.suggestedExt,ext);
-    pendingOpt.suggestedExt=ext; pendingOpt.quality=q;
-  });
-  $('#opt-go').addEventListener('click',async function(){
-    if(!pendingOpt)return;
-    var p=pendingOpt; var name=sanitize($('#opt-name').value)||p.suggested;
-    if(p.kind==='bridge'){
-      var q=$('#opt-quality').value||'best';
-      $('#opt-overlay').classList.remove('on'); pendingOpt=null;
-      var handle=null;
-      if(window.showSaveFilePicker&&!S.bg){
-        try{ handle=await window.showSaveFilePicker({suggestedName:ensureExt(name,p.suggestedExt)}); }
-        catch(e){
-          if(e&&e.name==='AbortError'){ setRabbit('idle'); setBubble('no save location picked — the link stayed put.'); return; }
-          handle=null;
-        }
-      }
-      startBridgePrepare(p,q,name,handle);
-      return;
-    }
-    var opts={name:name,connections:p.connections,info:p.info};
-    $('#opt-overlay').classList.remove('on'); pendingOpt=null;
-    startDownload(p.url,name,opts);
-  });
-  $('#prep-cancel').addEventListener('click',closePrepOverlay);
-  $('#bridge-connect-go').addEventListener('click',bridgeConnectGo);
-  $('#bridge-connect-cancel').addEventListener('click',bridgeConnectClose);
-  $('#pv-cancel').addEventListener('click',cancelPreview);
-  $('#bridge-recheck').addEventListener('click',function(){
-    if(location.protocol==='https:' && !bridge) toast('if your browser asks, allow local network access for the bridge');
-    detectBridge(30000).then(function(){
-      if(bridge&&bridge.ready) toast('bridge connected');
-      else if(bridge) toast('bridge online, but yt-dlp is missing');
-      else toast(location.protocol==='https:'?'bridge offline — allow local access or start bridge/start.ps1':'bridge offline');
-    });
-  });
-  function copyText(t){
-    if(navigator.clipboard&&navigator.clipboard.writeText){ return navigator.clipboard.writeText(t); }
-    return new Promise(function(res,rej){ var ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy')?res():rej(new Error('copy failed')); }catch(e){ rej(e); } finally{ document.body.removeChild(ta); } });
-  }
-  $('#bridge-lan-copy').addEventListener('click',function(){ var t=$('#bridge-lan').textContent; if(!t)return; copyText(t).then(function(){toast('copied — open it on the other device');}).catch(function(){toast('copy failed — select the address manually');}); });
-  $('#url').addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
-  $('#url').addEventListener('input',function(){ if(this.value.trim()){ setRabbit('link'); setBubble('ooh, a link. press <span class="accent">enter</span> or hit download.'); } });
-  $('#go-btn').addEventListener('click',function(){submit();});
-  $('#paste-btn').addEventListener('click',function(){
-    if(navigator.clipboard&&navigator.clipboard.readText){
-      navigator.clipboard.readText().then(function(t){ t=(t||'').trim(); if(/^https?:\/\//i.test(t)){ $('#url').value=t; submit(); } else { $('#url').focus(); setBubble('clipboard has no link — paste one into the box.'); } })
-      .catch(function(){ $('#url').focus(); setBubble('paste the link into the box, then press <span class="accent">enter</span>.'); });
-    } else { $('#url').focus(); }
-  });
-  $('#sample-chip').addEventListener('click',function(){ $('#url').value=SAMPLE; submit(SAMPLE); });
-  $('#help-sample').addEventListener('click',function(){ $('#help-overlay').classList.remove('on'); setView('save'); $('#url').value=SAMPLE; submit(SAMPLE); });
-
-  /* ---------- overlays ---------- */
-  function openHelp(){ $('#help-overlay').classList.add('on'); }
-  $('#help-open').addEventListener('click',openHelp);
-  function renderHistory(filter){ var f=(filter||'').toLowerCase();
-    var list=S.history.filter(function(h){return (h.title||'').toLowerCase().indexOf(f)>-1||(h.host||'').indexOf(f)>-1;});
-    $('#hist-list').innerHTML=list.map(function(h,i){ var ico=h.kind==='audio'?ICO.audio:h.kind==='video'?ICO.video:ICO.file;
-      return '<div class="hist-row" data-i="'+i+'"><div class="hist-ico">'+ico+'</div><div class="hist-main"><b>'+esc(h.title)+'</b><span>'+esc(h.host||'')+' · '+esc(h.size||'')+' · '+esc(h.when||'')+'</span></div><div class="hist-act"><button data-h="redo" title="download again">'+ICO.redo+'</button><button data-h="copy" title="copy link">'+ICO.copy+'</button><button data-h="del" title="remove">'+ICO.trash+'</button></div></div>';
-    }).join('')||'<div class="hist-empty">no downloads yet</div>';
-    $$('#hist-list [data-h]').forEach(function(b){ b.onclick=function(){
-      var row=b.closest('.hist-row'); var idx=+row.getAttribute('data-i'); var item=S.history[idx]; var act=b.getAttribute('data-h');
-      if(act==='redo'){ $('#hist-overlay').classList.remove('on'); setView('save'); $('#url').value=item.url; submit(item.url); }
-      else if(act==='copy'){ if(navigator.clipboard)navigator.clipboard.writeText(item.url).then(function(){toast('link copied');}); }
-      else if(act==='del'){ var removed=S.history.splice(idx,1)[0]; saveHistory(); renderHistory($('#hist-search').value);
-        toast('removed '+removed.title,'undo',function(){S.history.splice(idx,0,removed);saveHistory();renderHistory($('#hist-search').value);}); }
-    }; });
-  }
-  $('#hist-open').addEventListener('click',function(){renderHistory('');$('#hist-search').value='';$('#hist-overlay').classList.add('on');});
-  $('#hist-search').addEventListener('input',function(){renderHistory(this.value);});
-  function closeOverlay(o){ if(o.id==='prep-overlay'){ closePrepOverlay(); return; } if(o.id==='bridge-connect-overlay'){ bridgeConnectClose(); return; } o.classList.remove('on'); if(o.id==='opt-overlay')resetOptState(); }
-  $$('[data-close]').forEach(function(b){b.addEventListener('click',function(){closeOverlay(b.closest('.overlay'));});});
-  $$('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)closeOverlay(o);});});
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape')$$('.overlay.on').forEach(closeOverlay); });
-
-  /* ---------- toast ---------- */
+  /* toast */
   var toastT=null;
-  function toast(msg,actLabel,actFn){ $('#toast-text').textContent=msg; var a=$('#toast-act');
-    if(actLabel){a.style.display='';a.textContent=actLabel;a.onclick=function(){actFn();hideToast();};}else{a.style.display='none';a.onclick=null;}
-    $('#toast').classList.add('on'); if(toastT)clearTimeout(toastT); toastT=setTimeout(hideToast,3600); }
-  function hideToast(){$('#toast').classList.remove('on');}
+  function toast(msg){ var t=$('#toast'); t.textContent=msg; t.classList.add('on');
+    clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('on');},2200); }
 
-  /* ---------- init ---------- */
-  loadSettings(); loadHistory(); applySettingsToUI();
-  setRabbit('idle'); setBubble('paste a link — i\'ll do the rest.'); renderHistory(''); updateBadge();
-  var bridgeAllowed=false; try{ bridgeAllowed=!!localStorage.getItem(BRIDGE_ALLOW_KEY); }catch(e){}
-  if(location.protocol!=='https:' || bridgeAllowed) detectBridge(); else updateBridgeUI();
-  var handoff=new URLSearchParams(location.search).get('url');
-  if(handoff && location.protocol!=='https:' && /^https?:\/\//i.test(handoff)){ $('#url').value=handoff; submit(handoff); }
-  window.addEventListener('focus',function(){ if(location.protocol==='https:')return; if(!bridge||!bridge.ready) recheckBridge(); });
+  function copyText(text){
+    function legacy(){ return new Promise(function(res,rej){ var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy')?res():rej(new Error('copy failed')); }catch(e){ rej(e); } finally{ document.body.removeChild(ta); } }); }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ return navigator.clipboard.writeText(text).catch(legacy); }
+    return legacy();
+  }
+  function wireCopy(btn, getText){
+    btn.addEventListener('click',function(){
+      copyText(getText()).then(function(){ toast('copied — paste it in your terminal'); Rig.setState('success'); })
+        .catch(function(){ toast('copy failed — select the text manually'); });
+    });
+  }
+  wireCopy($('#hero-copy'), function(){ return $('#hero-cmd').textContent; });
+  $$('.panel .cp').forEach(function(b){ wireCopy(b, function(){ return $('code', b.parentNode).textContent; }); });
+
+  /* terminal reveal */
+  var lines=$$('#term .ln');
+  if(reduced||!('IntersectionObserver' in window)){ lines.forEach(function(l){l.classList.add('on');}); }
+  else {
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return;
+        io.disconnect();
+        lines.forEach(function(l,i){ setTimeout(function(){ l.classList.add('on'); }, 170*i); });
+      });
+    },{threshold:.35});
+    io.observe($('#term'));
+  }
 })();
-</script>
-</div>
-<!--APP-FRAGMENT-END-->
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  // Ensure bottom navigation is always visible on mobile
-  var navs = document.querySelectorAll('#downrabbit-app .nav-top, #downrabbit-app .nav-bottom');
-  navs.forEach(function(n){ n.style.display='flex'; n.style.position='relative'; n.style.zIndex='10'; });
-  // Enable page scrolling
-  document.body.style.overflow='';
-  document.documentElement.style.overflow='';
-  // Reset scroll position
-  window.scrollTo(0,0);
-});
 </script>
 </body>
 </html>

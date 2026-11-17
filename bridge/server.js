@@ -17,7 +17,6 @@ const DATA_DIR = path.join(os.tmpdir(), 'downrabbit-bridge');
 const CACHE_DIR = path.join(DATA_DIR, 'ytdlp-cache');
 const RESOLVE_DISK = path.join(DATA_DIR, 'resolve-cache.json');
 const BIN_DIR = path.join(__dirname, 'bin');
-const APP_HTML = path.join(__dirname, '..', 'webapp', 'index.html');
 
 const MAX_ACTIVE = clampInt(process.env.BRIDGE_MAX_ACTIVE, 3, 1, 4);
 const FRAGMENTS = clampInt(process.env.BRIDGE_FRAGMENTS, 24, 1, 32);
@@ -63,6 +62,8 @@ function findTool(name) {
 const YTDLP = process.env.YTDLP_PATH || findTool('yt-dlp');
 const FFMPEG = process.env.FFMPEG_PATH || findTool('ffmpeg');
 const FFMPEG_DIR = path.isAbsolute(FFMPEG) ? path.dirname(FFMPEG) : '';
+// yt-dlp needs a JS runtime to answer YouTube's player challenge; we are node
+const NODE_DIR = /^node(\.exe)?$/i.test(path.basename(process.execPath)) ? path.dirname(process.execPath) : '';
 
 function probeTool(cmd, args) {
   return new Promise(function (resolve) {
@@ -371,7 +372,14 @@ function baseArgs() {
   if (COOKIES_BROWSER) a.push('--cookies-from-browser', COOKIES_BROWSER);
   if (COOKIE_FILE) a.push('--cookies', COOKIE_FILE);
   if (FFMPEG_DIR) a.push('--ffmpeg-location', FFMPEG_DIR);
+  if (NODE_DIR && ytdlpSupportsJsRuntime()) a.push('--js-runtimes', 'node:' + NODE_DIR);
   return a;
+}
+
+function ytdlpSupportsJsRuntime() {
+  const m = /^(\d{4})\.(\d{2})\.(\d{2})/.exec(ytdlpVersion || '');
+  if (!m) return true;
+  return (m[1] + m[2] + m[3]) >= '20251101';
 }
 
 function cleanStderr(text) {
@@ -448,7 +456,7 @@ async function resolveData(url) {
 
 async function resolveDataFresh(url) {
   const args = baseArgs().concat(['-J', '--skip-download', url]);
-  const r = await runCapture(YTDLP, args, 90000);
+  const r = await runCapture(YTDLP, args, 180000);
   if (r.code !== 0) throw friendlyError(r.stderr, r.code);
   let data;
   try {
@@ -1082,17 +1090,6 @@ function lanUrls() {
   return cand.map(function (c) { return c.url; });
 }
 
-function serveApp(req, res) {
-  let body;
-  try { body = fs.readFileSync(APP_HTML); }
-  catch (e) { return json(res, 500, { error: 'webapp/index.html not found next to bridge/' }); }
-  const etag = '"' + crypto.createHash('sha1').update(body).digest('hex').slice(0, 16) + '"';
-  if (req.headers['if-none-match'] === etag) { res.writeHead(304, { ETag: etag, 'Cache-Control': 'no-cache' }); return res.end(); }
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Content-Length': body.length, 'Cache-Control': 'no-cache', ETag: etag });
-  if (req.method === 'HEAD') return res.end();
-  res.end(body);
-}
-
 const server = http.createServer(async function (req, res) {
   cors(req, res);
   if (req.method === 'OPTIONS') {
@@ -1106,7 +1103,6 @@ const server = http.createServer(async function (req, res) {
   const p = u.pathname;
 
   try {
-    if ((p === '/' || p === '/index.html') && (req.method === 'GET' || req.method === 'HEAD')) return serveApp(req, res);
     if (p === '/ping' && req.method === 'GET') {
       await refreshTools(false);
       return json(res, 200, {

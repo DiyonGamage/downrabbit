@@ -2,7 +2,7 @@
   "name": "downrabbit-bridge",
   "version": "1.0.0",
   "private": true,
-  "description": "Local yt-dlp bridge for Downrabbit",
+  "description": "Local download engine behind the downr command",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

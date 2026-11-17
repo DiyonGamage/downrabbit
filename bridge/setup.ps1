@@ -29,14 +29,13 @@ if (-not (Test-Path (Join-Path $bin 'ffmpeg.exe')) -and (-not $haveFfmpeg -or -n
   Invoke-WebRequest -Uri 'https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-win64-gpl.zip' -OutFile $zip
   Expand-Archive -Path $zip -DestinationPath $tmp -Force
   $ffmpeg = Get-ChildItem -Path $tmp -Recurse -Filter 'ffmpeg.exe' | Select-Object -First 1
-  $ffprobe = Get-ChildItem -Path $tmp -Recurse -Filter 'ffprobe.exe' | Select-Object -First 1
   if (-not $ffmpeg) { throw 'ffmpeg.exe was not found in the archive' }
   Copy-Item $ffmpeg.FullName (Join-Path $bin 'ffmpeg.exe') -Force
-  if ($ffprobe) { Copy-Item $ffprobe.FullName (Join-Path $bin 'ffprobe.exe') -Force }
   Remove-Item $tmp -Recurse -Force
   Remove-Item $zip -Force
 }
 
 Write-Host ''
-Write-Host 'ready. start the bridge with:'
-Write-Host '  .\start.ps1'
+Write-Host 'ready. try the command with:'
+Write-Host '  node .\downr.js --help'
+Write-Host '  node .\downr.js "https://youtu.be/..."'
