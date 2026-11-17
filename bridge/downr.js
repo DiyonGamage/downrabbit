@@ -97,6 +97,7 @@ async function ping(ms) {
 }
 
 let spawned = null;
+let keepEngine = false;
 async function ensureEngine() {
   let p = await ping(1500);
   if (p) return { info: p, spawned: false };
@@ -504,11 +505,17 @@ const Progress = (function () {
   }
 
   function cleanup() {
-    if (!active) return;
-    stopTimer();
-    if (tty && printed) out.write(CLEAR + '\n' + SHOW);
-    active = false;
-    printed = false;
+    if (active) {
+      stopTimer();
+      if (tty && printed) out.write(CLEAR + '\n' + SHOW);
+      active = false;
+      printed = false;
+    }
+    if (!keepEngine && spawned) {
+      const child = spawned;
+      spawned = null;
+      try { process.kill(child.pid); } catch (e) {}
+    }
   }
 
   process.on('exit', cleanup);
@@ -588,6 +595,7 @@ async function runOne(url, o, dir) {
     console.log(HELP);
     process.exit(2);
   }
+  keepEngine = !!o.keep;
   const dir = path.resolve(expand(o.dir || defaultDir()));
   fs.mkdirSync(dir, { recursive: true });
 
@@ -609,6 +617,7 @@ async function runOne(url, o, dir) {
     const p = await ping(1000);
     if (p && !p.active && !p.queued) {
       try { process.kill(spawned.pid); } catch (e) {}
+      spawned = null;
     }
   }
   process.exit(failed ? 1 : 0);
